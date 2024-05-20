@@ -1,0 +1,5 @@
+ToolSet: 16.0 (local)@C:\Program Files (x86)\Microsoft Visual Studio\2019\Community
+Ninja: 1.11.1@C:\Users\akiko\AppData\Local\Programs\CLion\bin\ninja\win\x64\ninja.exe
+Options: msvc.arch=amd64
+
+Options:-DCMAKE_MAKE_PROGRAM=C:/Users/akiko/AppData/Local/Programs/CLion/bin/ninja/win/x64/ninja.exe

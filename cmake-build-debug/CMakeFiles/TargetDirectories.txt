@@ -1,0 +1,3 @@
+C:/_Git/clion-directx-example/cmake-build-debug/CMakeFiles/src.dir
+C:/_Git/clion-directx-example/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/_Git/clion-directx-example/cmake-build-debug/CMakeFiles/rebuild_cache.dir
