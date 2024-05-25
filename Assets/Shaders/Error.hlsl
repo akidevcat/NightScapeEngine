@@ -1,14 +1,14 @@
-cbuffer GlobalProperties
+cbuffer GlobalProperties : register(b0)
 {
     float4 Timee;
 };
 
-cbuffer MaterialProperties
+cbuffer MaterialProperties : register(b1)
 {
     float Tint;
 };
 
-cbuffer DrawProperties
+cbuffer DrawProperties : register(b2)
 {
     float Time;
 };
@@ -45,5 +45,4 @@ PixelInput VertexMain(VertexInput input)
 float4 PixelMain(PixelInput input) : SV_TARGET
 {
     return float4(1, 0, 1, 1);
-    return float4(input.uv.x, input.uv.y, 1.0 - input.uv.x, 1.0) * (sin(Time * 10.0) * 0.5 + 0.5);
 }

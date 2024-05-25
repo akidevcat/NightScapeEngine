@@ -15,6 +15,8 @@ public:
     void Release();
     bool Compile(ID3D11Device* device);
 
+    bool UploadProperties(ID3D11DeviceContext *context);
+
 public:
     [[nodiscard]] VertexShader* GetVertexShader() const { return _vShader; }
     [[nodiscard]] PixelShader* GetPixelShader() const { return _pShader; }

@@ -44,7 +44,6 @@ bool Material::SetVertexVar(size_t pUid, void *value, size_t valueSize)
         return false;
     }
 
-    _isDirty = true;
     return true;
 }
 
@@ -58,19 +57,26 @@ bool Material::SetPixelVar(size_t pUid, void *value, size_t valueSize)
         return false;
     }
 
-    _isDirty = true;
     return true;
 }
 
-bool Material::Upload()
+bool Material::UploadMaterialProperties(ID3D11DeviceContext *context)
 {
-    if (!_isDirty)
-    {
-        return true;
-    }
+    if (_vsMaterialProps)
+        _shader->GetVertexShader()->UploadBuffer(context, _vsMaterialProps);
+    if (_psMaterialProps)
+        _shader->GetPixelShader()->UploadBuffer(context, _psMaterialProps);
 
+    return true; // ToDo
+}
 
+void Material::UploadShaderProperties(ID3D11DeviceContext *context)
+{
+    _shader->UploadProperties(context);
+}
 
-    _isDirty = false;
-    return true;
+void Material::UploadAllProperties(ID3D11DeviceContext *context)
+{
+    UploadMaterialProperties(context);
+    UploadShaderProperties(context);
 }

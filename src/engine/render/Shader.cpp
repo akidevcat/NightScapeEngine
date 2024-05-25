@@ -36,3 +36,20 @@ bool Shader::Compile(ID3D11Device *device)
     _isCompiled = true;
     return true;
 }
+
+bool Shader::UploadProperties(ID3D11DeviceContext *context)
+{
+    if (_vShader)
+    {
+        _vShader->UploadGlobalBuffer(context);
+        _vShader->UploadDrawBuffer(context);
+    }
+
+    if (_pShader)
+    {
+        _pShader->UploadGlobalBuffer(context);
+        _pShader->UploadDrawBuffer(context);
+    }
+
+    return true; // ToDo
+}

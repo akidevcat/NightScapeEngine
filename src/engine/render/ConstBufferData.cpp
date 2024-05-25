@@ -51,5 +51,6 @@ bool ConstBufferData::SetVar(size_t pUid, void* value, size_t valueSize)
     }
     memcpy(valuePtr, value, valueSize);
 
+    _isDirty = true;
     return true;
 }

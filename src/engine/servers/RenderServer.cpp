@@ -466,14 +466,15 @@ void RenderServer::Shutdown()
 
 void RenderServer::BeginScene(XMFLOAT4 color)
 {
-	float c[4];
+	// float c[4];
+	//
+	// c[0] = color.x;
+	// c[1] = color.y;
+	// c[2] = color.z;
+	// c[3] = color.w;
 
-	c[0] = color.x;
-	c[1] = color.y;
-	c[2] = color.z;
-	c[3] = color.w;
-
-	_deviceContext->ClearRenderTargetView(_renderTargetView, c);
+	// _deviceContext->ClearRenderTargetView(_renderTargetView, c);
+	_deviceContext->ClearRenderTargetView(_renderTargetView, reinterpret_cast<const float*>(&color));
 	_deviceContext->ClearDepthStencilView(_depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 }
 
@@ -489,4 +490,93 @@ void RenderServer::EndScene()
 		// Present as fast as possible.
 		_swapChain->Present(0, 0);
 	}
+}
+
+void RenderServer::DrawMesh(Mesh *mesh, Material* material, XMMATRIX matrix, Camera *camera)
+{
+	PipelineSetMesh(mesh);
+	PipelineSetMaterial(material);
+	PipelineDrawIndexed(mesh);
+}
+
+void RenderServer::PipelineSetMesh(Mesh *mesh)
+{
+	constexpr unsigned int offset = 0;
+	constexpr unsigned int stride = sizeof(VertexData);
+
+	_deviceContext->IASetVertexBuffers(0, 1, &mesh->vertexBuffer, &stride, &offset);
+	_deviceContext->IASetIndexBuffer(mesh->indexBuffer, DXGI_FORMAT_R32_UINT, 0);
+	_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+}
+
+void RenderServer::PipelineSetMaterial(Material *material)
+{
+	// Upload props to GPU buffer if material or shaders were changed
+	material->UploadAllProperties(_deviceContext);
+
+	_deviceContext->IASetInputLayout(
+		material->GetShader()->GetVertexShader()->GetInputLayout());
+	_deviceContext->VSSetShader(
+		material->GetShader()->GetVertexShader()->AsID3D11(), nullptr, 0);
+	_deviceContext->PSSetShader(
+		material->GetShader()->GetPixelShader()->AsID3D11(), nullptr, 0);
+
+	// ToDo transfer outside
+	auto vsGlobalProps = material->GetShader()->GetVertexShader()->GetGlobalProps();
+	auto psGlobalProps = material->GetShader()->GetPixelShader()->GetGlobalProps();
+	auto vsMatProps = material->GetVSMaterialProps();
+	auto psMatProps = material->GetPSMaterialProps();
+	auto vsDrawProps = material->GetShader()->GetVertexShader()->GetDrawProps();
+	auto psDrawProps = material->GetShader()->GetPixelShader()->GetDrawProps();
+
+	static ID3D11Buffer* vsBuffers[3];
+	static ID3D11Buffer* psBuffers[3];
+
+	int vsBuffersCount = 0;
+	int psBuffersCount = 0;
+
+	if (vsGlobalProps)
+	{
+		vsBuffers[vsBuffersCount] = vsGlobalProps->bPtr;
+		vsBuffersCount++;
+	}
+	if (vsMatProps)
+	{
+		vsBuffers[vsBuffersCount] = vsMatProps->bPtr;
+		vsBuffersCount++;
+	}
+	if (vsDrawProps)
+	{
+		vsBuffers[vsBuffersCount] = vsDrawProps->bPtr;
+		vsBuffersCount++;
+	}
+
+	if (psGlobalProps)
+	{
+		psBuffers[psBuffersCount] = psGlobalProps->bPtr;
+		psBuffersCount++;
+	}
+	if (psMatProps)
+	{
+		psBuffers[psBuffersCount] = psMatProps->bPtr;
+		psBuffersCount++;
+	}
+	if (psDrawProps)
+	{
+		psBuffers[psBuffersCount] = psDrawProps->bPtr;
+		psBuffersCount++;
+	}
+
+	_deviceContext->VSSetConstantBuffers(
+		0, vsBuffersCount, vsBuffers);
+	_deviceContext->PSSetConstantBuffers(
+		0, psBuffersCount, psBuffers);
+
+	// _deviceContext->PSSetConstantBuffers(
+	// 	0, 1, &material->GetShader()->GetPixelShader()->GetDrawProps()->bPtr);
+}
+
+void RenderServer::PipelineDrawIndexed(Mesh *mesh)
+{
+	_deviceContext->DrawIndexed(mesh->indexCount, 0, 0);
 }

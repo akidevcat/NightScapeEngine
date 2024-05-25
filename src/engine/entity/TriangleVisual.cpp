@@ -27,32 +27,15 @@ void TriangleVisual::RenderEntity(RenderServer *render, TimeServer* time)
         return; // ToDo use missing mat instead
     }
 
-    constexpr unsigned int offset = 0;
-    constexpr unsigned int stride = sizeof(VertexData);
-
-    render->GetDeviceContext()->IASetVertexBuffers(0, 1, &_mesh->vertexBuffer, &stride, &offset);
-    render->GetDeviceContext()->IASetIndexBuffer(_mesh->indexBuffer, DXGI_FORMAT_R32_UINT, 0);
-    render->GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-    // Set the vertex input layout.
-    render->GetDeviceContext()->IASetInputLayout(
-        renderingMaterial->GetShader()->GetVertexShader()->GetInputLayout());
-
-    // Set the vertex and pixel shaders that will be used to render this triangle.
-    render->GetDeviceContext()->VSSetShader(
-        renderingMaterial->GetShader()->GetVertexShader()->AsID3D11(), nullptr, 0);
-    render->GetDeviceContext()->PSSetShader(
-        renderingMaterial->GetShader()->GetPixelShader()->AsID3D11(), nullptr, 0);
-
     float t = time->Time();
 
-    renderingMaterial->GetShader()->GetPixelShader()->SetDrawVar(ShaderUtils::PropertyToID("Time"), &t, sizeof(t));
-    renderingMaterial->GetShader()->GetPixelShader()->UploadDrawBuffer(render->GetDeviceContext());
 
-    render->GetDeviceContext()->PSSetConstantBuffers(0, 1, &renderingMaterial->GetShader()->GetPixelShader()->GetDrawProps()->bPtr);
+    renderingMaterial->GetShader()->GetPixelShader()->SetDrawVar(ShaderUtils::PropertyToID("Time"), &t, sizeof(t));
+    // renderingMaterial->GetShader()->GetPixelShader()->UploadDrawBuffer(render->GetDeviceContext());
+
+    // render->GetDeviceContext()->PSSetConstantBuffers(0, 1, &renderingMaterial->GetShader()->GetPixelShader()->GetDrawProps()->bPtr);
     // Set the sampler state in the pixel shader.
     // render->GetDeviceContext()->PSSetSamplers(0, 1, &m_sampleState);
 
-    // Render the triangle.
-    render->GetDeviceContext()->DrawIndexed(_mesh->indexCount, 0, 0);
+    render->DrawMesh(_mesh, renderingMaterial, XMMATRIX(), nullptr); // ToDo
 }

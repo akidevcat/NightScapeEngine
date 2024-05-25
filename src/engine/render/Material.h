@@ -13,14 +13,18 @@ public:
     bool SetVertexVar(size_t pUid, void* value, size_t valueSize);
     bool SetPixelVar(size_t pUid, void* value, size_t valueSize);
 
-    bool Upload();
+    bool UploadMaterialProperties(ID3D11DeviceContext *context);
+    void UploadShaderProperties(ID3D11DeviceContext *context);
+    void UploadAllProperties(ID3D11DeviceContext *context);
+
+
 
 public:
-    [[nodiscard]] bool IsDirty() const { return _isDirty; }
     [[nodiscard]] Shader* GetShader() const { return _shader; }
+    [[nodiscard]] ConstBufferData* GetVSMaterialProps() const { return _vsMaterialProps; }
+    [[nodiscard]] ConstBufferData* GetPSMaterialProps() const { return _psMaterialProps; }
 
 private:
-    bool             _isDirty = false;
     Shader*          _shader = nullptr;
     ConstBufferData* _vsMaterialProps = nullptr;
     ConstBufferData* _psMaterialProps = nullptr;

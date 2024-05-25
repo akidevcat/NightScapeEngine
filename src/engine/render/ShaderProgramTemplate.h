@@ -34,7 +34,6 @@ public:
     bool UploadDrawBuffer(ID3D11DeviceContext* deviceContext);
     bool UploadGlobalBuffer(ID3D11DeviceContext* deviceContext);
 
-    // bool GetVariableDescription(size_t cBufferId, size_t propertyId, _Out_ D3D11_SHADER_VARIABLE_DESC& desc) const;
 
     bool SetGlobalVar(size_t pUid, void* value, size_t valueSize);
     bool SetDrawVar(size_t pUid, void* value, size_t valueSize);
@@ -346,7 +345,10 @@ bool SHADER_PROGRAM_TEMPLATE_CLASS_NAME::SetDrawVar(size_t pUid, void* value, si
 
 bool SHADER_PROGRAM_TEMPLATE_CLASS_NAME::UploadBuffer(ID3D11DeviceContext* deviceContext, ConstBufferData* buffer)
 {
-    // ToDo add invalidated flag per constant buffer
+    if (!buffer->IsDirty())
+    {
+        return false; // ToDo what state should be returned?
+    }
 
     HRESULT result;
     D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -363,17 +365,21 @@ bool SHADER_PROGRAM_TEMPLATE_CLASS_NAME::UploadBuffer(ID3D11DeviceContext* devic
     // Unlock the constant buffer.
     deviceContext->Unmap(buffer->bPtr, 0);
 
+    buffer->UnmarkDirty();
+
     return true;
 }
 
 bool SHADER_PROGRAM_TEMPLATE_CLASS_NAME::UploadDrawBuffer(ID3D11DeviceContext *deviceContext)
 {
-    return UploadBuffer(deviceContext, _drawProps);
+    if (_drawProps)
+        return UploadBuffer(deviceContext, _drawProps);
 }
 
 bool SHADER_PROGRAM_TEMPLATE_CLASS_NAME::UploadGlobalBuffer(ID3D11DeviceContext *deviceContext)
 {
-    return UploadBuffer(deviceContext, _globalProps);
+    if (_globalProps)
+        return UploadBuffer(deviceContext, _globalProps);
 }
 
 bool SHADER_PROGRAM_TEMPLATE_CLASS_NAME::CreateConstBufferLookup(ID3D11Device* device, ConstBufferData* buffer)

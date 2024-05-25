@@ -8,6 +8,10 @@
 #include <dxgi.h>
 #include <d3d11.h>
 #include <directxmath.h>
+
+#include "../data/Mesh.h"
+#include "../entity/Camera.h"
+#include "../render/Material.h"
 using namespace DirectX;
 
 #pragma comment(lib, "d3d11.lib")
@@ -21,11 +25,17 @@ public:
     bool Initialize(int screenWidth, int screenHeight, HWND hwnd);
     void Shutdown();
 
+    // ===== Pipeline Methods =====
+    void PipelineSetMesh(Mesh* mesh);
+    void PipelineSetMaterial(Material* material);
+    void PipelineDrawIndexed(Mesh* mesh);
+
+    // ===== Render Methods =====
     void BeginScene(XMFLOAT4 color);
     void EndScene();
+    void DrawMesh(Mesh* mesh, Material* material, XMMATRIX matrix, Camera* camera);
 
 // Property Accessors
-public:
     bool                        GetFullscreenState() const { return _isFullscreen; }
     void                        SetFullscreenState(bool state) { _isFullscreen = state; }
     ID3D11Device*               GetDevice() const { return _device; }
