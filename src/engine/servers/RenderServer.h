@@ -29,7 +29,7 @@ public:
     bool                        GetFullscreenState() const { return _isFullscreen; }
     void                        SetFullscreenState(bool state) { _isFullscreen = state; }
     ID3D11Device*               GetDevice() const { return _device; }
-    ID3D11DeviceContext*        GetDeviceContex() const { return _deviceContext; }
+    ID3D11DeviceContext*        GetDeviceContext() const { return _deviceContext; }
 
 private:
     bool                        _isFullscreen = false;

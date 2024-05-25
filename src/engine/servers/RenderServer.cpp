@@ -174,6 +174,7 @@ bool RenderServer::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	// Create the swap chain, Direct3D device, and Direct3D device context.
 	result = D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, 0, &featureLevel, 1,
 										   D3D11_SDK_VERSION, &swapChainDesc, &_swapChain, &_device, NULL, &_deviceContext);
+
 	if(FAILED(result))
 	{
 		return false;

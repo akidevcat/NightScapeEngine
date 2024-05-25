@@ -1,7 +1,10 @@
 #include "engine.h"
 
+#include <chrono>
+
 #include "entity/Camera.h"
 #include "entity/SceneEntity.h"
+#include "entity/VisualEntity.h"
 #include "scene/Scene.h"
 
 Engine::Engine()
@@ -11,25 +14,11 @@ Engine::Engine()
 
 Engine::~Engine()
 {
-    if (_gameInstance)
-    {
-        delete _gameInstance;
-    }
-
-    if (_inputServer)
-    {
-        delete _inputServer;
-    }
-
-    if (_renderServer)
-    {
-        delete _renderServer;
-    }
-
-    if (_sceneServer)
-    {
-        delete _sceneServer;
-    }
+    delete _gameInstance;
+    delete _inputServer;
+    delete _renderServer;
+    delete _sceneServer;
+    delete _timeServer;
 }
 
 bool Engine::Initialize(IGame* game, HINSTANCE histance, int screenWidth, int screenHeight, HWND hwnd)
@@ -37,6 +26,12 @@ bool Engine::Initialize(IGame* game, HINSTANCE histance, int screenWidth, int sc
     bool result = true;
 
     _gameInstance = game;
+
+    _timeServer = new TimeServer{};
+    if (!_timeServer->Initialize())
+    {
+        return false;
+    }
 
     _inputServer = new InputServer{};
     if (!_inputServer->Initialize(histance, hwnd, screenWidth, screenHeight))
@@ -66,6 +61,8 @@ void Engine::Start()
 
 bool Engine::UpdateFrame()
 {
+    _timeServer->BeginFrame();
+
     OnFrameInput();
     _gameInstance->OnFrameInput();
 
@@ -77,6 +74,8 @@ bool Engine::UpdateFrame()
 
     OnFrameCleanup();
     _gameInstance->OnFrameCleanup();
+
+    _timeServer->EndFrame();
 
     return true;
 }
@@ -105,9 +104,22 @@ void Engine::OnFrameUpdate()
 
 void Engine::OnFrameRender()
 {
-    _renderServer->BeginScene(XMFLOAT4(0, 1, 0, 1));
+    _renderServer->BeginScene(XMFLOAT4(0, 0, 0, 1));
 
+    // Get all visual entities
+    vector<Scene*> scenes;
+    vector<VisualEntity*> entities;
 
+    _sceneServer->GetAllScenes(scenes);
+    for (auto scene : scenes)
+    {
+        scene->FindAllEntitiesFromBaseType(entities);
+    }
+
+    for (auto entity : entities)
+    {
+        entity->RenderEntity(_renderServer, _timeServer);
+    }
 
     _renderServer->EndScene();
 }

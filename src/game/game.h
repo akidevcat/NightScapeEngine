@@ -2,6 +2,9 @@
 #define GAME_H
 
 #include "../engine/engine.h"
+#include "../engine/entity/TriangleVisual.h"
+#include "../engine/render/Shader.h"
+#include "../engine/render/Material.h"
 
 class Game : public IGame
 {
@@ -23,7 +26,12 @@ private:
     bool Render();
 
 private:
-    Engine* _engine;
+    Engine* _engine = nullptr;
+    Scene* _scene = nullptr;
+    Shader* _testShader = nullptr;
+    Material* _testMaterial = nullptr;
+    TriangleVisual* _triangle = nullptr;
+    // Shader* _test = nullptr;
 };
 
 #endif //GAME_H

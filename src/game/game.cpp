@@ -1,6 +1,7 @@
 #include "game.h"
 
 #include "../engine/entity/Camera.h"
+#include "../engine/entity/TriangleVisual.h"
 
 Game::Game()
 {
@@ -9,7 +10,10 @@ Game::Game()
 
 Game::~Game()
 {
-
+    delete _testShader;
+    delete _testMaterial;
+    delete _triangle;
+    delete _scene;
 }
 
 bool Game::Initialize(Engine* engine)
@@ -26,20 +30,29 @@ void Game::Shutdown()
 
 void Game::Start()
 {
-    Scene* scene;
-    _engine->GetSceneServer()->CreateScene(scene);
+    static size_t matPropsId = ShaderUtils::PropertyToID("MaterialProperties");
+    static size_t tintId = ShaderUtils::PropertyToID("Tint");
 
-    // SceneEntity* entA = new SceneEntity{};
-    // SceneEntity* entB = new SceneEntity{};
-    SceneEntity* entC = new Camera{};
+    _engine->GetSceneServer()->CreateScene(_scene);
 
-    // scene->RegisterEntity(entA);
-    // scene->RegisterEntity(entB);
-    scene->RegisterEntity(entC);
+    SceneEntity* camera = new Camera{};
 
-    vector<Camera*> test{};
+    _scene->RegisterEntity(camera);
 
-    scene->FindAllEntitiesFromBaseType<Camera>(test);
+    _testShader = new Shader{L"Assets/Shaders/Triangle.hlsl"};
+    _testShader->Compile(_engine->GetRenderServer()->GetDevice());
+
+    float value = 516.3125612f;
+
+    _testMaterial = new Material{_testShader};
+    _testMaterial->SetPixelVar(tintId, &value, sizeof(float));
+
+    _triangle = new TriangleVisual{_engine->GetRenderServer()->GetDevice()};
+    _triangle->renderingMaterial = _testMaterial;
+
+    _scene->RegisterEntity(_triangle);
+
+    int a = 1;
 }
 
 bool Game::UpdateFrame()

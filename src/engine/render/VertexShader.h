@@ -1,0 +1,10 @@
+#ifndef VERTEXSHADER_H
+#define VERTEXSHADER_H
+
+#define SHADER_PROGRAM_TEMPLATE_HEADER
+#define SHADER_PROGRAM_TEMPLATE_CLASS_NAME VertexShader
+#define SHADER_PROGRAM_TEMPLATE_TYPE_VERTEX
+
+#include "ShaderProgramTemplate.h"
+
+#endif //VERTEXSHADER_H

@@ -47,101 +47,178 @@ cmake_ninja_workdir = C$:\_Git\clion-directx-example\cmake-build-debug\
 #############################################
 # Order-only phony target for src
 
-build cmake_object_order_depends_target_src: phony || CMakeFiles\src.dir
+build cmake_object_order_depends_target_src: phony || copy_data
 
 build CMakeFiles\src.dir\src\main.cpp.obj: CXX_COMPILER__src_unscanned_Debug C$:\_Git\clion-directx-example\src\main.cpp || cmake_object_order_depends_target_src
-  FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MDd /Zi /Ob0 /Od /RTC1 -std:c++17
+  FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MDd /Zi /Ob0 /Od /RTC1 -std:c++17 -MDd -Zi
   OBJECT_DIR = CMakeFiles\src.dir
   OBJECT_FILE_DIR = CMakeFiles\src.dir\src
   TARGET_COMPILE_PDB = CMakeFiles\src.dir\
   TARGET_PDB = src.pdb
 
 build CMakeFiles\src.dir\src\application.cpp.obj: CXX_COMPILER__src_unscanned_Debug C$:\_Git\clion-directx-example\src\application.cpp || cmake_object_order_depends_target_src
-  FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MDd /Zi /Ob0 /Od /RTC1 -std:c++17
+  FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MDd /Zi /Ob0 /Od /RTC1 -std:c++17 -MDd -Zi
   OBJECT_DIR = CMakeFiles\src.dir
   OBJECT_FILE_DIR = CMakeFiles\src.dir\src
   TARGET_COMPILE_PDB = CMakeFiles\src.dir\
   TARGET_PDB = src.pdb
 
 build CMakeFiles\src.dir\src\game\game.cpp.obj: CXX_COMPILER__src_unscanned_Debug C$:\_Git\clion-directx-example\src\game\game.cpp || cmake_object_order_depends_target_src
-  FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MDd /Zi /Ob0 /Od /RTC1 -std:c++17
+  FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MDd /Zi /Ob0 /Od /RTC1 -std:c++17 -MDd -Zi
   OBJECT_DIR = CMakeFiles\src.dir
   OBJECT_FILE_DIR = CMakeFiles\src.dir\src\game
   TARGET_COMPILE_PDB = CMakeFiles\src.dir\
   TARGET_PDB = src.pdb
 
 build CMakeFiles\src.dir\src\engine\servers\InputServer.cpp.obj: CXX_COMPILER__src_unscanned_Debug C$:\_Git\clion-directx-example\src\engine\servers\InputServer.cpp || cmake_object_order_depends_target_src
-  FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MDd /Zi /Ob0 /Od /RTC1 -std:c++17
+  FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MDd /Zi /Ob0 /Od /RTC1 -std:c++17 -MDd -Zi
   OBJECT_DIR = CMakeFiles\src.dir
   OBJECT_FILE_DIR = CMakeFiles\src.dir\src\engine\servers
   TARGET_COMPILE_PDB = CMakeFiles\src.dir\
   TARGET_PDB = src.pdb
 
 build CMakeFiles\src.dir\src\engine\servers\RenderServer.cpp.obj: CXX_COMPILER__src_unscanned_Debug C$:\_Git\clion-directx-example\src\engine\servers\RenderServer.cpp || cmake_object_order_depends_target_src
-  FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MDd /Zi /Ob0 /Od /RTC1 -std:c++17
+  FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MDd /Zi /Ob0 /Od /RTC1 -std:c++17 -MDd -Zi
   OBJECT_DIR = CMakeFiles\src.dir
   OBJECT_FILE_DIR = CMakeFiles\src.dir\src\engine\servers
   TARGET_COMPILE_PDB = CMakeFiles\src.dir\
   TARGET_PDB = src.pdb
 
 build CMakeFiles\src.dir\src\engine\servers\AssetServer.cpp.obj: CXX_COMPILER__src_unscanned_Debug C$:\_Git\clion-directx-example\src\engine\servers\AssetServer.cpp || cmake_object_order_depends_target_src
-  FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MDd /Zi /Ob0 /Od /RTC1 -std:c++17
+  FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MDd /Zi /Ob0 /Od /RTC1 -std:c++17 -MDd -Zi
   OBJECT_DIR = CMakeFiles\src.dir
   OBJECT_FILE_DIR = CMakeFiles\src.dir\src\engine\servers
   TARGET_COMPILE_PDB = CMakeFiles\src.dir\
   TARGET_PDB = src.pdb
 
 build CMakeFiles\src.dir\src\engine\engine.cpp.obj: CXX_COMPILER__src_unscanned_Debug C$:\_Git\clion-directx-example\src\engine\engine.cpp || cmake_object_order_depends_target_src
-  FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MDd /Zi /Ob0 /Od /RTC1 -std:c++17
+  FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MDd /Zi /Ob0 /Od /RTC1 -std:c++17 -MDd -Zi
   OBJECT_DIR = CMakeFiles\src.dir
   OBJECT_FILE_DIR = CMakeFiles\src.dir\src\engine
   TARGET_COMPILE_PDB = CMakeFiles\src.dir\
   TARGET_PDB = src.pdb
 
 build CMakeFiles\src.dir\src\engine\math.cpp.obj: CXX_COMPILER__src_unscanned_Debug C$:\_Git\clion-directx-example\src\engine\math.cpp || cmake_object_order_depends_target_src
-  FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MDd /Zi /Ob0 /Od /RTC1 -std:c++17
+  FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MDd /Zi /Ob0 /Od /RTC1 -std:c++17 -MDd -Zi
   OBJECT_DIR = CMakeFiles\src.dir
   OBJECT_FILE_DIR = CMakeFiles\src.dir\src\engine
   TARGET_COMPILE_PDB = CMakeFiles\src.dir\
   TARGET_PDB = src.pdb
 
 build CMakeFiles\src.dir\src\engine\servers\SoundServer.cpp.obj: CXX_COMPILER__src_unscanned_Debug C$:\_Git\clion-directx-example\src\engine\servers\SoundServer.cpp || cmake_object_order_depends_target_src
-  FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MDd /Zi /Ob0 /Od /RTC1 -std:c++17
+  FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MDd /Zi /Ob0 /Od /RTC1 -std:c++17 -MDd -Zi
   OBJECT_DIR = CMakeFiles\src.dir
   OBJECT_FILE_DIR = CMakeFiles\src.dir\src\engine\servers
   TARGET_COMPILE_PDB = CMakeFiles\src.dir\
   TARGET_PDB = src.pdb
 
 build CMakeFiles\src.dir\src\engine\entity\SceneEntity.cpp.obj: CXX_COMPILER__src_unscanned_Debug C$:\_Git\clion-directx-example\src\engine\entity\SceneEntity.cpp || cmake_object_order_depends_target_src
-  FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MDd /Zi /Ob0 /Od /RTC1 -std:c++17
+  FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MDd /Zi /Ob0 /Od /RTC1 -std:c++17 -MDd -Zi
   OBJECT_DIR = CMakeFiles\src.dir
   OBJECT_FILE_DIR = CMakeFiles\src.dir\src\engine\entity
   TARGET_COMPILE_PDB = CMakeFiles\src.dir\
   TARGET_PDB = src.pdb
 
 build CMakeFiles\src.dir\src\engine\entity\Camera.cpp.obj: CXX_COMPILER__src_unscanned_Debug C$:\_Git\clion-directx-example\src\engine\entity\Camera.cpp || cmake_object_order_depends_target_src
-  FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MDd /Zi /Ob0 /Od /RTC1 -std:c++17
+  FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MDd /Zi /Ob0 /Od /RTC1 -std:c++17 -MDd -Zi
   OBJECT_DIR = CMakeFiles\src.dir
   OBJECT_FILE_DIR = CMakeFiles\src.dir\src\engine\entity
   TARGET_COMPILE_PDB = CMakeFiles\src.dir\
   TARGET_PDB = src.pdb
 
 build CMakeFiles\src.dir\src\engine\entity\Entity.cpp.obj: CXX_COMPILER__src_unscanned_Debug C$:\_Git\clion-directx-example\src\engine\entity\Entity.cpp || cmake_object_order_depends_target_src
-  FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MDd /Zi /Ob0 /Od /RTC1 -std:c++17
+  FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MDd /Zi /Ob0 /Od /RTC1 -std:c++17 -MDd -Zi
   OBJECT_DIR = CMakeFiles\src.dir
   OBJECT_FILE_DIR = CMakeFiles\src.dir\src\engine\entity
   TARGET_COMPILE_PDB = CMakeFiles\src.dir\
   TARGET_PDB = src.pdb
 
 build CMakeFiles\src.dir\src\engine\scene\Scene.cpp.obj: CXX_COMPILER__src_unscanned_Debug C$:\_Git\clion-directx-example\src\engine\scene\Scene.cpp || cmake_object_order_depends_target_src
-  FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MDd /Zi /Ob0 /Od /RTC1 -std:c++17
+  FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MDd /Zi /Ob0 /Od /RTC1 -std:c++17 -MDd -Zi
   OBJECT_DIR = CMakeFiles\src.dir
   OBJECT_FILE_DIR = CMakeFiles\src.dir\src\engine\scene
   TARGET_COMPILE_PDB = CMakeFiles\src.dir\
   TARGET_PDB = src.pdb
 
 build CMakeFiles\src.dir\src\engine\servers\SceneServer.cpp.obj: CXX_COMPILER__src_unscanned_Debug C$:\_Git\clion-directx-example\src\engine\servers\SceneServer.cpp || cmake_object_order_depends_target_src
-  FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MDd /Zi /Ob0 /Od /RTC1 -std:c++17
+  FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MDd /Zi /Ob0 /Od /RTC1 -std:c++17 -MDd -Zi
+  OBJECT_DIR = CMakeFiles\src.dir
+  OBJECT_FILE_DIR = CMakeFiles\src.dir\src\engine\servers
+  TARGET_COMPILE_PDB = CMakeFiles\src.dir\
+  TARGET_PDB = src.pdb
+
+build CMakeFiles\src.dir\src\engine\servers\ShaderCompiler.cpp.obj: CXX_COMPILER__src_unscanned_Debug C$:\_Git\clion-directx-example\src\engine\servers\ShaderCompiler.cpp || cmake_object_order_depends_target_src
+  FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MDd /Zi /Ob0 /Od /RTC1 -std:c++17 -MDd -Zi
+  OBJECT_DIR = CMakeFiles\src.dir
+  OBJECT_FILE_DIR = CMakeFiles\src.dir\src\engine\servers
+  TARGET_COMPILE_PDB = CMakeFiles\src.dir\
+  TARGET_PDB = src.pdb
+
+build CMakeFiles\src.dir\src\engine\entity\VisualEntity.cpp.obj: CXX_COMPILER__src_unscanned_Debug C$:\_Git\clion-directx-example\src\engine\entity\VisualEntity.cpp || cmake_object_order_depends_target_src
+  FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MDd /Zi /Ob0 /Od /RTC1 -std:c++17 -MDd -Zi
+  OBJECT_DIR = CMakeFiles\src.dir
+  OBJECT_FILE_DIR = CMakeFiles\src.dir\src\engine\entity
+  TARGET_COMPILE_PDB = CMakeFiles\src.dir\
+  TARGET_PDB = src.pdb
+
+build CMakeFiles\src.dir\src\engine\render\Material.cpp.obj: CXX_COMPILER__src_unscanned_Debug C$:\_Git\clion-directx-example\src\engine\render\Material.cpp || cmake_object_order_depends_target_src
+  FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MDd /Zi /Ob0 /Od /RTC1 -std:c++17 -MDd -Zi
+  OBJECT_DIR = CMakeFiles\src.dir
+  OBJECT_FILE_DIR = CMakeFiles\src.dir\src\engine\render
+  TARGET_COMPILE_PDB = CMakeFiles\src.dir\
+  TARGET_PDB = src.pdb
+
+build CMakeFiles\src.dir\src\engine\entity\TriangleVisual.cpp.obj: CXX_COMPILER__src_unscanned_Debug C$:\_Git\clion-directx-example\src\engine\entity\TriangleVisual.cpp || cmake_object_order_depends_target_src
+  FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MDd /Zi /Ob0 /Od /RTC1 -std:c++17 -MDd -Zi
+  OBJECT_DIR = CMakeFiles\src.dir
+  OBJECT_FILE_DIR = CMakeFiles\src.dir\src\engine\entity
+  TARGET_COMPILE_PDB = CMakeFiles\src.dir\
+  TARGET_PDB = src.pdb
+
+build CMakeFiles\src.dir\src\engine\data\Mesh.cpp.obj: CXX_COMPILER__src_unscanned_Debug C$:\_Git\clion-directx-example\src\engine\data\Mesh.cpp || cmake_object_order_depends_target_src
+  FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MDd /Zi /Ob0 /Od /RTC1 -std:c++17 -MDd -Zi
+  OBJECT_DIR = CMakeFiles\src.dir
+  OBJECT_FILE_DIR = CMakeFiles\src.dir\src\engine\data
+  TARGET_COMPILE_PDB = CMakeFiles\src.dir\
+  TARGET_PDB = src.pdb
+
+build CMakeFiles\src.dir\src\engine\render\VertexShader.cpp.obj: CXX_COMPILER__src_unscanned_Debug C$:\_Git\clion-directx-example\src\engine\render\VertexShader.cpp || cmake_object_order_depends_target_src
+  FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MDd /Zi /Ob0 /Od /RTC1 -std:c++17 -MDd -Zi
+  OBJECT_DIR = CMakeFiles\src.dir
+  OBJECT_FILE_DIR = CMakeFiles\src.dir\src\engine\render
+  TARGET_COMPILE_PDB = CMakeFiles\src.dir\
+  TARGET_PDB = src.pdb
+
+build CMakeFiles\src.dir\src\engine\render\ShaderUtils.cpp.obj: CXX_COMPILER__src_unscanned_Debug C$:\_Git\clion-directx-example\src\engine\render\ShaderUtils.cpp || cmake_object_order_depends_target_src
+  FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MDd /Zi /Ob0 /Od /RTC1 -std:c++17 -MDd -Zi
+  OBJECT_DIR = CMakeFiles\src.dir
+  OBJECT_FILE_DIR = CMakeFiles\src.dir\src\engine\render
+  TARGET_COMPILE_PDB = CMakeFiles\src.dir\
+  TARGET_PDB = src.pdb
+
+build CMakeFiles\src.dir\src\engine\render\PixelShader.cpp.obj: CXX_COMPILER__src_unscanned_Debug C$:\_Git\clion-directx-example\src\engine\render\PixelShader.cpp || cmake_object_order_depends_target_src
+  FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MDd /Zi /Ob0 /Od /RTC1 -std:c++17 -MDd -Zi
+  OBJECT_DIR = CMakeFiles\src.dir
+  OBJECT_FILE_DIR = CMakeFiles\src.dir\src\engine\render
+  TARGET_COMPILE_PDB = CMakeFiles\src.dir\
+  TARGET_PDB = src.pdb
+
+build CMakeFiles\src.dir\src\engine\render\Shader.cpp.obj: CXX_COMPILER__src_unscanned_Debug C$:\_Git\clion-directx-example\src\engine\render\Shader.cpp || cmake_object_order_depends_target_src
+  FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MDd /Zi /Ob0 /Od /RTC1 -std:c++17 -MDd -Zi
+  OBJECT_DIR = CMakeFiles\src.dir
+  OBJECT_FILE_DIR = CMakeFiles\src.dir\src\engine\render
+  TARGET_COMPILE_PDB = CMakeFiles\src.dir\
+  TARGET_PDB = src.pdb
+
+build CMakeFiles\src.dir\src\engine\render\ConstBufferData.cpp.obj: CXX_COMPILER__src_unscanned_Debug C$:\_Git\clion-directx-example\src\engine\render\ConstBufferData.cpp || cmake_object_order_depends_target_src
+  FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MDd /Zi /Ob0 /Od /RTC1 -std:c++17 -MDd -Zi
+  OBJECT_DIR = CMakeFiles\src.dir
+  OBJECT_FILE_DIR = CMakeFiles\src.dir\src\engine\render
+  TARGET_COMPILE_PDB = CMakeFiles\src.dir\
+  TARGET_PDB = src.pdb
+
+build CMakeFiles\src.dir\src\engine\servers\TimeServer.cpp.obj: CXX_COMPILER__src_unscanned_Debug C$:\_Git\clion-directx-example\src\engine\servers\TimeServer.cpp || cmake_object_order_depends_target_src
+  FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MDd /Zi /Ob0 /Od /RTC1 -std:c++17 -MDd -Zi
   OBJECT_DIR = CMakeFiles\src.dir
   OBJECT_FILE_DIR = CMakeFiles\src.dir\src\engine\servers
   TARGET_COMPILE_PDB = CMakeFiles\src.dir\
@@ -155,8 +232,8 @@ build CMakeFiles\src.dir\src\engine\servers\SceneServer.cpp.obj: CXX_COMPILER__s
 #############################################
 # Link the executable src.exe
 
-build src.exe: CXX_EXECUTABLE_LINKER__src_Debug CMakeFiles\src.dir\src\main.cpp.obj CMakeFiles\src.dir\src\application.cpp.obj CMakeFiles\src.dir\src\game\game.cpp.obj CMakeFiles\src.dir\src\engine\servers\InputServer.cpp.obj CMakeFiles\src.dir\src\engine\servers\RenderServer.cpp.obj CMakeFiles\src.dir\src\engine\servers\AssetServer.cpp.obj CMakeFiles\src.dir\src\engine\engine.cpp.obj CMakeFiles\src.dir\src\engine\math.cpp.obj CMakeFiles\src.dir\src\engine\servers\SoundServer.cpp.obj CMakeFiles\src.dir\src\engine\entity\SceneEntity.cpp.obj CMakeFiles\src.dir\src\engine\entity\Camera.cpp.obj CMakeFiles\src.dir\src\engine\entity\Entity.cpp.obj CMakeFiles\src.dir\src\engine\scene\Scene.cpp.obj CMakeFiles\src.dir\src\engine\servers\SceneServer.cpp.obj
-  FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MDd /Zi /Ob0 /Od /RTC1
+build src.exe: CXX_EXECUTABLE_LINKER__src_Debug CMakeFiles\src.dir\src\main.cpp.obj CMakeFiles\src.dir\src\application.cpp.obj CMakeFiles\src.dir\src\game\game.cpp.obj CMakeFiles\src.dir\src\engine\servers\InputServer.cpp.obj CMakeFiles\src.dir\src\engine\servers\RenderServer.cpp.obj CMakeFiles\src.dir\src\engine\servers\AssetServer.cpp.obj CMakeFiles\src.dir\src\engine\engine.cpp.obj CMakeFiles\src.dir\src\engine\math.cpp.obj CMakeFiles\src.dir\src\engine\servers\SoundServer.cpp.obj CMakeFiles\src.dir\src\engine\entity\SceneEntity.cpp.obj CMakeFiles\src.dir\src\engine\entity\Camera.cpp.obj CMakeFiles\src.dir\src\engine\entity\Entity.cpp.obj CMakeFiles\src.dir\src\engine\scene\Scene.cpp.obj CMakeFiles\src.dir\src\engine\servers\SceneServer.cpp.obj CMakeFiles\src.dir\src\engine\servers\ShaderCompiler.cpp.obj CMakeFiles\src.dir\src\engine\entity\VisualEntity.cpp.obj CMakeFiles\src.dir\src\engine\render\Material.cpp.obj CMakeFiles\src.dir\src\engine\entity\TriangleVisual.cpp.obj CMakeFiles\src.dir\src\engine\data\Mesh.cpp.obj CMakeFiles\src.dir\src\engine\render\VertexShader.cpp.obj CMakeFiles\src.dir\src\engine\render\ShaderUtils.cpp.obj CMakeFiles\src.dir\src\engine\render\PixelShader.cpp.obj CMakeFiles\src.dir\src\engine\render\Shader.cpp.obj CMakeFiles\src.dir\src\engine\render\ConstBufferData.cpp.obj CMakeFiles\src.dir\src\engine\servers\TimeServer.cpp.obj || copy_data
+  FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MDd /Zi /Ob0 /Od /RTC1 -MDd -Zi
   LINK_FLAGS = /machine:x64 /debug /INCREMENTAL /subsystem:windows
   LINK_LIBRARIES = d3d9.lib  d3d11.lib  d3dcompiler.lib  dinput8.lib  dxguid.lib  kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib
   OBJECT_DIR = CMakeFiles\src.dir
@@ -166,6 +243,12 @@ build src.exe: CXX_EXECUTABLE_LINKER__src_Debug CMakeFiles\src.dir\src\main.cpp.
   TARGET_FILE = src.exe
   TARGET_IMPLIB = src.lib
   TARGET_PDB = src.pdb
+
+
+#############################################
+# Utility command for copy_data
+
+build copy_data: phony CMakeFiles\copy_data
 
 
 #############################################
@@ -189,6 +272,14 @@ build CMakeFiles\rebuild_cache.util: CUSTOM_COMMAND
   restat = 1
 
 build rebuild_cache: phony CMakeFiles\rebuild_cache.util
+
+
+#############################################
+# Custom command for CMakeFiles\copy_data
+
+build CMakeFiles\copy_data | ${cmake_ninja_workdir}CMakeFiles\copy_data: CUSTOM_COMMAND
+  COMMAND = C:\windows\system32\cmd.exe /C "cd /D C:\_Git\clion-directx-example\cmake-build-debug && C:\Users\akiko\AppData\Local\Programs\CLion\bin\cmake\win\x64\bin\cmake.exe -E copy_directory_if_different C:/_Git/clion-directx-example/Assets/ C:/_Git/clion-directx-example/cmake-build-debug/Assets"
+  DESC = Copying data
 
 # =============================================================================
 # Target aliases.
