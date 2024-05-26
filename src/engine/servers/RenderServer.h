@@ -11,6 +11,7 @@
 
 #include "../data/Mesh.h"
 #include "../entity/Camera.h"
+#include "../render/GlobalProperties.h"
 #include "../render/Material.h"
 using namespace DirectX;
 
@@ -26,6 +27,7 @@ public:
     void Shutdown();
 
     // ===== Pipeline Methods =====
+    void PipelineMarkGlobalPropertiesDirty();
     void PipelineSetMesh(Mesh* mesh);
     void PipelineSetMaterial(Material* material);
     void PipelineDrawIndexed(Mesh* mesh);
@@ -36,10 +38,11 @@ public:
     void DrawMesh(Mesh* mesh, Material* material, XMMATRIX matrix, Camera* camera);
 
     // Property Accessors
-    bool                        GetFullscreenState() const { return _isFullscreen; }
-    void                        SetFullscreenState(bool state) { _isFullscreen = state; }
-    ID3D11Device*               GetDevice() const { return _device; }
-    ID3D11DeviceContext*        GetDeviceContext() const { return _deviceContext; }
+    [[nodiscard]] GlobalProperties*           GetGlobalProperties() const { return _globalProperties; }
+    [[nodiscard]] bool                        GetFullscreenState() const { return _isFullscreen; }
+                  void                        SetFullscreenState(bool state) { _isFullscreen = state; }
+    [[nodiscard]] ID3D11Device*               GetDevice() const { return _device; }
+    [[nodiscard]] ID3D11DeviceContext*        GetDeviceContext() const { return _deviceContext; }
 
 private:
     bool                        _isFullscreen = false;
@@ -63,6 +66,9 @@ private:
 
     Shader*                     _errorShader = nullptr;
     Material*                   _errorMaterial = nullptr;
+
+    GlobalProperties*           _globalProperties = nullptr;
+    ConstBufferData*            _globalPropertiesBuffer = nullptr;
 
     // XMMATRIX                    _projectionMatrix;
     // XMMATRIX                    _worldMatrix;

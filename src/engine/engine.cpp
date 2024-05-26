@@ -104,6 +104,12 @@ void Engine::OnFrameUpdate()
 
 void Engine::OnFrameRender()
 {
+    // Fill global properties
+    _renderServer->GetGlobalProperties()->Time = _timeServer->Time();
+    _renderServer->GetGlobalProperties()->DeltaTime = _timeServer->Delta();
+
+    _renderServer->PipelineMarkGlobalPropertiesDirty();
+
     _renderServer->BeginScene(XMFLOAT4(0, 0, 0, 1));
 
     // Get all visual entities

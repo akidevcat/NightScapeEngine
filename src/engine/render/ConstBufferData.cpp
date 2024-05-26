@@ -2,12 +2,38 @@
 
 #include <iostream>
 
-ConstBufferData::ConstBufferData(UINT id, size_t uid, D3D11_SHADER_BUFFER_DESC desc) : ConstBufferData(id, uid, desc, 0)
+ConstBufferData::ConstBufferData(ID3D11Device* device, UINT id, size_t uid, size_t size, void* customDataPtr)
 {
+    this->_isCustomDataPtr = true;
+    this->id = id;
+    this->uid = uid;
+    this->size = size;
+    this->description = {};
+    if (size > 0)
+    {
+        // this->vPtr = malloc(size);
+        // memset(this->vPtr, 0, size);
+        this->vPtr = customDataPtr;
 
+        D3D11_BUFFER_DESC bufferDesc;
+
+        bufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+        bufferDesc.ByteWidth = size;
+        bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+        bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+        bufferDesc.MiscFlags = 0;
+        bufferDesc.StructureByteStride = 0;
+
+        HRESULT result = device->CreateBuffer(&bufferDesc, nullptr, &this->bPtr); // ToDo initial data
+        if (FAILED(result))
+        {
+            std::cerr << "Failed to create constant buffer: " << result << std::endl;
+            return;
+        }
+    }
 }
 
-ConstBufferData::ConstBufferData(UINT id, size_t uid, D3D11_SHADER_BUFFER_DESC desc, size_t size)
+ConstBufferData::ConstBufferData(ID3D11Device* device, UINT id, size_t uid, D3D11_SHADER_BUFFER_DESC desc, size_t size)
 {
     this->id = id;
     this->uid = uid;
@@ -17,12 +43,28 @@ ConstBufferData::ConstBufferData(UINT id, size_t uid, D3D11_SHADER_BUFFER_DESC d
     {
         this->vPtr = malloc(size);
         memset(this->vPtr, 0, size);
+
+        D3D11_BUFFER_DESC bufferDesc;
+
+        bufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+        bufferDesc.ByteWidth = size;
+        bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+        bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+        bufferDesc.MiscFlags = 0;
+        bufferDesc.StructureByteStride = 0;
+
+        HRESULT result = device->CreateBuffer(&bufferDesc, nullptr, &this->bPtr); // ToDo initial data
+        if (FAILED(result))
+        {
+            std::cerr << "Failed to create constant buffer: " << result << std::endl;
+            return;
+        }
     }
 }
 
 ConstBufferData::~ConstBufferData()
 {
-    if (vPtr)
+    if (vPtr && !_isCustomDataPtr)
         free(vPtr);
 }
 

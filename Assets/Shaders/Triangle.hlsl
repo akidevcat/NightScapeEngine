@@ -1,7 +1,9 @@
-cbuffer GlobalProperties
-{
-    float4 Timee;
-};
+#include "Include/NSECommon.hlsl"
+
+// cbuffer GlobalProperties
+// {
+//     float4 Timee;
+// };
 
 cbuffer MaterialProperties
 {
@@ -45,5 +47,5 @@ PixelInput VertexMain(VertexInput input)
 
 float4 PixelMain(PixelInput input) : SV_TARGET
 {
-    return float4(input.uv.x, input.uv.y, 1.0 - input.uv.x, 1.0) * (sin(Time * 10.0) * 0.5 + 0.5);
+    return float4(input.uv.x, input.uv.y, 1.0 - input.uv.x, 1.0) * (sin(_Time * 10.0) * 0.5 + 0.5);
 }

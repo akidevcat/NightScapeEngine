@@ -26,9 +26,9 @@ void TriangleVisual::RenderEntity(RenderServer *render, TimeServer* time)
 
     if (renderingMaterial)
     {
-        float t = time->Time();
+        // float t = time->Time();
         // ToDo
-        renderingMaterial->GetShader()->GetPixelShader()->SetDrawVar(ShaderUtils::PropertyToID("Time"), &t, sizeof(t));
+        // renderingMaterial->GetShader()->GetPixelShader()->SetDrawVar(ShaderUtils::PropertyToID("Time"), &t, sizeof(t));
         material = renderingMaterial;
     }
 

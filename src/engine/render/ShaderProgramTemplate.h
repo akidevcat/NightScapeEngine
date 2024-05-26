@@ -32,13 +32,13 @@ public:
     bool Compile(ID3D11Device* device);
     bool UploadBuffer(ID3D11DeviceContext* deviceContext, ConstBufferData* buffer);
     bool UploadDrawBuffer(ID3D11DeviceContext* deviceContext);
-    bool UploadGlobalBuffer(ID3D11DeviceContext* deviceContext);
-
+    // bool UploadGlobalBuffer(ID3D11DeviceContext* deviceContext);
 
     bool SetGlobalVar(size_t pUid, void* value, size_t valueSize);
     bool SetDrawVar(size_t pUid, void* value, size_t valueSize);
 
-    [[nodiscard]] ConstBufferData* GetGlobalProps() const { return _globalProps; }
+    // [[nodiscard]] ConstBufferData* GetGlobalProps() const { return _globalProps; }
+    [[nodiscard]] bool HasGlobalProps() const { return _hasGlobalProps; }
     [[nodiscard]] ConstBufferData* GetDrawProps() const { return _drawProps; }
     [[nodiscard]] ConstBufferData* GetMaterialPropsLookup() const { return _materialPropsLookup; }
 #ifdef SHADER_PROGRAM_TEMPLATE_TYPE_VERTEX
@@ -66,7 +66,8 @@ private:
     ID3D11InputLayout*      _inputLayout = nullptr;
 #endif
 
-    ConstBufferData*        _globalProps = nullptr;
+    // ConstBufferData*        _globalProps = nullptr;
+    bool                    _hasGlobalProps = false;
     ConstBufferData*        _drawProps = nullptr;
     ConstBufferData*        _materialPropsLookup = nullptr;
 
@@ -101,7 +102,7 @@ SHADER_PROGRAM_TEMPLATE_CLASS_NAME::~SHADER_PROGRAM_TEMPLATE_CLASS_NAME()
     Release();
 
     delete _path;
-    delete _globalProps;
+    // delete _globalProps;
     delete _drawProps;
     delete _materialPropsLookup;
 }
@@ -147,11 +148,11 @@ bool SHADER_PROGRAM_TEMPLATE_CLASS_NAME::Compile(ID3D11Device* device)
     D3D11_INPUT_ELEMENT_DESC inputLayout[4];
 
 #ifdef SHADER_PROGRAM_TEMPLATE_TYPE_VERTEX
-    result = D3DCompileFromFile(_path, NULL, NULL, "VertexMain", "vs_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0,
+    result = D3DCompileFromFile(_path, nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "VertexMain", "vs_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0,
                                 &sBuffer, &errorMessage);
 #endif
 #ifdef SHADER_PROGRAM_TEMPLATE_TYPE_PIXEL
-    result = D3DCompileFromFile(_path, NULL, NULL, "PixelMain", "ps_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0,
+    result = D3DCompileFromFile(_path, nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "PixelMain", "ps_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0,
                                 &sBuffer, &errorMessage);
 #endif
 
@@ -323,15 +324,15 @@ bool SHADER_PROGRAM_TEMPLATE_CLASS_NAME::Compile(ID3D11Device* device)
 //     return true;
 // }
 
-bool SHADER_PROGRAM_TEMPLATE_CLASS_NAME::SetGlobalVar(size_t pUid, void* value, size_t valueSize)
-{
-    if (!_globalProps)
-    {
-        return false;
-    }
-
-    return _globalProps->SetVar(pUid, value, valueSize);
-}
+// bool SHADER_PROGRAM_TEMPLATE_CLASS_NAME::SetGlobalVar(size_t pUid, void* value, size_t valueSize)
+// {
+//     if (!_globalProps)
+//     {
+//         return false;
+//     }
+//
+//     return _globalProps->SetVar(pUid, value, valueSize);
+// }
 
 bool SHADER_PROGRAM_TEMPLATE_CLASS_NAME::SetDrawVar(size_t pUid, void* value, size_t valueSize)
 {
@@ -376,12 +377,6 @@ bool SHADER_PROGRAM_TEMPLATE_CLASS_NAME::UploadDrawBuffer(ID3D11DeviceContext *d
         return UploadBuffer(deviceContext, _drawProps);
 }
 
-bool SHADER_PROGRAM_TEMPLATE_CLASS_NAME::UploadGlobalBuffer(ID3D11DeviceContext *deviceContext)
-{
-    if (_globalProps)
-        return UploadBuffer(deviceContext, _globalProps);
-}
-
 bool SHADER_PROGRAM_TEMPLATE_CLASS_NAME::CreateConstBufferLookup(ID3D11Device* device, ConstBufferData* buffer)
 {
     HRESULT result;
@@ -417,21 +412,21 @@ bool SHADER_PROGRAM_TEMPLATE_CLASS_NAME::CreateConstBufferLookup(ID3D11Device* d
         buffer->vDesc.emplace(ShaderUtils::PropertyToID(varDesc.Name), varDesc);
     }
 
-    D3D11_BUFFER_DESC bufferDesc;
+    // D3D11_BUFFER_DESC bufferDesc;
+    //
+    // // Setup the description of the dynamic matrix constant buffer that is in the vertex shader.
+    // bufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+    // bufferDesc.ByteWidth = buffer->description.Size;
+    // bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+    // bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+    // bufferDesc.MiscFlags = 0;
+    // bufferDesc.StructureByteStride = 0;
 
-    // Setup the description of the dynamic matrix constant buffer that is in the vertex shader.
-    bufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-    bufferDesc.ByteWidth = buffer->description.Size;
-    bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-    bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-    bufferDesc.MiscFlags = 0;
-    bufferDesc.StructureByteStride = 0;
-
-    result = device->CreateBuffer(&bufferDesc, nullptr, &buffer->bPtr); // ToDo initial data
-    if(FAILED(result))
-    {
-        return false;
-    }
+    // result = device->CreateBuffer(&bufferDesc, nullptr, &buffer->bPtr); // ToDo initial data
+    // if(FAILED(result))
+    // {
+    //     return false;
+    // }
 
     return true;
 }
@@ -461,17 +456,18 @@ bool SHADER_PROGRAM_TEMPLATE_CLASS_NAME::CreateConstBufferLookups(ID3D11Device* 
 
         if (bufferUid == ShaderUtils::PropertyToID("GlobalProperties"))
         {
-            _globalProps = new ConstBufferData{cBufferIndex, bufferUid, bufferDesc, bufferDesc.Size};
-            buffer = _globalProps;
+            // _globalProps = new ConstBufferData{device, cBufferIndex, bufferUid, bufferDesc, bufferDesc.Size};
+            // buffer = _globalProps;
+            _hasGlobalProps = true;
         }
         else if (bufferUid == ShaderUtils::PropertyToID("DrawProperties"))
         {
-            _drawProps = new ConstBufferData{cBufferIndex, bufferUid, bufferDesc, bufferDesc.Size};
+            _drawProps = new ConstBufferData{device, cBufferIndex, bufferUid, bufferDesc, bufferDesc.Size};
             buffer = _drawProps;
         }
         else if (bufferUid == ShaderUtils::PropertyToID("MaterialProperties"))
         {
-            _materialPropsLookup = new ConstBufferData{cBufferIndex, bufferUid, bufferDesc, 0};
+            _materialPropsLookup = new ConstBufferData{device, cBufferIndex, bufferUid, bufferDesc, 0};
             buffer = _materialPropsLookup;
         }
 

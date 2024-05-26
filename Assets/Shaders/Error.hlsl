@@ -1,7 +1,10 @@
-cbuffer GlobalProperties
-{
-    float4 Timee;
-};
+#include "Include/NSECommon.hlsl"
+
+// cbuffer GlobalProperties
+// {
+//     float4 Timee;
+// };
+
 cbuffer MaterialProperties
 {
     float Tint;

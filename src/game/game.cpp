@@ -44,7 +44,7 @@ void Game::Start()
 
     float value = 516.3125612f;
 
-    _testMaterial = new Material{_testShader};
+    _testMaterial = new Material{_engine->GetRenderServer()->GetDevice(), _testShader};
     _testMaterial->SetPixelVar(tintId, &value, sizeof(float));
 
     // _triangle = new TriangleVisual{_engine->GetRenderServer()->GetDevice()};

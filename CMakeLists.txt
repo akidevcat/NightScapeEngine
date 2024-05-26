@@ -17,8 +17,8 @@ add_executable(src WIN32
         src/engine/servers/AssetServer.h
         src/engine/engine.cpp
         src/engine/engine.h
-        src/engine/math.cpp
-        src/engine/math.h
+        src/engine/math/math.cpp
+        src/engine/math/math.h
         src/engine/servers/SoundServer.cpp
         src/engine/servers/SoundServer.h
         src/engine/entity/SceneEntity.cpp
@@ -57,6 +57,8 @@ add_executable(src WIN32
         src/engine/servers/TimeServer.h
         src/engine/entity/FullscreenQuad.cpp
         src/engine/entity/FullscreenQuad.h
+        src/engine/render/GlobalProperties.cpp
+        src/engine/render/GlobalProperties.h
 )
 
 target_link_libraries(src d3d9 d3d11 d3dcompiler dinput8 dxguid)

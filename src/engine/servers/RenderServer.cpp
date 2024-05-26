@@ -1,5 +1,7 @@
 #include "RenderServer.h"
 
+#include "../render/GlobalProperties.h"
+
 RenderServer::RenderServer()
 {
 
@@ -9,6 +11,8 @@ RenderServer::~RenderServer()
 {
 	delete _errorShader;
 	delete _errorMaterial;
+	delete _globalPropertiesBuffer;
+	delete _globalProperties;
 }
 
 bool RenderServer::Initialize(int screenWidth, int screenHeight, HWND hwnd)
@@ -387,9 +391,21 @@ bool RenderServer::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		return false;
 	}
 
+	_globalProperties = new GlobalProperties{};
+
+	// ToDo
 	_errorShader = new Shader{L"Assets/Shaders/Error.hlsl"};
 	_errorShader->Compile(_device);
-	_errorMaterial = new Material{_errorShader};
+	_errorMaterial = new Material{_device, _errorShader};
+
+	// ToDo
+	size_t globalPropsBufferSize = sizeof(GlobalProperties);
+	if (globalPropsBufferSize % 16 != 0)
+	{
+		globalPropsBufferSize += 16 - globalPropsBufferSize % 16;
+	}
+	_globalPropertiesBuffer = new ConstBufferData{
+		_device, 0, ShaderUtils::PropertyToID("GlobalProperties"), globalPropsBufferSize, _globalProperties};
 
     return true;
 }
@@ -469,6 +485,11 @@ void RenderServer::Shutdown()
 	}
 }
 
+void RenderServer::PipelineMarkGlobalPropertiesDirty()
+{
+	_globalPropertiesBuffer->MarkDirty();
+}
+
 void RenderServer::BeginScene(XMFLOAT4 color)
 {
 	_deviceContext->ClearRenderTargetView(_renderTargetView, reinterpret_cast<const float*>(&color));
@@ -509,7 +530,7 @@ void RenderServer::PipelineSetMesh(Mesh *mesh)
 void RenderServer::PipelineSetMaterial(Material *material)
 {
 	// Upload props to GPU buffer if material or shaders were changed
-	material->UploadAllProperties(_deviceContext);
+	material->UploadAllProperties(_deviceContext, _globalPropertiesBuffer);
 
 	_deviceContext->IASetInputLayout(
 		material->GetShader()->GetVertexShader()->GetInputLayout());
@@ -523,7 +544,7 @@ void RenderServer::PipelineSetMaterial(Material *material)
 	int vsBuffersLength = 0;
 	int psBuffersLength = 0;
 
-	material->EnumerateBuffers(vsBuffers, vsBuffersLength, psBuffers, psBuffersLength);
+	material->EnumerateBuffers(vsBuffers, vsBuffersLength, psBuffers, psBuffersLength, _globalPropertiesBuffer);
 
 	_deviceContext->VSSetConstantBuffers(
 		0, vsBuffersLength, vsBuffers);
