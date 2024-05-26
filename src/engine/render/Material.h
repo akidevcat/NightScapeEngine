@@ -16,8 +16,8 @@ public:
     bool UploadMaterialProperties(ID3D11DeviceContext *context);
     void UploadShaderProperties(ID3D11DeviceContext *context);
     void UploadAllProperties(ID3D11DeviceContext *context);
-
-
+    void EnumerateBuffers(_Out_ ID3D11Buffer* vsBuffers[3], _Out_ int& vsBuffersLength,
+    _Out_ ID3D11Buffer* psBuffers[3], _Out_ int& psBuffersLength) const;
 
 public:
     [[nodiscard]] Shader* GetShader() const { return _shader; }

@@ -37,6 +37,7 @@ PixelInput VertexMain(VertexInput input)
     output.position.xyz = input.position;
     output.position.z = 0.5;
     output.position.w = 1.0f;
+
     output.uv = input.uv;
 
     return output;
@@ -44,6 +45,5 @@ PixelInput VertexMain(VertexInput input)
 
 float4 PixelMain(PixelInput input) : SV_TARGET
 {
-    return float4(1, 0, 1, 1);
     return float4(input.uv.x, input.uv.y, 1.0 - input.uv.x, 1.0) * (sin(Time * 10.0) * 0.5 + 0.5);
 }

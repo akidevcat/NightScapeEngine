@@ -35,7 +35,7 @@ public:
     void EndScene();
     void DrawMesh(Mesh* mesh, Material* material, XMMATRIX matrix, Camera* camera);
 
-// Property Accessors
+    // Property Accessors
     bool                        GetFullscreenState() const { return _isFullscreen; }
     void                        SetFullscreenState(bool state) { _isFullscreen = state; }
     ID3D11Device*               GetDevice() const { return _device; }
@@ -61,9 +61,12 @@ private:
     ID3D11BlendState*           _alphaEnableBlendingState = nullptr;
     ID3D11BlendState*           _alphaDisableBlendingState = nullptr;
 
-    XMMATRIX                    _projectionMatrix;
-    XMMATRIX                    _worldMatrix;
-    XMMATRIX                    _orthoMatrix;
+    Shader*                     _errorShader = nullptr;
+    Material*                   _errorMaterial = nullptr;
+
+    // XMMATRIX                    _projectionMatrix;
+    // XMMATRIX                    _worldMatrix;
+    // XMMATRIX                    _orthoMatrix;
 };
 
 #endif //RENDER_SERVER_H

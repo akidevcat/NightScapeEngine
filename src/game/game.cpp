@@ -12,7 +12,7 @@ Game::~Game()
 {
     delete _testShader;
     delete _testMaterial;
-    delete _triangle;
+    delete _quad;
     delete _scene;
 }
 
@@ -47,12 +47,12 @@ void Game::Start()
     _testMaterial = new Material{_testShader};
     _testMaterial->SetPixelVar(tintId, &value, sizeof(float));
 
-    _triangle = new TriangleVisual{_engine->GetRenderServer()->GetDevice()};
-    _triangle->renderingMaterial = _testMaterial;
+    // _triangle = new TriangleVisual{_engine->GetRenderServer()->GetDevice()};
+    // _triangle->renderingMaterial = _testMaterial;
+    _quad = new FullscreenQuad{_engine->GetRenderServer()->GetDevice()};
+    _quad->renderingMaterial = _testMaterial;
 
-    _scene->RegisterEntity(_triangle);
-
-    int a = 1;
+    _scene->RegisterEntity(_quad);
 }
 
 bool Game::UpdateFrame()

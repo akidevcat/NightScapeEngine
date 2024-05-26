@@ -7,7 +7,8 @@ RenderServer::RenderServer()
 
 RenderServer::~RenderServer()
 {
-
+	delete _errorShader;
+	delete _errorMaterial;
 }
 
 bool RenderServer::Initialize(int screenWidth, int screenHeight, HWND hwnd)
@@ -319,13 +320,13 @@ bool RenderServer::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	float screenAspect = (float)screenWidth / (float)screenHeight;
 
 	// Create the projection matrix for 3D rendering.
-	_projectionMatrix = XMMatrixPerspectiveFovLH(fov, screenAspect, cameraNear, cameraFar);
+	// _projectionMatrix = XMMatrixPerspectiveFovLH(fov, screenAspect, cameraNear, cameraFar);
 
     // Initialize the world matrix to the identity matrix.
-	_worldMatrix = XMMatrixIdentity();
+	// _worldMatrix = XMMatrixIdentity();
 
 	// Create an orthographic projection matrix for 2D rendering.
-	_orthoMatrix = XMMatrixOrthographicLH((float)screenWidth, (float)screenHeight, cameraNear, cameraFar);
+	// _orthoMatrix = XMMatrixOrthographicLH((float)screenWidth, (float)screenHeight, cameraNear, cameraFar);
 
 	// Clear the second depth stencil state before setting the parameters.
 	D3D11_DEPTH_STENCIL_DESC depthDisabledStencilDesc;
@@ -385,6 +386,10 @@ bool RenderServer::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	{
 		return false;
 	}
+
+	_errorShader = new Shader{L"Assets/Shaders/Error.hlsl"};
+	_errorShader->Compile(_device);
+	_errorMaterial = new Material{_errorShader};
 
     return true;
 }
@@ -466,14 +471,6 @@ void RenderServer::Shutdown()
 
 void RenderServer::BeginScene(XMFLOAT4 color)
 {
-	// float c[4];
-	//
-	// c[0] = color.x;
-	// c[1] = color.y;
-	// c[2] = color.z;
-	// c[3] = color.w;
-
-	// _deviceContext->ClearRenderTargetView(_renderTargetView, c);
 	_deviceContext->ClearRenderTargetView(_renderTargetView, reinterpret_cast<const float*>(&color));
 	_deviceContext->ClearDepthStencilView(_depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 }
@@ -495,7 +492,7 @@ void RenderServer::EndScene()
 void RenderServer::DrawMesh(Mesh *mesh, Material* material, XMMATRIX matrix, Camera *camera)
 {
 	PipelineSetMesh(mesh);
-	PipelineSetMaterial(material);
+	PipelineSetMaterial(material ? material : _errorMaterial);
 	PipelineDrawIndexed(mesh);
 }
 
@@ -521,59 +518,17 @@ void RenderServer::PipelineSetMaterial(Material *material)
 	_deviceContext->PSSetShader(
 		material->GetShader()->GetPixelShader()->AsID3D11(), nullptr, 0);
 
-	// ToDo transfer outside
-	auto vsGlobalProps = material->GetShader()->GetVertexShader()->GetGlobalProps();
-	auto psGlobalProps = material->GetShader()->GetPixelShader()->GetGlobalProps();
-	auto vsMatProps = material->GetVSMaterialProps();
-	auto psMatProps = material->GetPSMaterialProps();
-	auto vsDrawProps = material->GetShader()->GetVertexShader()->GetDrawProps();
-	auto psDrawProps = material->GetShader()->GetPixelShader()->GetDrawProps();
-
 	static ID3D11Buffer* vsBuffers[3];
 	static ID3D11Buffer* psBuffers[3];
+	int vsBuffersLength = 0;
+	int psBuffersLength = 0;
 
-	int vsBuffersCount = 0;
-	int psBuffersCount = 0;
-
-	if (vsGlobalProps)
-	{
-		vsBuffers[vsBuffersCount] = vsGlobalProps->bPtr;
-		vsBuffersCount++;
-	}
-	if (vsMatProps)
-	{
-		vsBuffers[vsBuffersCount] = vsMatProps->bPtr;
-		vsBuffersCount++;
-	}
-	if (vsDrawProps)
-	{
-		vsBuffers[vsBuffersCount] = vsDrawProps->bPtr;
-		vsBuffersCount++;
-	}
-
-	if (psGlobalProps)
-	{
-		psBuffers[psBuffersCount] = psGlobalProps->bPtr;
-		psBuffersCount++;
-	}
-	if (psMatProps)
-	{
-		psBuffers[psBuffersCount] = psMatProps->bPtr;
-		psBuffersCount++;
-	}
-	if (psDrawProps)
-	{
-		psBuffers[psBuffersCount] = psDrawProps->bPtr;
-		psBuffersCount++;
-	}
+	material->EnumerateBuffers(vsBuffers, vsBuffersLength, psBuffers, psBuffersLength);
 
 	_deviceContext->VSSetConstantBuffers(
-		0, vsBuffersCount, vsBuffers);
+		0, vsBuffersLength, vsBuffers);
 	_deviceContext->PSSetConstantBuffers(
-		0, psBuffersCount, psBuffers);
-
-	// _deviceContext->PSSetConstantBuffers(
-	// 	0, 1, &material->GetShader()->GetPixelShader()->GetDrawProps()->bPtr);
+		0, psBuffersLength, psBuffers);
 }
 
 void RenderServer::PipelineDrawIndexed(Mesh *mesh)

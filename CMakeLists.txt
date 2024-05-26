@@ -55,6 +55,8 @@ add_executable(src WIN32
         src/engine/render/ConstBufferData.h
         src/engine/servers/TimeServer.cpp
         src/engine/servers/TimeServer.h
+        src/engine/entity/FullscreenQuad.cpp
+        src/engine/entity/FullscreenQuad.h
 )
 
 target_link_libraries(src d3d9 d3d11 d3dcompiler dinput8 dxguid)

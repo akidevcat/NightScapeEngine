@@ -1,14 +1,12 @@
-cbuffer GlobalProperties : register(b0)
+cbuffer GlobalProperties
 {
     float4 Timee;
 };
-
-cbuffer MaterialProperties : register(b1)
+cbuffer MaterialProperties
 {
     float Tint;
 };
-
-cbuffer DrawProperties : register(b2)
+cbuffer DrawProperties
 {
     float Time;
 };

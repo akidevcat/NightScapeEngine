@@ -2,6 +2,7 @@
 #define GAME_H
 
 #include "../engine/engine.h"
+#include "../engine/entity/FullscreenQuad.h"
 #include "../engine/entity/TriangleVisual.h"
 #include "../engine/render/Shader.h"
 #include "../engine/render/Material.h"
@@ -30,7 +31,7 @@ private:
     Scene* _scene = nullptr;
     Shader* _testShader = nullptr;
     Material* _testMaterial = nullptr;
-    TriangleVisual* _triangle = nullptr;
+    FullscreenQuad* _quad = nullptr;
     // Shader* _test = nullptr;
 };
 

@@ -5,14 +5,12 @@
 
 #include "Entity.h"
 
-using namespace DirectX;
-
 class SceneEntity : public Entity
 {
 public:
-    XMFLOAT3 position = XMFLOAT3(0, 0, 0);
-    XMFLOAT4 rotation = XMFLOAT4(0, 0, 0, 1);
-    XMFLOAT3 scale    = XMFLOAT3(1, 1, 1);
+    DirectX::XMFLOAT3 position = DirectX::XMFLOAT3(0, 0, 0);
+    DirectX::XMFLOAT4 rotation = DirectX::XMFLOAT4(0, 0, 0, 1);
+    DirectX::XMFLOAT3 scale    = DirectX::XMFLOAT3(1, 1, 1);
 
 public:
     virtual void OnUpdate() {}

@@ -80,3 +80,47 @@ void Material::UploadAllProperties(ID3D11DeviceContext *context)
     UploadMaterialProperties(context);
     UploadShaderProperties(context);
 }
+
+void Material::EnumerateBuffers(_Out_ ID3D11Buffer* vsBuffers[3], _Out_ int& vsBuffersLength,
+    _Out_ ID3D11Buffer* psBuffers[3], _Out_ int& psBuffersLength) const
+{
+    auto vsGlobalProps = _shader->GetVertexShader()->GetGlobalProps();
+    auto psGlobalProps = _shader->GetPixelShader()->GetGlobalProps();
+    auto vsDrawProps = _shader->GetVertexShader()->GetDrawProps();
+    auto psDrawProps = _shader->GetPixelShader()->GetDrawProps();
+
+    vsBuffersLength = 0;
+    psBuffersLength = 0;
+
+    if (vsGlobalProps)
+    {
+        vsBuffers[vsBuffersLength] = vsGlobalProps->bPtr;
+        vsBuffersLength++;
+    }
+    if (_vsMaterialProps)
+    {
+        vsBuffers[vsBuffersLength] = _vsMaterialProps->bPtr;
+        vsBuffersLength++;
+    }
+    if (vsDrawProps)
+    {
+        vsBuffers[vsBuffersLength] = vsDrawProps->bPtr;
+        vsBuffersLength++;
+    }
+
+    if (psGlobalProps)
+    {
+        psBuffers[psBuffersLength] = psGlobalProps->bPtr;
+        psBuffersLength++;
+    }
+    if (_psMaterialProps)
+    {
+        psBuffers[psBuffersLength] = _psMaterialProps->bPtr;
+        psBuffersLength++;
+    }
+    if (psDrawProps)
+    {
+        psBuffers[psBuffersLength] = psDrawProps->bPtr;
+        psBuffersLength++;
+    }
+}

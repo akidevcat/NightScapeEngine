@@ -6,10 +6,50 @@
 
 struct VertexData
 {
-    DirectX::XMFLOAT3 position;
-    DirectX::XMFLOAT3 normal;
-    DirectX::XMFLOAT2 uv;
-    DirectX::XMFLOAT4 color;
+    DirectX::XMFLOAT3 position = {0, 0, 0};
+    DirectX::XMFLOAT3 normal = {0, 0, 0};
+    DirectX::XMFLOAT2 uv = {0, 0};
+    DirectX::XMFLOAT4 color = {1, 1, 1, 1};
+    //
+    // VertexData()
+    // {
+    //     this->position = DirectX::XMFLOAT3(0, 0, 0);
+    //     this->normal = DirectX::XMFLOAT3(0, 0, 0);
+    //     this->uv = DirectX::XMFLOAT2(0, 0);
+    //     this->color = DirectX::XMFLOAT4(1, 1, 1, 1);
+    // }
+    //
+    // VertexData(DirectX::XMFLOAT3 position)
+    // {
+    //     this->position = position;
+    //     this->normal = DirectX::XMFLOAT3(0, 0, 0);
+    //     this->uv = DirectX::XMFLOAT2(0, 0);
+    //     this->color = DirectX::XMFLOAT4(1, 1, 1, 1);
+    // }
+    //
+    // VertexData(DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 normal)
+    // {
+    //     this->position = position;
+    //     this->normal = normal;
+    //     this->uv = DirectX::XMFLOAT2(0, 0);
+    //     this->color = DirectX::XMFLOAT4(1, 1, 1, 1);
+    // }
+    //
+    // VertexData(DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 normal, DirectX::XMFLOAT2 uv)
+    // {
+    //     this->position = position;
+    //     this->normal = normal;
+    //     this->uv = uv;
+    //     this->color = DirectX::XMFLOAT4(1, 1, 1, 1);
+    // }
+    //
+    // VertexData(DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 normal, DirectX::XMFLOAT2 uv, DirectX::XMFLOAT4 color)
+    // {
+    //     this->position = position;
+    //     this->normal = normal;
+    //     this->uv = uv;
+    //     this->color = color;
+    // }
 };
 
 class Mesh
