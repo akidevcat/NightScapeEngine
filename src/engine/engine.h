@@ -30,11 +30,13 @@ public:
 
     void Shutdown();
 
-public:
     [[nodiscard]] RenderServer* GetRenderServer() const { return _renderServer; }
     [[nodiscard]] InputServer* GetInputServer() const { return _inputServer; }
     [[nodiscard]] SceneServer* GetSceneServer() const { return _sceneServer; }
     [[nodiscard]] TimeServer* GetTimeServer() const { return _timeServer; }
+    [[nodiscard]] int GetScreenWidth() const { return _screenWidth; }
+    [[nodiscard]] int GetScreenHeight() const { return _screenHeight; }
+    [[nodiscard]] float GetScreenAspect() const { return (float)_screenWidth / (float)_screenHeight; }
 
 private:
     void OnFrameInput();
@@ -48,6 +50,8 @@ private:
     InputServer* _inputServer = nullptr;
     SceneServer* _sceneServer = nullptr;
     TimeServer* _timeServer = nullptr;
+    int _screenWidth;
+    int _screenHeight;
 };
 
 #endif //ENGINE_H

@@ -37,16 +37,16 @@ bool Shader::Compile(ID3D11Device *device)
     return true;
 }
 
-void Shader::UploadDrawProperties(ID3D11DeviceContext *context)
+void Shader::UploadDrawProperties(ID3D11DeviceContext *context, ConstBufferData* drawProps)
 {
     if (_vShader)
     {
-        _vShader->UploadDrawBuffer(context);
+        _vShader->UploadBuffer(context, drawProps);
     }
 
     if (_pShader)
     {
-        _pShader->UploadDrawBuffer(context);
+        _pShader->UploadBuffer(context, drawProps);
     }
 }
 

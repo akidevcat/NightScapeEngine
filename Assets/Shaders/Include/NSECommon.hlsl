@@ -7,4 +7,10 @@ cbuffer GlobalProperties
     float _DeltaTime;
 }
 
+cbuffer DrawProperties
+{
+    float4x4 _ProjectionMatrix;
+    float4x4 _ModelMatrix;
+};
+
 #endif

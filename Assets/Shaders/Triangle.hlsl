@@ -1,18 +1,8 @@
 #include "Include/NSECommon.hlsl"
 
-// cbuffer GlobalProperties
-// {
-//     float4 Timee;
-// };
-
 cbuffer MaterialProperties
 {
-    float Tint;
-};
 
-cbuffer DrawProperties
-{
-    float Time;
 };
 
 //Texture2D shaderTexture : register(t0);
@@ -36,9 +26,11 @@ PixelInput VertexMain(VertexInput input)
 {
     PixelInput output;
 
-    output.position.xyz = input.position;
-    output.position.z = 0.5;
-    output.position.w = 1.0f;
+//     input.position.x = sin(_Time + input.position.x + input.position.y);
+    input.position.z = 2.0 + sin(_Time);
+
+    output.position = mul(_ProjectionMatrix, float4(input.position, 1));
+    output.position.xyz /= output.position.w;
 
     output.uv = input.uv;
 
@@ -47,5 +39,6 @@ PixelInput VertexMain(VertexInput input)
 
 float4 PixelMain(PixelInput input) : SV_TARGET
 {
-    return float4(input.uv.x, input.uv.y, 1.0 - input.uv.x, 1.0) * (sin(_Time * 10.0) * 0.5 + 0.5);
+//     return float4(input.uv.x, input.uv.y, 1.0 - input.uv.x, 1.0) * (sin(_Time * 10.0) * 0.5 + 0.5);
+    return float4(input.uv.x, input.uv.y, 1.0 - input.uv.x, 1.0);
 }

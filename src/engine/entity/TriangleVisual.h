@@ -11,7 +11,7 @@ public:
     explicit TriangleVisual(ID3D11Device* device);
     ~TriangleVisual();
 
-    void RenderEntity(RenderServer* render, TimeServer* time) override;
+    void RenderEntity(RenderServer* render, TimeServer* time, Camera *camera) override;
     
 private:
     Mesh* _mesh = nullptr;

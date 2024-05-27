@@ -11,8 +11,11 @@ RenderServer::~RenderServer()
 {
 	delete _errorShader;
 	delete _errorMaterial;
-	delete _globalPropertiesBuffer;
+
 	delete _globalProperties;
+	delete _globalPropertiesBuffer;
+	delete _drawProperties;
+	delete _drawPropertiesBuffer;
 }
 
 bool RenderServer::Initialize(int screenWidth, int screenHeight, HWND hwnd)
@@ -391,8 +394,6 @@ bool RenderServer::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		return false;
 	}
 
-	_globalProperties = new GlobalProperties{};
-
 	// ToDo
 	_errorShader = new Shader{L"Assets/Shaders/Error.hlsl"};
 	_errorShader->Compile(_device);
@@ -404,8 +405,15 @@ bool RenderServer::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	{
 		globalPropsBufferSize += 16 - globalPropsBufferSize % 16;
 	}
-	_globalPropertiesBuffer = new ConstBufferData{
-		_device, 0, ShaderUtils::PropertyToID("GlobalProperties"), globalPropsBufferSize, _globalProperties};
+	_globalPropertiesBuffer = new ConstBufferData{_device, 0, ShaderUtils::PropertyToID("GlobalProperties"), globalPropsBufferSize, _globalProperties};
+
+	// ToDo
+	size_t drawPropsBufferSize = sizeof(DrawProperties);
+	if (drawPropsBufferSize % 16 != 0)
+	{
+		drawPropsBufferSize += 16 - drawPropsBufferSize % 16;
+	}
+	_drawPropertiesBuffer = new ConstBufferData{_device, 0, ShaderUtils::PropertyToID("DrawProperties"), drawPropsBufferSize, _drawProperties};
 
     return true;
 }
@@ -490,7 +498,65 @@ void RenderServer::PipelineMarkGlobalPropertiesDirty()
 	_globalPropertiesBuffer->MarkDirty();
 }
 
-void RenderServer::BeginScene(XMFLOAT4 color)
+void RenderServer::PipelineSetCamera(Camera *camera)
+{
+	_drawProperties->ProjectionMatrix = camera->GetProjectionMatrix();
+	_drawPropertiesBuffer->MarkDirty();
+}
+
+void RenderServer::PipelineSetModelMatrix(const DirectX::XMMATRIX& matrix)
+{
+	_drawProperties->ModelMatrix = matrix;
+	_drawPropertiesBuffer->MarkDirty();
+}
+
+// void RenderServer::PipelineSetMainCameraReference(Camera *camera)
+// {
+// 	_mainCamera = camera;
+// }
+
+void RenderServer::PipelineSetMesh(Mesh *mesh)
+{
+	constexpr unsigned int offset = 0;
+	constexpr unsigned int stride = sizeof(VertexData);
+
+	_deviceContext->IASetVertexBuffers(0, 1, &mesh->vertexBuffer, &stride, &offset);
+	_deviceContext->IASetIndexBuffer(mesh->indexBuffer, DXGI_FORMAT_R32_UINT, 0);
+	_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+}
+
+void RenderServer::PipelineSetMaterial(Material *material)
+{
+	// Upload props to GPU buffer if material or shaders were changed
+	material->UploadAllProperties(_deviceContext, _globalPropertiesBuffer, _drawPropertiesBuffer);
+
+	_deviceContext->IASetInputLayout(
+		material->GetShader()->GetVertexShader()->GetInputLayout());
+	_deviceContext->VSSetShader(
+		material->GetShader()->GetVertexShader()->AsID3D11(), nullptr, 0);
+	_deviceContext->PSSetShader(
+		material->GetShader()->GetPixelShader()->AsID3D11(), nullptr, 0);
+
+	static ID3D11Buffer* vsBuffers[3];
+	static ID3D11Buffer* psBuffers[3];
+	int vsBuffersLength = 0;
+	int psBuffersLength = 0;
+
+	material->EnumerateBuffers(vsBuffers, vsBuffersLength, psBuffers, psBuffersLength,
+		_globalPropertiesBuffer, _drawPropertiesBuffer);
+
+	_deviceContext->VSSetConstantBuffers(
+		0, vsBuffersLength, vsBuffers);
+	_deviceContext->PSSetConstantBuffers(
+		0, psBuffersLength, psBuffers);
+}
+
+void RenderServer::PipelineDrawIndexed(Mesh *mesh)
+{
+	_deviceContext->DrawIndexed(mesh->indexCount, 0, 0);
+}
+
+void RenderServer::BeginScene(DirectX::XMFLOAT4 color)
 {
 	_deviceContext->ClearRenderTargetView(_renderTargetView, reinterpret_cast<const float*>(&color));
 	_deviceContext->ClearDepthStencilView(_depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
@@ -510,49 +576,11 @@ void RenderServer::EndScene()
 	}
 }
 
-void RenderServer::DrawMesh(Mesh *mesh, Material* material, XMMATRIX matrix, Camera *camera)
+void RenderServer::DrawMesh(Mesh *mesh, Material* material, const DirectX::XMMATRIX& matrix, Camera *camera)
 {
+	PipelineSetModelMatrix(matrix);
+	PipelineSetCamera(camera);
 	PipelineSetMesh(mesh);
 	PipelineSetMaterial(material ? material : _errorMaterial);
 	PipelineDrawIndexed(mesh);
-}
-
-void RenderServer::PipelineSetMesh(Mesh *mesh)
-{
-	constexpr unsigned int offset = 0;
-	constexpr unsigned int stride = sizeof(VertexData);
-
-	_deviceContext->IASetVertexBuffers(0, 1, &mesh->vertexBuffer, &stride, &offset);
-	_deviceContext->IASetIndexBuffer(mesh->indexBuffer, DXGI_FORMAT_R32_UINT, 0);
-	_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-}
-
-void RenderServer::PipelineSetMaterial(Material *material)
-{
-	// Upload props to GPU buffer if material or shaders were changed
-	material->UploadAllProperties(_deviceContext, _globalPropertiesBuffer);
-
-	_deviceContext->IASetInputLayout(
-		material->GetShader()->GetVertexShader()->GetInputLayout());
-	_deviceContext->VSSetShader(
-		material->GetShader()->GetVertexShader()->AsID3D11(), nullptr, 0);
-	_deviceContext->PSSetShader(
-		material->GetShader()->GetPixelShader()->AsID3D11(), nullptr, 0);
-
-	static ID3D11Buffer* vsBuffers[3];
-	static ID3D11Buffer* psBuffers[3];
-	int vsBuffersLength = 0;
-	int psBuffersLength = 0;
-
-	material->EnumerateBuffers(vsBuffers, vsBuffersLength, psBuffers, psBuffersLength, _globalPropertiesBuffer);
-
-	_deviceContext->VSSetConstantBuffers(
-		0, vsBuffersLength, vsBuffers);
-	_deviceContext->PSSetConstantBuffers(
-		0, psBuffersLength, psBuffers);
-}
-
-void RenderServer::PipelineDrawIndexed(Mesh *mesh)
-{
-	_deviceContext->DrawIndexed(mesh->indexCount, 0, 0);
 }

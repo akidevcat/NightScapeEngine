@@ -12,7 +12,7 @@ public:
     VisualEntity();
     ~VisualEntity();
 
-    virtual void RenderEntity(RenderServer* render, TimeServer* time) = 0;
+    virtual void RenderEntity(RenderServer* render, TimeServer* time, Camera *camera) = 0;
     // ToDo GetAABB, change to local aabb...
     // ToDo Material
 public:

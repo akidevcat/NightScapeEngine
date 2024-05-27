@@ -9,7 +9,7 @@ public:
     explicit FullscreenQuad(ID3D11Device* device);
     ~FullscreenQuad();
 
-    void RenderEntity(RenderServer* render, TimeServer* time) override;
+    void RenderEntity(RenderServer* render, TimeServer* time, Camera *camera) override;
 
 private:
     Mesh* _mesh = nullptr;

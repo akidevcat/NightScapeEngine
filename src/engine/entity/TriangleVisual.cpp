@@ -1,5 +1,7 @@
 #include "TriangleVisual.h"
 
+using namespace DirectX;
+
 TriangleVisual::TriangleVisual(ID3D11Device* device)
 {
     _mesh = new Mesh{3, 3};
@@ -20,17 +22,7 @@ TriangleVisual::~TriangleVisual()
     delete _mesh;
 }
 
-void TriangleVisual::RenderEntity(RenderServer *render, TimeServer* time)
+void TriangleVisual::RenderEntity(RenderServer *render, TimeServer* time, Camera *camera)
 {
-    Material *material = nullptr;
-
-    if (renderingMaterial)
-    {
-        // float t = time->Time();
-        // ToDo
-        // renderingMaterial->GetShader()->GetPixelShader()->SetDrawVar(ShaderUtils::PropertyToID("Time"), &t, sizeof(t));
-        material = renderingMaterial;
-    }
-
-    render->DrawMesh(_mesh, material, XMMATRIX(), nullptr); // ToDo
+    render->DrawMesh(_mesh, renderingMaterial, XMMATRIX(), camera); // ToDo
 }

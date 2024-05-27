@@ -1,5 +1,7 @@
 #include "FullscreenQuad.h"
 
+using namespace DirectX;
+
 FullscreenQuad::FullscreenQuad(ID3D11Device *device)
 {
     _mesh = new Mesh{4, 2 * 3};
@@ -24,17 +26,7 @@ FullscreenQuad::~FullscreenQuad()
     delete _mesh;
 }
 
-void FullscreenQuad::RenderEntity(RenderServer *render, TimeServer *time)
+void FullscreenQuad::RenderEntity(RenderServer *render, TimeServer *time, Camera *camera)
 {
-    Material *material = nullptr;
-
-    if (renderingMaterial)
-    {
-        float t = time->Time();
-        // ToDo
-        renderingMaterial->GetShader()->GetPixelShader()->SetDrawVar(ShaderUtils::PropertyToID("Time"), &t, sizeof(t));
-        material = renderingMaterial;
-    }
-
-    render->DrawMesh(_mesh, material, XMMATRIX(), nullptr); // ToDo
+    render->DrawMesh(_mesh, renderingMaterial, XMMatrixIdentity(), camera); // ToDo
 }

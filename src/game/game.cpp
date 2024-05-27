@@ -35,9 +35,11 @@ void Game::Start()
 
     _engine->GetSceneServer()->CreateScene(_scene);
 
-    SceneEntity* camera = new Camera{};
-
+    auto camera = new Camera{};
     _scene->RegisterEntity(camera);
+    _engine->GetSceneServer()->SetMainCamera(camera);
+
+    camera->SetParams(_engine->GetScreenAspect(), 60.0f, 0.1f, 1000.0f, false, 0.0f);
 
     _testShader = new Shader{L"Assets/Shaders/Triangle.hlsl"};
     _testShader->Compile(_engine->GetRenderServer()->GetDevice());
@@ -49,6 +51,7 @@ void Game::Start()
 
     // _triangle = new TriangleVisual{_engine->GetRenderServer()->GetDevice()};
     // _triangle->renderingMaterial = _testMaterial;
+
     _quad = new FullscreenQuad{_engine->GetRenderServer()->GetDevice()};
     _quad->renderingMaterial = _testMaterial;
 

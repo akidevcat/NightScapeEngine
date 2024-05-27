@@ -31,7 +31,7 @@ public:
     void Release();
     bool Compile(ID3D11Device* device);
     bool UploadBuffer(ID3D11DeviceContext* deviceContext, ConstBufferData* buffer);
-    bool UploadDrawBuffer(ID3D11DeviceContext* deviceContext);
+    // bool UploadDrawBuffer(ID3D11DeviceContext* deviceContext);
     // bool UploadGlobalBuffer(ID3D11DeviceContext* deviceContext);
 
     bool SetGlobalVar(size_t pUid, void* value, size_t valueSize);
@@ -39,6 +39,7 @@ public:
 
     // [[nodiscard]] ConstBufferData* GetGlobalProps() const { return _globalProps; }
     [[nodiscard]] bool HasGlobalProps() const { return _hasGlobalProps; }
+    [[nodiscard]] bool HasDrawProps() const { return _hasDrawProps; }
     [[nodiscard]] ConstBufferData* GetDrawProps() const { return _drawProps; }
     [[nodiscard]] ConstBufferData* GetMaterialPropsLookup() const { return _materialPropsLookup; }
 #ifdef SHADER_PROGRAM_TEMPLATE_TYPE_VERTEX
@@ -68,6 +69,7 @@ private:
 
     // ConstBufferData*        _globalProps = nullptr;
     bool                    _hasGlobalProps = false;
+    bool                    _hasDrawProps = false;
     ConstBufferData*        _drawProps = nullptr;
     ConstBufferData*        _materialPropsLookup = nullptr;
 
@@ -371,11 +373,11 @@ bool SHADER_PROGRAM_TEMPLATE_CLASS_NAME::UploadBuffer(ID3D11DeviceContext* devic
     return true;
 }
 
-bool SHADER_PROGRAM_TEMPLATE_CLASS_NAME::UploadDrawBuffer(ID3D11DeviceContext *deviceContext)
-{
-    if (_drawProps)
-        return UploadBuffer(deviceContext, _drawProps);
-}
+// bool SHADER_PROGRAM_TEMPLATE_CLASS_NAME::UploadDrawBuffer(ID3D11DeviceContext *deviceContext)
+// {
+//     if (_drawProps)
+//         return UploadBuffer(deviceContext, _drawProps);
+// }
 
 bool SHADER_PROGRAM_TEMPLATE_CLASS_NAME::CreateConstBufferLookup(ID3D11Device* device, ConstBufferData* buffer)
 {
@@ -462,8 +464,9 @@ bool SHADER_PROGRAM_TEMPLATE_CLASS_NAME::CreateConstBufferLookups(ID3D11Device* 
         }
         else if (bufferUid == ShaderUtils::PropertyToID("DrawProperties"))
         {
-            _drawProps = new ConstBufferData{device, cBufferIndex, bufferUid, bufferDesc, bufferDesc.Size};
-            buffer = _drawProps;
+            // _drawProps = new ConstBufferData{device, cBufferIndex, bufferUid, bufferDesc, bufferDesc.Size};
+            // buffer = _drawProps;
+            _hasDrawProps = true;
         }
         else if (bufferUid == ShaderUtils::PropertyToID("MaterialProperties"))
         {

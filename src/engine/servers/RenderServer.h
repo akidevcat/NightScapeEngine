@@ -1,19 +1,15 @@
 #ifndef RENDER_SERVER_H
 #define RENDER_SERVER_H
 
-
-// #pragma comment(lib, "d3dcompiler.lib")
-
-#include <d3dcompiler.h>
 #include <dxgi.h>
 #include <d3d11.h>
 #include <directxmath.h>
 
 #include "../data/Mesh.h"
 #include "../entity/Camera.h"
+#include "../render/DrawProperties.h"
 #include "../render/GlobalProperties.h"
 #include "../render/Material.h"
-using namespace DirectX;
 
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "dxgi.lib")
@@ -28,14 +24,17 @@ public:
 
     // ===== Pipeline Methods =====
     void PipelineMarkGlobalPropertiesDirty();
+    void PipelineSetCamera(Camera* camera);
+    void PipelineSetModelMatrix(const DirectX::XMMATRIX& matrix);
+    // void PipelineSetMainCameraReference(Camera* camera);
     void PipelineSetMesh(Mesh* mesh);
     void PipelineSetMaterial(Material* material);
     void PipelineDrawIndexed(Mesh* mesh);
 
     // ===== Render Methods =====
-    void BeginScene(XMFLOAT4 color);
+    void BeginScene(DirectX::XMFLOAT4 color);
     void EndScene();
-    void DrawMesh(Mesh* mesh, Material* material, XMMATRIX matrix, Camera* camera);
+    void DrawMesh(Mesh* mesh, Material* material, const DirectX::XMMATRIX &matrix, Camera* camera);
 
     // Property Accessors
     [[nodiscard]] GlobalProperties*           GetGlobalProperties() const { return _globalProperties; }
@@ -67,12 +66,10 @@ private:
     Shader*                     _errorShader = nullptr;
     Material*                   _errorMaterial = nullptr;
 
-    GlobalProperties*           _globalProperties = nullptr;
+    GlobalProperties*           _globalProperties = new GlobalProperties{};
     ConstBufferData*            _globalPropertiesBuffer = nullptr;
-
-    // XMMATRIX                    _projectionMatrix;
-    // XMMATRIX                    _worldMatrix;
-    // XMMATRIX                    _orthoMatrix;
+    DrawProperties*             _drawProperties = new DrawProperties{};
+    ConstBufferData*            _drawPropertiesBuffer = nullptr;
 };
 
 #endif //RENDER_SERVER_H

@@ -1,17 +1,8 @@
 #include "Include/NSECommon.hlsl"
 
-// cbuffer GlobalProperties
-// {
-//     float4 Timee;
-// };
-
 cbuffer MaterialProperties
 {
-    float Tint;
-};
-cbuffer DrawProperties
-{
-    float Time;
+
 };
 
 //Texture2D shaderTexture : register(t0);

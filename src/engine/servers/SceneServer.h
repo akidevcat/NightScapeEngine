@@ -2,6 +2,7 @@
 #define SCENESERVER_H
 #include <unordered_map>
 
+#include "../entity/Camera.h"
 #include "../scene/Scene.h"
 
 class SceneServer
@@ -16,9 +17,14 @@ public:
     void    UnloadScene(size_t sceneId);
     void    GetAllScenes(vector<Scene*>& vec);
 
+    void SetMainCamera(Camera* camera) { _mainCamera = camera; }
+    [[nodiscard]] Camera* GetMainCamera() const { return _mainCamera; }
+
 private:
     std::unordered_map<size_t, Scene*> _scenes
         = std::unordered_map<size_t, Scene*>();
+
+    Camera* _mainCamera = nullptr;
 };
 
 #endif //SCENESERVER_H

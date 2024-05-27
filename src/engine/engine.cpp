@@ -26,6 +26,8 @@ bool Engine::Initialize(IGame* game, HINSTANCE histance, int screenWidth, int sc
     bool result = true;
 
     _gameInstance = game;
+    _screenWidth = screenWidth;
+    _screenHeight = screenHeight;
 
     _timeServer = new TimeServer{};
     if (!_timeServer->Initialize())
@@ -110,9 +112,10 @@ void Engine::OnFrameRender()
 
     _renderServer->PipelineMarkGlobalPropertiesDirty();
 
-    _renderServer->BeginScene(XMFLOAT4(0, 0, 0, 1));
+    _renderServer->BeginScene(DirectX::XMFLOAT4(0, 0, 0, 1));
 
     // Get all visual entities
+    Camera* _camera = _sceneServer->GetMainCamera();
     vector<Scene*> scenes;
     vector<VisualEntity*> entities;
 
@@ -122,9 +125,12 @@ void Engine::OnFrameRender()
         scene->FindAllEntitiesFromBaseType(entities);
     }
 
-    for (auto entity : entities)
+    if (_camera)
     {
-        entity->RenderEntity(_renderServer, _timeServer);
+        for (auto entity : entities)
+        {
+            entity->RenderEntity(_renderServer, _timeServer, _camera);
+        }
     }
 
     _renderServer->EndScene();

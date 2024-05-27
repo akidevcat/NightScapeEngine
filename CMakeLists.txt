@@ -59,6 +59,8 @@ add_executable(src WIN32
         src/engine/entity/FullscreenQuad.h
         src/engine/render/GlobalProperties.cpp
         src/engine/render/GlobalProperties.h
+        src/engine/render/DrawProperties.h
+        src/engine/render/DrawProperties.cpp
 )
 
 target_link_libraries(src d3d9 d3d11 d3dcompiler dinput8 dxguid)

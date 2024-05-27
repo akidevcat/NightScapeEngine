@@ -15,10 +15,9 @@ public:
     void Release();
     bool Compile(ID3D11Device* device);
 
-    void UploadDrawProperties(ID3D11DeviceContext *context);
+    void UploadDrawProperties(ID3D11DeviceContext *context, ConstBufferData* drawProps);
     void UploadGlobalProperties(ID3D11DeviceContext *context, ConstBufferData* globalProps);
 
-public:
     [[nodiscard]] VertexShader* GetVertexShader() const { return _vShader; }
     [[nodiscard]] PixelShader* GetPixelShader() const { return _pShader; }
     [[nodiscard]] bool IsCompiled() const { return _isCompiled; }

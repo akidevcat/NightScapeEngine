@@ -1,6 +1,8 @@
 #ifndef GLOBALPROPERTIES_H
 #define GLOBALPROPERTIES_H
 
+#include <directxmath.h>
+
 struct GlobalProperties
 {
     float Time;
