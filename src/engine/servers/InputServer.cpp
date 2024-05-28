@@ -188,6 +188,8 @@ void InputServer::ProcessInput()
     // Update the location of the mouse cursor based on the change of the mouse location during the frame.
     _mouseX += _mouseState.lX;
     _mouseY += _mouseState.lY;
+    _mouseDX = _mouseState.lX;
+    _mouseDY = _mouseState.lY;
 
     // Ensure the mouse location doesn't exceed the screen width or height.
     if(_mouseX < 0)  { _mouseX = 0; }
@@ -212,5 +214,21 @@ void InputServer::GetMouseLocation(int& mouseX, int& mouseY) const
 {
     mouseX = _mouseX;
     mouseY = _mouseY;
+}
+
+void InputServer::GetMouseDelta(int &dx, int &dy) const
+{
+    dx = _mouseDX;
+    dy = _mouseDY;
+}
+
+bool InputServer::GetKey(int key) const
+{
+    if(_keyboardState[key] & 0x80)
+    {
+        return true;
+    }
+
+    return false;
 }
 

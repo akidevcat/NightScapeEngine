@@ -15,7 +15,7 @@ public:
     size_t  CreateScene(_Out_ Scene*& scene);
     //      LoadScene ToDo
     void    UnloadScene(size_t sceneId);
-    void    GetAllScenes(vector<Scene*>& vec);
+    void    GetAllScenes(std::vector<Scene*>& vec);
 
     void SetMainCamera(Camera* camera) { _mainCamera = camera; }
     [[nodiscard]] Camera* GetMainCamera() const { return _mainCamera; }

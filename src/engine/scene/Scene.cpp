@@ -4,6 +4,8 @@
 
 #include "../entity/SceneEntity.h"
 
+using namespace std;
+
 size_t Scene::_uidCount = 0;
 
 Scene::Scene()
@@ -82,6 +84,12 @@ void Scene::UnregisterEntity(SceneEntity *entity)
 
     // Unregister entity
     typeMap->erase(eit);
+}
+
+void Scene::DestroyEntity(SceneEntity *entity)
+{
+    UnregisterEntity(entity);
+    delete entity;
 }
 
 

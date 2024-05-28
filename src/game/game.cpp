@@ -3,6 +3,7 @@
 #include <iostream>
 
 #include "../engine/entity/Camera.h"
+#include "../engine/entity/FreeCamera.h"
 #include "../engine/entity/TriangleVisual.h"
 
 Game::Game()
@@ -14,7 +15,7 @@ Game::~Game()
 {
     delete _testShader;
     delete _testMaterial;
-    delete _triangle;
+    // delete _triangle;
     delete _scene;
 }
 
@@ -36,11 +37,11 @@ void Game::Start()
 
     _engine->GetSceneServer()->CreateScene(_scene);
 
-    auto camera = new Camera{};
+    auto camera = new FreeCamera{_engine->GetInputServer(), _engine->GetTimeServer()};
     _scene->RegisterEntity(camera);
     _engine->GetSceneServer()->SetMainCamera(camera);
 
-    camera->SetParams(_engine->GetScreenAspect(), 60.0f, 0.1f, 1000.0f, false, 0.0f);
+    camera->SetParams(_engine->GetScreenAspect(), 90.0f, 0.1f, 1000.0f, false, 0.0f);
     camera->position = {0, 0, -1};
 
     _testShader = new Shader{L"Assets/Shaders/Triangle.hlsl"};

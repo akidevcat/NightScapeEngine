@@ -29,7 +29,7 @@ PixelInput VertexMain(VertexInput input)
     output.position = mul(_ModelMatrix, float4(input.position, 1));
     output.position = mul(_ViewMatrix, output.position);
     output.position = mul(_ProjectionMatrix, output.position);
-    output.position.xyz /= output.position.w;
+//     output.position.xyz /= output.position.w;
 
     output.uv = input.uv;
 

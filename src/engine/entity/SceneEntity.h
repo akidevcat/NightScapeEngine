@@ -10,11 +10,11 @@ class SceneEntity : public Entity
 {
 public:
     DirectX::XMMATRIX GetModelMatrix(NSE::Vector3d relativeTo);
+    DirectX::XMFLOAT3 Forward();
 
     virtual void OnUpdate() {}
 
     NSE::Vector3d     position = NSE::Vector3d{};
-    // DirectX::XMFLOAT3 position = {};
     DirectX::XMVECTOR rotation = DirectX::XMQuaternionIdentity();
     DirectX::XMFLOAT3 scale    = DirectX::XMFLOAT3(1, 1, 1);
 };

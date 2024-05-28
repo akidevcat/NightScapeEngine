@@ -2,11 +2,16 @@
 
 namespace NSE
 {
-    Vector3d::Vector3d(const DirectX::XMFLOAT3& v)
+    Vector3d::Vector3d(const DirectX::XMVECTOR& v)
     {
-        x = v.x;
-        y = v.y;
-        z = v.z;
+        x = v.m128_f32[0];
+        y = v.m128_f32[1];
+        z = v.m128_f32[2];
+    }
+
+    Vector3d::operator DirectX::XMVECTOR() const
+    {
+        return {(float)x, (float)y, (float)z};
     }
 
     Vector3d::operator DirectX::XMFLOAT3() const

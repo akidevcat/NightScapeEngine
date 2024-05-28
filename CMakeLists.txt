@@ -61,6 +61,8 @@ add_executable(src WIN32
         src/engine/render/DrawProperties.cpp
         src/engine/math/Math.cpp
         src/engine/math/Math.h
+        src/engine/entity/FreeCamera.cpp
+        src/engine/entity/FreeCamera.h
 )
 
 target_link_libraries(src d3d9 d3d11 d3dcompiler dinput8 dxguid)

@@ -18,7 +18,8 @@ namespace NSE
         Vector3d(Vector3d&&) = default;
         Vector3d& operator=(Vector3d&&) = default;
 
-        Vector3d(const DirectX::XMFLOAT3& v);
+        Vector3d(const DirectX::XMVECTOR& v);
+        explicit operator DirectX::XMVECTOR() const;
         explicit operator DirectX::XMFLOAT3() const;
 
         constexpr Vector3d(double _x, double _y, double _z) : x(_x), y(_y), z(_z) {}

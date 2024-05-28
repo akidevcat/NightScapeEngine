@@ -31,7 +31,7 @@ void SceneServer::UnloadScene(size_t sceneId)
     _scenes.erase(sceneId);
 }
 
-void SceneServer::GetAllScenes(vector<Scene*>& vec)
+void SceneServer::GetAllScenes(std::vector<Scene*>& vec)
 {
     for (auto& it : _scenes)
     {

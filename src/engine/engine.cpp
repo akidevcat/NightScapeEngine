@@ -7,6 +7,8 @@
 #include "entity/VisualEntity.h"
 #include "scene/Scene.h"
 
+using namespace std;
+
 Engine::Engine()
 {
 

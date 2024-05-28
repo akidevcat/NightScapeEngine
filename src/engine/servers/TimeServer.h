@@ -1,6 +1,8 @@
 #ifndef TIMESERVER_H
 #define TIMESERVER_H
 
+#include <chrono>
+
 class TimeServer
 {
 public:
@@ -18,8 +20,8 @@ public:
 private:
     float _timeSeconds = 0;
     float _deltaTimeSeconds = 0;
-    long long int _absoluteTimeMs = 0;
-    long long int _lastAbsoluteTimeMs = 0;
+    std::chrono::time_point<std::chrono::system_clock> _absoluteTimeMs = {};
+    std::chrono::time_point<std::chrono::system_clock> _lastAbsoluteTimeMs = {};
 };
 
 #endif //TIMESERVER_H
