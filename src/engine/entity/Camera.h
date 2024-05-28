@@ -15,6 +15,7 @@ public:
 
     [[nodiscard]] bool IsOrthographic() const { return _isOrthographic; }
     [[nodiscard]] DirectX::XMMATRIX GetProjectionMatrix() const { return _projectionMatrix; }
+    [[nodiscard]] DirectX::XMMATRIX GetViewMatrix() const;
 
     void UpdateProjectionMatrix();
 

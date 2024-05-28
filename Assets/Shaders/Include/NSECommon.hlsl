@@ -11,6 +11,8 @@ cbuffer DrawProperties
 {
     float4x4 _ProjectionMatrix;
     float4x4 _ModelMatrix;
+    float4x4 _ViewMatrix;
+    float4x4 _MVPMatrix;
 };
 
 #endif

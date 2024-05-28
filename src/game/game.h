@@ -31,7 +31,7 @@ private:
     Scene* _scene = nullptr;
     Shader* _testShader = nullptr;
     Material* _testMaterial = nullptr;
-    FullscreenQuad* _quad = nullptr;
+    TriangleVisual* _triangle = nullptr;
     // Shader* _test = nullptr;
 };
 

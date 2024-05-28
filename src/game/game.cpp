@@ -1,5 +1,7 @@
 #include "game.h"
 
+#include <iostream>
+
 #include "../engine/entity/Camera.h"
 #include "../engine/entity/TriangleVisual.h"
 
@@ -12,7 +14,7 @@ Game::~Game()
 {
     delete _testShader;
     delete _testMaterial;
-    delete _quad;
+    delete _triangle;
     delete _scene;
 }
 
@@ -30,7 +32,6 @@ void Game::Shutdown()
 
 void Game::Start()
 {
-    static size_t matPropsId = ShaderUtils::PropertyToID("MaterialProperties");
     static size_t tintId = ShaderUtils::PropertyToID("Tint");
 
     _engine->GetSceneServer()->CreateScene(_scene);
@@ -40,6 +41,7 @@ void Game::Start()
     _engine->GetSceneServer()->SetMainCamera(camera);
 
     camera->SetParams(_engine->GetScreenAspect(), 60.0f, 0.1f, 1000.0f, false, 0.0f);
+    camera->position = {0, 0, -1};
 
     _testShader = new Shader{L"Assets/Shaders/Triangle.hlsl"};
     _testShader->Compile(_engine->GetRenderServer()->GetDevice());
@@ -52,10 +54,12 @@ void Game::Start()
     // _triangle = new TriangleVisual{_engine->GetRenderServer()->GetDevice()};
     // _triangle->renderingMaterial = _testMaterial;
 
-    _quad = new FullscreenQuad{_engine->GetRenderServer()->GetDevice()};
-    _quad->renderingMaterial = _testMaterial;
+    _triangle = new TriangleVisual{_engine->GetRenderServer()->GetDevice()};
+    _scene->RegisterEntity(_triangle);
 
-    _scene->RegisterEntity(_quad);
+    _triangle->renderingMaterial = _testMaterial;
+
+    _triangle->position = {0, 0, 1};
 }
 
 bool Game::UpdateFrame()
@@ -70,7 +74,7 @@ void Game::OnFrameInput()
 
 void Game::OnFrameUpdate()
 {
-
+    _triangle->rotation = DirectX::XMQuaternionRotationAxis({0, 0, 1}, _engine->GetTimeServer()->Time() * 2.0f);
 }
 
 void Game::OnFrameRender()

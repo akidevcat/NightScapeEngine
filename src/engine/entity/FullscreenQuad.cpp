@@ -28,5 +28,5 @@ FullscreenQuad::~FullscreenQuad()
 
 void FullscreenQuad::RenderEntity(RenderServer *render, TimeServer *time, Camera *camera)
 {
-    render->DrawMesh(_mesh, renderingMaterial, XMMatrixIdentity(), camera); // ToDo
+    render->DrawMesh(_mesh, renderingMaterial, GetModelMatrix(camera->position), camera); // ToDo
 }

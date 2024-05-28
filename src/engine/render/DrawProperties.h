@@ -7,6 +7,8 @@ struct DrawProperties
 {
     DirectX::XMMATRIX ProjectionMatrix;
     DirectX::XMMATRIX ModelMatrix;
+    DirectX::XMMATRIX ViewMatrix;
+    DirectX::XMMATRIX MVPMatrix;
 };
 
 #endif //DRAWPROPERTIES_H

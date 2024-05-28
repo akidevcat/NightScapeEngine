@@ -54,6 +54,11 @@ void Camera::GetParams(float *aspect, float *fov, float *near, float *far, float
     }
 }
 
+DirectX::XMMATRIX Camera::GetViewMatrix() const
+{
+    return DirectX::XMMatrixAffineTransformation(DirectX::g_XMOne, DirectX::g_XMZero, rotation, DirectX::g_XMZero);
+}
+
 void Camera::UpdateProjectionMatrix()
 {
     if (_isOrthographic)

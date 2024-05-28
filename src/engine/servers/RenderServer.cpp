@@ -501,6 +501,7 @@ void RenderServer::PipelineMarkGlobalPropertiesDirty()
 void RenderServer::PipelineSetCamera(Camera *camera)
 {
 	_drawProperties->ProjectionMatrix = camera->GetProjectionMatrix();
+	_drawProperties->ViewMatrix = camera->GetViewMatrix();
 	_drawPropertiesBuffer->MarkDirty();
 }
 

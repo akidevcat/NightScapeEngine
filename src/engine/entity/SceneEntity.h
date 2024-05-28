@@ -4,16 +4,19 @@
 #include <directxmath.h>
 
 #include "Entity.h"
+#include "../math/Math.h"
 
 class SceneEntity : public Entity
 {
 public:
-    DirectX::XMFLOAT3 position = DirectX::XMFLOAT3(0, 0, 0);
-    DirectX::XMFLOAT4 rotation = DirectX::XMFLOAT4(0, 0, 0, 1);
-    DirectX::XMFLOAT3 scale    = DirectX::XMFLOAT3(1, 1, 1);
+    DirectX::XMMATRIX GetModelMatrix(NSE::Vector3d relativeTo);
 
-public:
     virtual void OnUpdate() {}
+
+    NSE::Vector3d     position = NSE::Vector3d{};
+    // DirectX::XMFLOAT3 position = {};
+    DirectX::XMVECTOR rotation = DirectX::XMQuaternionIdentity();
+    DirectX::XMFLOAT3 scale    = DirectX::XMFLOAT3(1, 1, 1);
 };
 
 #endif //SCENEENTITY_H

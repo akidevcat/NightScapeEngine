@@ -17,8 +17,6 @@ add_executable(src WIN32
         src/engine/servers/AssetServer.h
         src/engine/engine.cpp
         src/engine/engine.h
-        src/engine/math/math.cpp
-        src/engine/math/math.h
         src/engine/servers/SoundServer.cpp
         src/engine/servers/SoundServer.h
         src/engine/entity/SceneEntity.cpp
@@ -61,6 +59,8 @@ add_executable(src WIN32
         src/engine/render/GlobalProperties.h
         src/engine/render/DrawProperties.h
         src/engine/render/DrawProperties.cpp
+        src/engine/math/Math.cpp
+        src/engine/math/Math.h
 )
 
 target_link_libraries(src d3d9 d3d11 d3dcompiler dinput8 dxguid)

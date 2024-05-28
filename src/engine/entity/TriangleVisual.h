@@ -11,6 +11,7 @@ public:
     explicit TriangleVisual(ID3D11Device* device);
     ~TriangleVisual();
 
+    void OnUpdate() override;
     void RenderEntity(RenderServer* render, TimeServer* time, Camera *camera) override;
     
 private:

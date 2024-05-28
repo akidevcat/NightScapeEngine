@@ -44,6 +44,7 @@ public:
     [[nodiscard]] ID3D11DeviceContext*        GetDeviceContext() const { return _deviceContext; }
 
 private:
+
     bool                        _isFullscreen = false;
     bool                        _isVSyncEnabled = false;
 
