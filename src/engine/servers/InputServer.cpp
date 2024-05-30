@@ -1,5 +1,7 @@
 #include "InputServer.h"
 
+#include <iostream>
+
 InputServer::InputServer()
 {
     _directInput = nullptr;
@@ -15,6 +17,7 @@ InputServer::~InputServer()
 bool InputServer::Initialize(HINSTANCE hinstance, HWND hwnd, int screenWidth, int screenHeight)
 {
     HRESULT result;
+    _hwnd = hwnd;
 
     _screenWidth = screenWidth;
     _screenHeight = screenHeight;
@@ -44,7 +47,7 @@ bool InputServer::Initialize(HINSTANCE hinstance, HWND hwnd, int screenWidth, in
 
     // Set the cooperative level of the keyboard to not share with other programs.
     // result = _keyboard->SetCooperativeLevel(hwnd, DISCL_FOREGROUND | DISCL_EXCLUSIVE);
-    result = _keyboard->SetCooperativeLevel(hwnd, DISCL_NONEXCLUSIVE | DISCL_BACKGROUND);
+    result = _keyboard->SetCooperativeLevel(hwnd, DISCL_NONEXCLUSIVE | DISCL_FOREGROUND);
     if(FAILED(result))
     {
         return false;
@@ -230,5 +233,21 @@ bool InputServer::GetKey(int key) const
     }
 
     return false;
+}
+
+void InputServer::SetMouseLocked(const bool state) const
+{
+    _mouse->Unacquire();
+    if (FAILED(_mouse->SetCooperativeLevel(_hwnd, state ? (DISCL_FOREGROUND | DISCL_EXCLUSIVE) : (DISCL_FOREGROUND | DISCL_NONEXCLUSIVE))))
+    {
+
+        std::cerr << "Failed to set mouse locked state" << std::endl;
+    }
+    _mouse->Acquire();
+}
+
+bool InputServer::GetLMB() const
+{
+    return _mouseState.rgbButtons[0] & 0x80;
 }
 

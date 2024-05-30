@@ -10,12 +10,12 @@ Camera::~Camera()
 
 }
 
-void Camera::SetParams(float aspect, float fov, float near, float far, bool isOrthographic, float orthographicSize)
+void Camera::SetParams(float aspect, float fov, float nearPane, float farPlane, bool isOrthographic, float orthographicSize)
 {
     _aspect = aspect;
     _fov = fov;
-    _near = near;
-    _far = far;
+    _near = nearPane;
+    _far = farPlane;
     _isOrthographic = isOrthographic;
 
     if (isOrthographic)
@@ -26,7 +26,7 @@ void Camera::SetParams(float aspect, float fov, float near, float far, bool isOr
     UpdateProjectionMatrix();
 }
 
-void Camera::GetParams(float *aspect, float *fov, float *near, float *far, float *orthographicSize) const
+void Camera::GetParams(float *aspect, float *fov, float *nearPane, float *farPlane, float *orthographicSize) const
 {
     if (aspect)
     {
@@ -38,14 +38,14 @@ void Camera::GetParams(float *aspect, float *fov, float *near, float *far, float
         *fov = _fov;
     }
 
-    if (near)
+    if (nearPane)
     {
-        *near = _near;
+        *nearPane = _near;
     }
 
-    if (far)
+    if (farPlane)
     {
-        *far = _far;
+        *farPlane = _far;
     }
 
     if (orthographicSize)
@@ -56,7 +56,8 @@ void Camera::GetParams(float *aspect, float *fov, float *near, float *far, float
 
 DirectX::XMMATRIX Camera::GetViewMatrix() const
 {
-    return DirectX::XMMatrixAffineTransformation(DirectX::g_XMOne, DirectX::g_XMZero, rotation, DirectX::g_XMZero);
+
+    return DirectX::XMMatrixAffineTransformation(DirectX::g_XMOne, DirectX::g_XMZero, DirectX::XMQuaternionInverse(rotation), DirectX::g_XMZero);
 }
 
 void Camera::UpdateProjectionMatrix()

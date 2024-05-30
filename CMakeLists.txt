@@ -63,6 +63,12 @@ add_executable(src WIN32
         src/engine/math/Math.h
         src/engine/entity/FreeCamera.cpp
         src/engine/entity/FreeCamera.h
+        src/engine/render/RenderTexture.cpp
+        src/engine/render/RenderTexture.h
+        src/engine/entity/Object.cpp
+        src/engine/entity/Object.h
+        src/engine/servers/ObjectServer.cpp
+        src/engine/servers/ObjectServer.h
 )
 
 target_link_libraries(src d3d9 d3d11 d3dcompiler dinput8 dxguid)

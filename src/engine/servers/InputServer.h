@@ -21,6 +21,8 @@ public:
     void GetMouseLocation(int&, int&) const;
     void GetMouseDelta(int& dx, int& dy) const;
     [[nodiscard]] bool GetKey(int key) const;
+    void SetMouseLocked(bool state) const;
+    bool GetLMB() const;
 
 private:
     bool ReadKeyboard();
@@ -33,6 +35,7 @@ private:
     IDirectInputDevice8* _mouse;
     unsigned char _keyboardState[256];
     DIMOUSESTATE _mouseState;
+    HWND _hwnd;
     int _screenWidth, _screenHeight, _mouseX, _mouseY, _mouseDX, _mouseDY;
 };
 

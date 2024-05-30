@@ -12,6 +12,8 @@ public:
 
     bool SetVertexVar(size_t pUid, void* value, size_t valueSize);
     bool SetPixelVar(size_t pUid, void* value, size_t valueSize);
+    void SetVSResource(size_t uid, ID3D11ShaderResourceView* resource);
+    void SetPSResource(size_t uid, ID3D11ShaderResourceView* resource);
 
     bool UploadMaterialProperties(ID3D11DeviceContext *context);
     void UploadDrawProperties(ID3D11DeviceContext *context, ConstBufferData* drawProps);

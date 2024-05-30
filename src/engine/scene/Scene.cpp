@@ -59,12 +59,14 @@ void Scene::RegisterEntity(SceneEntity *entity)
     }
 
     typeMap->try_emplace(entity->GetUID(), entity);
+    entity->SetSceneUID(GetUID());
 }
 
 void Scene::UnregisterEntity(SceneEntity *entity)
 {
     // Get entity type
     size_t typeId = typeid(*entity).hash_code();
+    entity->ResetSceneUID();
 
     // Check if type map definition already exists
     auto mit = _entities.find(typeId);

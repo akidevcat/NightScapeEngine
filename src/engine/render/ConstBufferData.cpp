@@ -96,3 +96,16 @@ bool ConstBufferData::SetVar(size_t pUid, void* value, size_t valueSize)
     _isDirty = true;
     return true;
 }
+
+void ConstBufferData::SetResourceView(size_t uid, ID3D11ShaderResourceView *res)
+{
+    auto existing = resMap.find(uid);
+
+    if (existing != resMap.end())
+    {
+        existing->second = res;
+        return;
+    }
+
+    resMap.emplace(uid, res);
+}

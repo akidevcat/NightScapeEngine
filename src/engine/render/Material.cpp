@@ -60,6 +60,22 @@ bool Material::SetPixelVar(size_t pUid, void *value, size_t valueSize)
     return true;
 }
 
+void Material::SetVSResource(size_t uid, ID3D11ShaderResourceView *resource)
+{
+    if (!_vsMaterialProps)
+        return;
+
+    _vsMaterialProps->SetResourceView(uid, resource);
+}
+
+void Material::SetPSResource(size_t uid, ID3D11ShaderResourceView *resource)
+{
+    if (!_psMaterialProps)
+        return;
+
+    _psMaterialProps->SetResourceView(uid, resource);
+}
+
 bool Material::UploadMaterialProperties(ID3D11DeviceContext *context)
 {
     if (_vsMaterialProps)

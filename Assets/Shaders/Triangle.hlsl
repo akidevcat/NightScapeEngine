@@ -5,8 +5,8 @@ cbuffer MaterialProperties
 
 };
 
-//Texture2D shaderTexture : register(t0);
-//SamplerState SampleType : register(s0);
+Texture2D shaderTexture;
+SamplerState SampleType;
 
 struct VertexInput
 {
@@ -39,5 +39,5 @@ PixelInput VertexMain(VertexInput input)
 float4 PixelMain(PixelInput input) : SV_TARGET
 {
 //     return float4(input.uv.x, input.uv.y, 1.0 - input.uv.x, 1.0) * (sin(_Time * 10.0) * 0.5 + 0.5);
-    return float4(input.uv.x, input.uv.y, 1.0 - input.uv.x, 1.0);
+    return float4(input.uv.x, input.uv.y, 1.0 - input.uv.x, 1.0) + shaderTexture.Sample(SampleType, input.uv);
 }

@@ -14,6 +14,7 @@ public:
     ~ConstBufferData();
 
     bool ConstBufferData::SetVar(size_t pUid, void* value, size_t valueSize);
+    void SetResourceView(size_t uid, ID3D11ShaderResourceView* res);
 
     bool IsDirty() { return _isDirty; }
     void MarkDirty() { _isDirty = true; }
@@ -27,6 +28,7 @@ public:
     ID3D11Buffer*                                          bPtr = nullptr;
     void*                                                  vPtr = nullptr;
     std::unordered_map<size_t, D3D11_SHADER_VARIABLE_DESC> vDesc = {};
+    std::unordered_map<size_t, ID3D11ShaderResourceView*>  resMap = {};
 
 private:
     bool                                                   _isDirty = false;

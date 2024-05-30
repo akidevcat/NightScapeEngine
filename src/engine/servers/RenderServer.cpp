@@ -320,21 +320,6 @@ bool RenderServer::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	// Create the viewport.
     _deviceContext->RSSetViewports(1, &_viewport);
 
-	// Setup the projection matrix.
-	float fov = 3.141592654f / 4.0f;
-	float cameraNear = 0.03f;
-	float cameraFar = 1000.0f;
-	float screenAspect = (float)screenWidth / (float)screenHeight;
-
-	// Create the projection matrix for 3D rendering.
-	// _projectionMatrix = XMMatrixPerspectiveFovLH(fov, screenAspect, cameraNear, cameraFar);
-
-    // Initialize the world matrix to the identity matrix.
-	// _worldMatrix = XMMatrixIdentity();
-
-	// Create an orthographic projection matrix for 2D rendering.
-	// _orthoMatrix = XMMatrixOrthographicLH((float)screenWidth, (float)screenHeight, cameraNear, cameraFar);
-
 	// Clear the second depth stencil state before setting the parameters.
 	D3D11_DEPTH_STENCIL_DESC depthDisabledStencilDesc;
 	ZeroMemory(&depthDisabledStencilDesc, sizeof(depthDisabledStencilDesc));
@@ -415,6 +400,48 @@ bool RenderServer::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	}
 	_drawPropertiesBuffer = new ConstBufferData{_device, 0, ShaderUtils::PropertyToID("DrawProperties"), drawPropsBufferSize, _drawProperties};
 
+	D3D11_SAMPLER_DESC samplerDesc;
+
+	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
+	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.MipLODBias = 0.0f;
+	samplerDesc.MaxAnisotropy = 1;
+	samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
+	samplerDesc.BorderColor[0] = 0;
+	samplerDesc.BorderColor[1] = 0;
+	samplerDesc.BorderColor[2] = 0;
+	samplerDesc.BorderColor[3] = 0;
+	samplerDesc.MinLOD = 0;
+	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+
+	result = _device->CreateSamplerState(&samplerDesc, &_defaultPointSampler);
+	if (FAILED(result))
+	{
+		return false;
+	}
+
+	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.MipLODBias = 0.0f;
+	samplerDesc.MaxAnisotropy = 1;
+	samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
+	samplerDesc.BorderColor[0] = 0;
+	samplerDesc.BorderColor[1] = 0;
+	samplerDesc.BorderColor[2] = 0;
+	samplerDesc.BorderColor[3] = 0;
+	samplerDesc.MinLOD = 0;
+	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+
+	result = _device->CreateSamplerState(&samplerDesc, &_defaultLinearSampler);
+	if (FAILED(result))
+	{
+		return false;
+	}
+
     return true;
 }
 
@@ -491,6 +518,18 @@ void RenderServer::Shutdown()
 		_swapChain->Release();
 		_swapChain = 0;
 	}
+
+	if (_defaultPointSampler)
+	{
+		_defaultPointSampler->Release();
+		_defaultPointSampler = nullptr;
+	}
+
+	if (_defaultLinearSampler)
+	{
+		_defaultLinearSampler->Release();
+		_defaultLinearSampler = nullptr;
+	}
 }
 
 void RenderServer::PipelineMarkGlobalPropertiesDirty()
@@ -550,11 +589,102 @@ void RenderServer::PipelineSetMaterial(Material *material)
 		0, vsBuffersLength, vsBuffers);
 	_deviceContext->PSSetConstantBuffers(
 		0, psBuffersLength, psBuffers);
+
+	// Set resources ToDo
+	static ID3D11ShaderResourceView* resources[128] = {};
+	UINT vsResourceCount = material->GetShader()->GetVertexShader()->GetDescription().BoundResources;
+	UINT psResourceCount = material->GetShader()->GetPixelShader()->GetDescription().BoundResources;
+
+	memset(resources, 0, sizeof(resources));
+
+	for(auto rDesc : *material->GetShader()->GetVertexShader()->GetResourcesLookup())
+	{
+		auto rUid = rDesc.first;
+		auto bid = rDesc.second.BindPoint;
+
+		std::unordered_map<size_t, ID3D11ShaderResourceView *>::iterator it;
+
+		if (material->GetVSMaterialProps())
+		{
+			it = material->GetVSMaterialProps()->resMap.find(rUid);
+			if (it != material->GetVSMaterialProps()->resMap.end())
+			{
+				resources[bid] = it->second;
+				continue;
+			}
+		}
+
+		it = _drawPropertiesBuffer->resMap.find(rUid);
+		if (it != _drawPropertiesBuffer->resMap.end())
+		{
+			resources[bid] = it->second;
+			continue;
+		}
+
+		it = _globalPropertiesBuffer->resMap.find(rUid);
+		if (it != _globalPropertiesBuffer->resMap.end())
+		{
+			resources[bid] = it->second;
+			continue;
+		}
+	}
+	_deviceContext->VSSetShaderResources(0, vsResourceCount, resources);
+
+	memset(resources, 0, sizeof(resources));
+
+	for(auto rDesc : *material->GetShader()->GetPixelShader()->GetResourcesLookup())
+	{
+		auto rUid = rDesc.first;
+		auto bid = rDesc.second.BindPoint;
+
+		std::unordered_map<size_t, ID3D11ShaderResourceView *>::iterator it;
+
+		if (material->GetPSMaterialProps())
+		{
+			it = material->GetPSMaterialProps()->resMap.find(rUid);
+			if (it != material->GetPSMaterialProps()->resMap.end())
+			{
+				resources[bid] = it->second;
+				continue;
+			}
+		}
+
+		it = _drawPropertiesBuffer->resMap.find(rUid);
+		if (it != _drawPropertiesBuffer->resMap.end())
+		{
+			resources[bid] = it->second;
+			continue;
+		}
+
+		it = _globalPropertiesBuffer->resMap.find(rUid);
+		if (it != _globalPropertiesBuffer->resMap.end())
+		{
+			resources[bid] = it->second;
+			continue;
+		}
+	}
+	_deviceContext->PSSetShaderResources(0, psResourceCount, resources);
 }
 
 void RenderServer::PipelineDrawIndexed(Mesh *mesh)
 {
 	_deviceContext->DrawIndexed(mesh->indexCount, 0, 0);
+}
+
+void RenderServer::PipelineSetRenderTarget(RenderTexture* target)
+{
+	D3D11_VIEWPORT viewport = {0, 0, (float)target->GetWidth(), (float)target->GetHeight(), 0.0f, 1.0f}; // ToDo ?
+
+	auto rtv = target->GetRTV();
+
+	_deviceContext->OMSetRenderTargets(1, &rtv, target->GetDepthStencilView());
+	_deviceContext->RSSetViewports(1, &viewport);
+}
+
+void RenderServer::PipelineResetRenderTarget()
+{
+	_deviceContext->OMSetRenderTargets(1, &_renderTargetView, _depthStencilView);
+	_deviceContext->RSSetViewports(1, &_viewport);
 }
 
 void RenderServer::BeginScene(DirectX::XMFLOAT4 color)
@@ -577,10 +707,26 @@ void RenderServer::EndScene()
 	}
 }
 
+void RenderServer::ClearRenderTarget(RenderTexture *target, DirectX::XMFLOAT4 color)
+{
+	_deviceContext->ClearRenderTargetView(target->GetRTV(), reinterpret_cast<const float*>(&color));
+	_deviceContext->ClearDepthStencilView(target->GetDepthStencilView(), D3D11_CLEAR_DEPTH, 1.0f, 0);
+}
+
 void RenderServer::DrawMesh(Mesh *mesh, Material* material, const DirectX::XMMATRIX& matrix, Camera *camera)
 {
 	PipelineSetModelMatrix(matrix);
+
 	PipelineSetCamera(camera);
+	if (camera->targetRT)
+	{
+		PipelineSetRenderTarget(camera->targetRT);
+	}
+	else
+	{
+		PipelineResetRenderTarget();
+	}
+
 	PipelineSetMesh(mesh);
 	PipelineSetMaterial(material ? material : _errorMaterial);
 	PipelineDrawIndexed(mesh);

@@ -1,5 +1,6 @@
 #include "engine.h"
 
+#include <algorithm>
 #include <chrono>
 
 #include "entity/Camera.h"
@@ -87,6 +88,15 @@ bool Engine::UpdateFrame()
 void Engine::OnFrameInput()
 {
     _inputServer->Update();
+
+    if (_inputServer->GetLMB())
+    {
+        _inputServer->SetMouseLocked(true);
+    }
+    if (_inputServer->GetKey(DIK_ESCAPE))
+    {
+        _inputServer->SetMouseLocked(false);
+    }
 }
 
 void Engine::OnFrameUpdate()
@@ -111,29 +121,50 @@ void Engine::OnFrameRender()
     // Fill global properties
     _renderServer->GetGlobalProperties()->Time = _timeServer->Time();
     _renderServer->GetGlobalProperties()->DeltaTime = _timeServer->Delta();
-
     _renderServer->PipelineMarkGlobalPropertiesDirty();
 
     _renderServer->BeginScene(DirectX::XMFLOAT4(0, 0, 0, 1));
 
     // Get all visual entities
-    Camera* _camera = _sceneServer->GetMainCamera();
+    // Camera* _camera = _sceneServer->GetMainCamera();
     vector<Scene*> scenes;
     vector<VisualEntity*> entities;
+    vector<Camera*> cameras;
 
     _sceneServer->GetAllScenes(scenes);
     for (auto scene : scenes)
     {
         scene->FindAllEntitiesFromBaseType(entities);
+        scene->FindAllEntitiesFromBaseType(cameras);
     }
 
-    if (_camera)
+    std::sort(cameras.begin(), cameras.end(), Camera::PriorityComp);
+
+    for (auto camera : cameras)
     {
+        if (camera->targetRT)
+            _renderServer->ClearRenderTarget(camera->targetRT, {0, 0, 0, 1});
+
         for (auto entity : entities)
         {
-            entity->RenderEntity(_renderServer, _timeServer, _camera);
+            size_t sceneUid;
+            if (!entity->GetSceneUID(sceneUid))
+                continue;
+
+            if (camera->targetSene && sceneUid != camera->targetSene->GetUID())
+                continue;
+
+            entity->RenderEntity(_renderServer, _timeServer, camera);
         }
     }
+
+    // if (_camera)
+    // {
+    //     for (auto entity : entities)
+    //     {
+    //         entity->RenderEntity(_renderServer, _timeServer, _camera);
+    //     }
+    // }
 
     _renderServer->EndScene();
 }

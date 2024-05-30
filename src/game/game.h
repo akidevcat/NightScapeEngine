@@ -29,9 +29,15 @@ private:
 private:
     Engine* _engine = nullptr;
     Scene* _scene = nullptr;
+    Scene* _presentScene = nullptr;
     Shader* _testShader = nullptr;
     Material* _testMaterial = nullptr;
     TriangleVisual* _triangle = nullptr;
+    RenderTexture* _cameraRT = nullptr;
+    Camera* _presentCamera = nullptr;
+    FullscreenQuad* _presentPlane = nullptr;
+    Shader* _presentShader = nullptr;
+    Material* _presentMaterial = nullptr;
     // Shader* _test = nullptr;
 };
 

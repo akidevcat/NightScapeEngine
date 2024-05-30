@@ -10,6 +10,7 @@
 #include "../render/DrawProperties.h"
 #include "../render/GlobalProperties.h"
 #include "../render/Material.h"
+#include "../render/RenderTexture.h"
 
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "dxgi.lib")
@@ -26,14 +27,16 @@ public:
     void PipelineMarkGlobalPropertiesDirty();
     void PipelineSetCamera(Camera* camera);
     void PipelineSetModelMatrix(const DirectX::XMMATRIX& matrix);
-    // void PipelineSetMainCameraReference(Camera* camera);
     void PipelineSetMesh(Mesh* mesh);
     void PipelineSetMaterial(Material* material);
     void PipelineDrawIndexed(Mesh* mesh);
+    void PipelineSetRenderTarget(RenderTexture* target);
+    void PipelineResetRenderTarget();
 
     // ===== Render Methods =====
     void BeginScene(DirectX::XMFLOAT4 color);
     void EndScene();
+    void ClearRenderTarget(RenderTexture* target, DirectX::XMFLOAT4 color);
     void DrawMesh(Mesh* mesh, Material* material, const DirectX::XMMATRIX &matrix, Camera* camera);
 
     // Property Accessors
@@ -42,6 +45,8 @@ public:
                   void                        SetFullscreenState(bool state) { _isFullscreen = state; }
     [[nodiscard]] ID3D11Device*               GetDevice() const { return _device; }
     [[nodiscard]] ID3D11DeviceContext*        GetDeviceContext() const { return _deviceContext; }
+    [[nodiscard]] ID3D11SamplerState*         GetDefaultPointSampler() const { return _defaultPointSampler; }
+    [[nodiscard]] ID3D11SamplerState*         GetDefaultLinearSampler() const { return _defaultLinearSampler; }
 
 private:
 
@@ -63,6 +68,8 @@ private:
     D3D11_VIEWPORT              _viewport;
     ID3D11BlendState*           _alphaEnableBlendingState = nullptr;
     ID3D11BlendState*           _alphaDisableBlendingState = nullptr;
+    ID3D11SamplerState*         _defaultPointSampler = nullptr;
+    ID3D11SamplerState*         _defaultLinearSampler = nullptr;
 
     Shader*                     _errorShader = nullptr;
     Material*                   _errorMaterial = nullptr;

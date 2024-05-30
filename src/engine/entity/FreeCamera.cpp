@@ -21,7 +21,14 @@ void FreeCamera::OnUpdate()
     // auto up = XMVector3Normalize({modelMat.r[0].m128_f32., modelMat.r[1], modelMat.r[2]});
     auto forward = XMVector3Normalize(modelMat.r[2]);
 
-    // std::cout << forward.m128_f32[0] << " " << forward.m128_f32[1] << " " << forward.m128_f32[2] << std::endl;
+    forward = XMVector3Rotate({0, 0, 1}, rotation);
+
+    // std::cout << std::endl << std::endl << std::endl << std::endl << std::endl << std::endl << std::endl << std::endl << std::endl << std::endl << std::endl << std::endl << std::endl << std::endl << std::endl << std::endl << std::endl << std::endl;
+    // std::cout << "right: " << right.m128_f32[0] << " " << right.m128_f32[1] << " " << right.m128_f32[2] << std::endl;
+    // std::cout << "up: " << up.m128_f32[0] << " " << up.m128_f32[1] << " " << up.m128_f32[2] << std::endl;
+    // std::cout << "forward: " << forward.m128_f32[0] << " " << forward.m128_f32[1] << " " << forward.m128_f32[2] << std::endl;
+
+    // std::cout <<
 
     float speed = 3.0f;
 
@@ -53,6 +60,6 @@ void FreeCamera::OnUpdate()
     int dx, dy;
     _input->GetMouseDelta(dx, dy);
 
-    auto camRot = XMQuaternionRotationRollPitchYaw((float)dy / -300.0f, (float)dx / -300.0f, 0);
+    auto camRot = XMQuaternionRotationRollPitchYaw((float)dy / 300.0f, (float)dx / 300.0f, 0);
     rotation = XMQuaternionMultiply(camRot, rotation);
 }
