@@ -21,7 +21,7 @@ bool Application::Initialize()
 
     InitializeWindows(screenWidth, screenHeight);
 
-	_engine = new Engine{};
+	_engine = new NSE::Engine{};
 	_game = new Game{};
 
 	result = _engine->Initialize(_game, _hinstance, screenWidth, screenHeight, _hwnd);

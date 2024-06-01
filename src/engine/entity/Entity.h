@@ -1,20 +1,21 @@
 #ifndef ENTITY_H
 #define ENTITY_H
+#include "Object.h"
 
-class Entity
+#define NSE_Entity obj_ptr<NSE::Entity>
+
+namespace NSE
 {
-protected:
-    Entity();
+    class Entity : public Object
+    {
+    protected:
+        Entity();
 
-public:
-    static void Create(Entity* entity); // ToDo
-    virtual ~Entity() = 0; // ToDo
+    public:
+        virtual ~Entity() = 0;
 
-    size_t GetUID();
-
-private:
-    size_t _uid;
-    static size_t _uidCount;
-};
+    private:
+    };
+}
 
 #endif //ENTITY_H

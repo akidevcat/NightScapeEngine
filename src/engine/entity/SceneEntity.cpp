@@ -2,32 +2,26 @@
 
 using namespace DirectX;
 
-XMMATRIX SceneEntity::GetModelMatrix(NSE::Vector3d relativeTo)
+XMMATRIX NSE::SceneEntity::GetModelMatrix(Vector3d relativeTo) const
 {
     auto positionCS = (XMFLOAT3)(position - relativeTo);
 
-    auto z = g_XMZero;
-    auto s = XMLoadFloat3(&scale);
+    auto s = XMLoadFloat3(&scale); // ToDo
     auto p = XMLoadFloat3(&positionCS);
-    auto m = XMMatrixAffineTransformation(s, z, rotation, p);
-    auto d = XMMatrixDeterminant(m);
 
-    return m;
-    // return XMMatrixInverse(&d, m);
-
-    // return XMMatrixTransformation(g_XMZero, g_XMIdentityR3, g_XMOne3, g_XMZero, g_XMIdentityR3, p);
+    return XMMatrixAffineTransformation(s, g_XMZero, rotation, p);
 }
 
-XMFLOAT3 SceneEntity::Forward()
+XMFLOAT3 NSE::SceneEntity::Forward()
 {
     return {}; // ToDo
 }
 
-bool SceneEntity::GetSceneUID(size_t &uid)
+bool NSE::SceneEntity::GetSceneUID(size_t &uid) const
 {
     if (_sceneUID == 0)
     {
-        uid = 0;
+        uid = -1; // ToDo
         return false;
     }
 
@@ -35,7 +29,7 @@ bool SceneEntity::GetSceneUID(size_t &uid)
     return true;
 }
 
-void SceneEntity::SetSceneUID(size_t uid)
+void NSE::SceneEntity::SetSceneUID(size_t uid)
 {
     _sceneUID = uid + 1;
 }

@@ -1,44 +1,56 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
-#include "SceneEntity.h"
+// #include "SceneEntity.h"
 #include "../render/RenderTexture.h"
 #include "../scene/Scene.h"
 
-class Camera : public SceneEntity
+#define NSE_Camera obj_ptr<NSE::Camera>
+
+namespace NSE
 {
-public:
-    Camera();
-    ~Camera();
+    class SceneEntity;
 
-    void SetParams(float aspect, float fov, float nearPlane, float farPlane, bool isOrthographic, float orthographicSize);
-    void GetParams(float* aspect, float* fov, float* nearPlane, float* farPlane, float* orthographicSize) const;
-
-    [[nodiscard]] bool IsOrthographic() const { return _isOrthographic; }
-    [[nodiscard]] DirectX::XMMATRIX GetProjectionMatrix() const { return _projectionMatrix; }
-    [[nodiscard]] DirectX::XMMATRIX GetViewMatrix() const;
-
-    static bool PriorityComp(Camera* a, Camera* b)
+    class Camera : public SceneEntity
     {
-        return a->priority < b->priority;
-    }
+    public:
+        Camera();
+        ~Camera() override;
 
-    void UpdateProjectionMatrix();
+        void SetParams(float aspect, float fov, float nearPlane, float farPlane, bool isOrthographic, float orthographicSize);
+        void GetParams(float* aspect, float* fov, float* nearPlane, float* farPlane, float* orthographicSize) const;
 
-    int priority = 0;
-    RenderTexture* targetRT = nullptr;
-    Scene* targetSene = nullptr;
+        [[nodiscard]] bool IsOrthographic() const { return _isOrthographic; }
+        [[nodiscard]] DirectX::XMMATRIX GetProjectionMatrix() const { return _projectionMatrix; }
+        [[nodiscard]] DirectX::XMMATRIX GetViewMatrix() const;
 
-private:
-    float _fov = 60.0f;
-    float _near = 0.1f;
-    float _far = 1000.0f;
-    float _aspect = 1.0f;
+        static bool PriorityComp(Camera* a, Camera* b) // ToDo
+        {
+            return a->priority < b->priority;
+        }
 
-    bool _isOrthographic = false;
-    float _orthographicSize = 10.0;
+        static bool PriorityCompRef(const NSE_Camera& a, const NSE_Camera& b) // ToDo
+        {
+            return a->priority < b->priority;
+        }
 
-    DirectX::XMMATRIX _projectionMatrix;
-};
+        void UpdateProjectionMatrix();
+
+        int priority = 0;
+        NSE_RenderTexture targetRT;
+        Scene* targetSene;
+
+    private:
+        float _fov = 60.0f;
+        float _near = 0.1f;
+        float _far = 1000.0f;
+        float _aspect = 1.0f;
+
+        bool _isOrthographic = false;
+        float _orthographicSize = 10.0;
+
+        DirectX::XMMATRIX _projectionMatrix;
+    };
+}
 
 #endif //CAMERA_H

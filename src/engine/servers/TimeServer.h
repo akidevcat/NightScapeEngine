@@ -3,25 +3,30 @@
 
 #include <chrono>
 
-class TimeServer
+#include "BaseServer.h"
+
+namespace NSE
 {
-public:
-    TimeServer();
-    ~TimeServer();
-    bool Initialize();
+    class TimeServer : public BaseServer<TimeServer>
+    {
+        public:
+        TimeServer();
+        ~TimeServer();
+        bool Initialize();
 
-    void BeginFrame();
-    void EndFrame();
+        void BeginFrame();
+        void EndFrame();
 
-public:
-    [[nodiscard]] float Time() const { return _timeSeconds; }
-    [[nodiscard]] float Delta() const { return _deltaTimeSeconds; }
+        public:
+        [[nodiscard]] float Time() const { return _timeSeconds; }
+        [[nodiscard]] float Delta() const { return _deltaTimeSeconds; }
 
-private:
-    float _timeSeconds = 0;
-    float _deltaTimeSeconds = 0;
-    std::chrono::time_point<std::chrono::system_clock> _absoluteTimeMs = {};
-    std::chrono::time_point<std::chrono::system_clock> _lastAbsoluteTimeMs = {};
-};
+        private:
+        float _timeSeconds = 0;
+        float _deltaTimeSeconds = 0;
+        std::chrono::time_point<std::chrono::system_clock> _absoluteTimeMs = {};
+        std::chrono::time_point<std::chrono::system_clock> _lastAbsoluteTimeMs = {};
+    };
+}
 
 #endif //TIMESERVER_H

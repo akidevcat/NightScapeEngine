@@ -6,24 +6,33 @@
 #include "Entity.h"
 #include "../math/Math.h"
 
-class SceneEntity : public Entity
+#define NSE_SceneEntity obj_ptr<NSE::SceneEntity>
+
+namespace NSE
 {
-public:
-    DirectX::XMMATRIX GetModelMatrix(NSE::Vector3d relativeTo);
-    DirectX::XMFLOAT3 Forward();
+    class SceneEntity : public Entity
+    {
+    public:
+        SceneEntity() = default;
 
-    bool GetSceneUID(size_t& uid);
-    void SetSceneUID(size_t uid);
-    void ResetSceneUID() { _sceneUID = 0; }
+        // ~SceneEntity() override;
 
-    virtual void OnUpdate() {}
+        [[nodiscard]] DirectX::XMMATRIX GetModelMatrix(Vector3d relativeTo) const;
+        DirectX::XMFLOAT3 Forward();
 
-    NSE::Vector3d     position = NSE::Vector3d{};
-    DirectX::XMVECTOR rotation = DirectX::XMQuaternionIdentity();
-    DirectX::XMFLOAT3 scale    = DirectX::XMFLOAT3(1, 1, 1);
+        bool GetSceneUID(size_t& uid) const;
+        void SetSceneUID(size_t uid);
+        void ResetSceneUID() { _sceneUID = 0; }
 
-private:
-    size_t            _sceneUID = 0;
-};
+        virtual void OnUpdate() {}
+
+        Vector3d     position = Vector3d{};
+        DirectX::XMVECTOR rotation = DirectX::XMQuaternionIdentity();
+        DirectX::XMFLOAT3 scale    = DirectX::XMFLOAT3(1, 1, 1);
+
+    private:
+        size_t            _sceneUID = 0;
+    };
+}
 
 #endif //SCENEENTITY_H

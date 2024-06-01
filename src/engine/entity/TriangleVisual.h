@@ -5,17 +5,24 @@
 #include "../data/Mesh.h"
 #include "../servers/TimeServer.h"
 
-class TriangleVisual : public VisualEntity
-{
-public:
-    explicit TriangleVisual(ID3D11Device* device);
-    ~TriangleVisual();
+#define NSE_TriangleVisual obj_ptr<NSE::TriangleVisual>
 
-    void OnUpdate() override;
-    void RenderEntity(RenderServer* render, TimeServer* time, Camera *camera) override;
-    
-private:
-    Mesh* _mesh = nullptr;
-};
+namespace NSE
+{
+    class Camera;
+
+    class TriangleVisual : public VisualEntity
+    {
+    public:
+        explicit TriangleVisual();
+        ~TriangleVisual() override;
+
+        void OnUpdate() override;
+        void RenderEntity(const obj_ptr<Camera>& camera) override;
+
+    private:
+        NSE_Mesh _mesh = nullptr;
+    };
+}
 
 #endif //TRIANGLEVISUAL_H

@@ -1,10 +1,13 @@
 #include "TriangleVisual.h"
 
+#include "Camera.h"
+#include "../servers/RenderServer.h"
+
 using namespace DirectX;
 
-TriangleVisual::TriangleVisual(ID3D11Device* device)
+NSE::TriangleVisual::TriangleVisual()
 {
-    _mesh = new Mesh{3, 3};
+    _mesh = CreateObject<Mesh>(3, 3);
 
     _mesh->vertices[0] = VertexData{XMFLOAT3(0, 1.1547f, 0), XMFLOAT3(0, 0, -1), XMFLOAT2(0.5, 1)};
     _mesh->vertices[1] = VertexData{XMFLOAT3(1.0f, -0.57735f, 0), XMFLOAT3(0, 0, -1), XMFLOAT2(1, 0)};
@@ -14,20 +17,20 @@ TriangleVisual::TriangleVisual(ID3D11Device* device)
     _mesh->indices[1] = 1;
     _mesh->indices[2] = 2;
 
-    _mesh->UploadData(device);
+    _mesh->UploadData(RenderServer::Get()->GetDevice());
 }
 
-TriangleVisual::~TriangleVisual()
+NSE::TriangleVisual::~TriangleVisual()
 {
-    delete _mesh;
+    ObjectServer::Get()->Destroy(_mesh);
 }
 
-void TriangleVisual::OnUpdate()
+void NSE::TriangleVisual::OnUpdate()
 {
 
 }
 
-void TriangleVisual::RenderEntity(RenderServer *render, TimeServer* time, Camera *camera)
+void NSE::TriangleVisual::RenderEntity(const NSE_Camera& camera)
 {
-    render->DrawMesh(_mesh, renderingMaterial, GetModelMatrix(camera->position), camera); // ToDo
+    RenderServer::Get()->DrawMesh(_mesh, renderingMaterial, GetModelMatrix(camera->position), camera);
 }

@@ -7,13 +7,13 @@
 #include "../engine/render/Shader.h"
 #include "../engine/render/Material.h"
 
-class Game : public IGame
+class Game : public NSE::IGame
 {
 public:
     Game();
     ~Game();
 
-    bool Initialize(Engine* engine);
+    bool Initialize(NSE::Engine* engine);
     void Shutdown();
     bool UpdateFrame();
 
@@ -27,17 +27,17 @@ private:
     bool Render();
 
 private:
-    Engine* _engine = nullptr;
-    Scene* _scene = nullptr;
-    Scene* _presentScene = nullptr;
-    Shader* _testShader = nullptr;
-    Material* _testMaterial = nullptr;
-    TriangleVisual* _triangle = nullptr;
-    RenderTexture* _cameraRT = nullptr;
-    Camera* _presentCamera = nullptr;
-    FullscreenQuad* _presentPlane = nullptr;
-    Shader* _presentShader = nullptr;
-    Material* _presentMaterial = nullptr;
+    NSE::Engine* _engine = nullptr;
+    NSE::Scene* _scene = nullptr;
+    NSE::Scene* _presentScene = nullptr;
+    NSE_Shader _testShader = nullptr;
+    NSE_Material _testMaterial = nullptr;
+    NSE_TriangleVisual _triangle = nullptr;
+    NSE_RenderTexture _cameraRT = nullptr;
+    NSE_Camera _presentCamera = nullptr;
+    NSE_FullscreenQuad _presentPlane = nullptr;
+    NSE_Shader _presentShader = nullptr;
+    NSE_Material _presentMaterial = nullptr;
     // Shader* _test = nullptr;
 };
 

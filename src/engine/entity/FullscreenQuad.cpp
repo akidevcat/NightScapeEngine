@@ -1,10 +1,12 @@
 #include "FullscreenQuad.h"
+#include "../data/Mesh.h"
+#include "../servers/RenderServer.h"
 
 using namespace DirectX;
 
-FullscreenQuad::FullscreenQuad(ID3D11Device *device)
+NSE::FullscreenQuad::FullscreenQuad()
 {
-    _mesh = new Mesh{4, 2 * 3};
+    _mesh = CreateObject<Mesh>(4, 2 * 3);
 
     _mesh->vertices[0] = VertexData{XMFLOAT3(-1, -1, 0), XMFLOAT3(0, 0, 1), XMFLOAT2(0, 0)};
     _mesh->vertices[1] = VertexData{XMFLOAT3(-1, 1, 0), XMFLOAT3(0, 0, 1), XMFLOAT2(0, 1)};
@@ -18,15 +20,15 @@ FullscreenQuad::FullscreenQuad(ID3D11Device *device)
     _mesh->indices[4] = 3;
     _mesh->indices[5] = 0;
 
-    _mesh->UploadData(device);
+    _mesh->UploadData(RenderServer::Get()->GetDevice());
 }
 
-FullscreenQuad::~FullscreenQuad()
+NSE::FullscreenQuad::~FullscreenQuad()
 {
-    delete _mesh;
+    ObjectServer::Get()->Destroy(_mesh);
 }
 
-void FullscreenQuad::RenderEntity(RenderServer *render, TimeServer *time, Camera *camera)
+void NSE::FullscreenQuad::RenderEntity(const NSE_Camera& camera)
 {
-    render->DrawMesh(_mesh, renderingMaterial, GetModelMatrix(camera->position), camera); // ToDo
+    RenderServer::Get()->DrawMesh(_mesh, renderingMaterial, GetModelMatrix(camera->position), camera);
 }

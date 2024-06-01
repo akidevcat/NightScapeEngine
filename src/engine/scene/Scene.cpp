@@ -1,55 +1,58 @@
 #include "Scene.h"
 
 #include <typeinfo>
+#include <utility>
 
+#include "../obj_ptr.h"
 #include "../entity/SceneEntity.h"
 
 using namespace std;
 
-size_t Scene::_uidCount = 0;
+size_t NSE::Scene::_uidCount = 0;
 
-Scene::Scene()
+NSE::Scene::Scene()
 {
     _uid = _uidCount++;
 }
 
-Scene::~Scene()
+NSE::Scene::~Scene()
 {
     // Deallocate maps
     for (auto typePair : _entities)
     {
-        for (auto entityPair : *typePair.second)
-        {
-            delete entityPair.second;
-        }
+        // for (auto entityPair : *typePair.second)
+        // {
+        //     // delete entityPair.second;
+        //     entityPair.second.reset();
+        // }
 
         delete typePair.second;
     }
 }
 
-void Scene::GetAllEntities(vector<SceneEntity*>& vec)
+void NSE::Scene::GetAllEntities(vector<obj_ptr<SceneEntity>>& vec)
 {
     for (auto it : _entities)
     {
-        for (auto eit : *it.second)
+        for (const auto& eit : *it.second)
         {
             vec.emplace_back(eit.second);
         }
     }
 }
 
-void Scene::RegisterEntity(SceneEntity *entity)
+void NSE::Scene::RegisterEntity(const NSE_SceneEntity& entity)
 {
     // Get entity type
     size_t typeId = typeid(*entity).hash_code();
 
     // Check if type map definition already exists
     auto mit = _entities.find(typeId);
-    unordered_map<size_t, SceneEntity*>* typeMap;
+    unordered_map<size_t, NSE_SceneEntity>* typeMap;
     if (mit == _entities.end())
     {
         // Create map
-        typeMap = new unordered_map<size_t, SceneEntity*>{};
+        typeMap = new unordered_map<size_t, NSE_SceneEntity>{};
         _entities.emplace(make_pair(typeId, typeMap));
     }
     else
@@ -62,7 +65,7 @@ void Scene::RegisterEntity(SceneEntity *entity)
     entity->SetSceneUID(GetUID());
 }
 
-void Scene::UnregisterEntity(SceneEntity *entity)
+void NSE::Scene::UnregisterEntity(const NSE_SceneEntity& entity)
 {
     // Get entity type
     size_t typeId = typeid(*entity).hash_code();
@@ -85,13 +88,15 @@ void Scene::UnregisterEntity(SceneEntity *entity)
     }
 
     // Unregister entity
+    eit->second->ResetSceneUID();
     typeMap->erase(eit);
 }
 
-void Scene::DestroyEntity(SceneEntity *entity)
+void NSE::Scene::Destroy(const NSE_SceneEntity& entity)
 {
+    // Firstly unregister this entity from scene
     UnregisterEntity(entity);
-    delete entity;
+
+    // Now call destroy
+    ObjectServer::Get()->Destroy(entity);
 }
-
-

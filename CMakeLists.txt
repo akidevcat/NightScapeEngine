@@ -69,6 +69,11 @@ add_executable(src WIN32
         src/engine/entity/Object.h
         src/engine/servers/ObjectServer.cpp
         src/engine/servers/ObjectServer.h
+        src/engine/servers/ScreenServer.cpp
+        src/engine/servers/ScreenServer.h
+        src/engine/obj_ptr.h
+        src/engine/servers/BaseServer.cpp
+        src/engine/servers/BaseServer.h
 )
 
 target_link_libraries(src d3d9 d3d11 d3dcompiler dinput8 dxguid)

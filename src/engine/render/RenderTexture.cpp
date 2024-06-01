@@ -3,8 +3,12 @@
 #include <d3d11.h>
 #include <iostream>
 
-RenderTexture::RenderTexture(ID3D11Device* device, int width, int height, DXGI_FORMAT colorFormat, DXGI_FORMAT depthStencilFormat)
+#include "../servers/RenderServer.h"
+
+NSE::RenderTexture::RenderTexture(int width, int height, DXGI_FORMAT colorFormat, DXGI_FORMAT depthStencilFormat)
 {
+    auto device = RenderServer::Get()->GetDevice();
+
     _width = width;
     _height = height;
     _colorFormat = colorFormat;
@@ -104,16 +108,14 @@ RenderTexture::RenderTexture(ID3D11Device* device, int width, int height, DXGI_F
     _viewport.MaxDepth = 1.0f;
     _viewport.TopLeftX = 0;
     _viewport.TopLeftY = 0;
-
-
 }
 
-RenderTexture::~RenderTexture()
+NSE::RenderTexture::~RenderTexture()
 {
     Release();
 }
 
-void RenderTexture::Release()
+void NSE::RenderTexture::Release()
 {
     if(_depthStencilView)
     {

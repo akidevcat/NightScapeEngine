@@ -3,54 +3,100 @@
 
 #include <memory>
 #include <unordered_map>
+#include "../obj_ptr.h"
 
 #include "../entity/SceneEntity.h"
+#include "../entity/VisualEntity.h"
+#include "../servers/ObjectServer.h"
 
-class Scene
+#define NSE_Scene obj_ptr<NSE::Scene>
+
+namespace NSE
 {
-public:
-    Scene();
-    ~Scene();
-
-    size_t GetUID() const { return _uid; }
-
-    void GetAllEntities(std::vector<SceneEntity*>& vec);
-    template <typename T> void FindAllEntitiesFromBaseType(std::vector<T*>& vec);
-    void RegisterEntity(SceneEntity* entity);
-    void UnregisterEntity(SceneEntity* entity);
-    void DestroyEntity(SceneEntity* entity);
-
-private:
-    size_t _uid;
-    static size_t _uidCount;
-
-    std::unordered_map<size_t, std::unordered_map<size_t, SceneEntity*>*> _entities =
-        std::unordered_map<size_t, std::unordered_map<size_t, SceneEntity*>*>();
-    // unordered_map<size_t, unordered_map<size_t, unique_ptr<SceneEntity>>*> _entities =
-    //     unordered_map<size_t, unordered_map<size_t, unique_ptr<SceneEntity>>*>();
-};
-
-template <typename T>
-void Scene::FindAllEntitiesFromBaseType(std::vector<T*>& vec)
-{
-    for (auto it : _entities)
+    class Scene
     {
-        // Check if map is empty
-        if (it.second->begin() == it.second->end())
-        {
-            continue;
-        }
+    public:
+        Scene();
+        ~Scene();
 
-        // check if the new type is a child for this type
-        if (!dynamic_cast<T*>(it.second->begin()->second))
-        {
-            continue;
-        }
+        [[nodiscard]] size_t GetUID() const { return _uid; }
 
-        for (auto eit : *it.second)
+        void GetAllEntities(std::vector<NSE_SceneEntity>& vec);
+        template <typename T, std::enable_if_t<std::is_base_of_v<SceneEntity, T>, int> = 0>
+            void FindAllEntitiesFromBaseType(std::vector<obj_ptr<T>>& vec);
+
+        template <class T, class... ArgTypes, std::enable_if_t<std::is_base_of_v<SceneEntity, T>, int> = 0>
+            obj_ptr<T> Create(ArgTypes&&... args);
+
+        void Destroy(const NSE_SceneEntity& entity);
+
+
+    private:
+        void RegisterEntity(const NSE_SceneEntity& entity);
+        void UnregisterEntity(const NSE_SceneEntity& entity);
+
+        size_t _uid;
+        static size_t _uidCount;
+
+        std::unordered_map<size_t, std::unordered_map<size_t, NSE_SceneEntity>*> _entities =
+            std::unordered_map<size_t, std::unordered_map<size_t, NSE_SceneEntity>*>();
+    };
+
+    template <typename T, std::enable_if_t<std::is_base_of_v<SceneEntity, T>, int>>
+        void Scene::FindAllEntitiesFromBaseType(std::vector<obj_ptr<T>>& vec)
+    {
+        for (auto it : _entities)
         {
-            vec.emplace_back(dynamic_cast<T*>(eit.second));
+            // Check if map is empty
+            if (it.second->begin() == it.second->end())
+            {
+                continue;
+            }
+
+            // check if the new type is a child for this type
+            if (!dynamic_cast<T*>(it.second->begin()->second.get())) // ToDo looks evil
+            {
+                continue;
+            }
+
+            for (const auto& eit : *it.second)
+            {
+                // vec.emplace_back(dynamic_cast<obj_ptr<T>&>(eit.second));
+                // obj_ptr<SceneEntity> a;
+                // obj_ptr<Object> b = obj_ptr<Object>(a);
+                // vec.emplace_back(dynamic_pointer_cast<T>(eit.second));
+
+
+
+                // obj_ptr(reinterpret_cast<T>(eit.second.get()))
+                // *reinterpret_cast<obj_ptr<T>*>(&eit.second);
+
+                vec.emplace_back(*reinterpret_cast<obj_ptr<T>*>(const_cast<obj_ptr<SceneEntity>*>(&eit.second))); // This is evil AF
+
+                // vec.emplace_back(obj_ptr<T>(eit.second.get()));
+                // vec.emplace_back(obj_ptr<T>(dynamic_cast<T*>(eit.second.get())));
+
+                // std::dynamic_pointer_cast<obj_ptr<T>>(eit.second)
+                // vec.emplace_back(eit.second);
+            }
         }
+    }
+
+    template <class T, class... ArgTypes, std::enable_if_t<std::is_base_of_v<SceneEntity, T>, int>>
+        obj_ptr<T> Scene::Create(ArgTypes&&... args)
+    {
+        // Transfer creation process to ObjectServer
+        obj_ptr<T> result = ObjectServer::Get()->Create<T>(std::forward<ArgTypes>(args)...);
+
+        // Register created entity on the scene
+        RegisterEntity(result);
+
+        return result;
+
+        // static_assert(std::is_base_of_v<SceneEntity, T>, "T must inherit from SceneEntity");
+        // T* ent = new T(_STD forward<ArgTypes>(args)...);
+        // shared_ptr<T> shared_ent = make_shared<T, ArgTypes>(args);
+        // std::shared_ptr<T> ent = make_shared<T, ArgTypes>(std::forward<ArgTypes>(args)...);
     }
 }
 

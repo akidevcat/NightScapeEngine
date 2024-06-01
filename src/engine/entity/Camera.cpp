@@ -1,16 +1,16 @@
 #include "Camera.h"
 
-Camera::Camera()
+NSE::Camera::Camera()
 {
     UpdateProjectionMatrix();
 }
 
-Camera::~Camera()
+NSE::Camera::~Camera()
 {
 
 }
 
-void Camera::SetParams(float aspect, float fov, float nearPane, float farPlane, bool isOrthographic, float orthographicSize)
+void NSE::Camera::SetParams(float aspect, float fov, float nearPane, float farPlane, bool isOrthographic, float orthographicSize)
 {
     _aspect = aspect;
     _fov = fov;
@@ -26,7 +26,7 @@ void Camera::SetParams(float aspect, float fov, float nearPane, float farPlane, 
     UpdateProjectionMatrix();
 }
 
-void Camera::GetParams(float *aspect, float *fov, float *nearPane, float *farPlane, float *orthographicSize) const
+void NSE::Camera::GetParams(float *aspect, float *fov, float *nearPane, float *farPlane, float *orthographicSize) const
 {
     if (aspect)
     {
@@ -54,13 +54,13 @@ void Camera::GetParams(float *aspect, float *fov, float *nearPane, float *farPla
     }
 }
 
-DirectX::XMMATRIX Camera::GetViewMatrix() const
+DirectX::XMMATRIX NSE::Camera::GetViewMatrix() const
 {
 
     return DirectX::XMMatrixAffineTransformation(DirectX::g_XMOne, DirectX::g_XMZero, DirectX::XMQuaternionInverse(rotation), DirectX::g_XMZero);
 }
 
-void Camera::UpdateProjectionMatrix()
+void NSE::Camera::UpdateProjectionMatrix()
 {
     if (_isOrthographic)
     {

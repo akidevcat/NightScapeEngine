@@ -2,8 +2,12 @@
 
 #include <iostream>
 
-Material::Material(ID3D11Device* device, Shader* shader)
+#include "../servers/RenderServer.h"
+
+NSE::Material::Material(const NSE_Shader& shader)
 {
+    auto device = RenderServer::Get()->GetDevice();
+
     _shader = shader;
     // ToDo Assert
 
@@ -28,13 +32,13 @@ Material::Material(ID3D11Device* device, Shader* shader)
     }
 }
 
-Material::~Material()
+NSE::Material::~Material()
 {
     delete _vsMaterialProps;
     delete _psMaterialProps;
 }
 
-bool Material::SetVertexVar(size_t pUid, void *value, size_t valueSize)
+bool NSE::Material::SetVertexVar(size_t pUid, void *value, size_t valueSize)
 {
     if (!_vsMaterialProps)
         return false;
@@ -47,7 +51,7 @@ bool Material::SetVertexVar(size_t pUid, void *value, size_t valueSize)
     return true;
 }
 
-bool Material::SetPixelVar(size_t pUid, void *value, size_t valueSize)
+bool NSE::Material::SetPixelVar(size_t pUid, void *value, size_t valueSize)
 {
     if (!_psMaterialProps)
         return false;
@@ -60,7 +64,7 @@ bool Material::SetPixelVar(size_t pUid, void *value, size_t valueSize)
     return true;
 }
 
-void Material::SetVSResource(size_t uid, ID3D11ShaderResourceView *resource)
+void NSE::Material::SetVSResource(size_t uid, ID3D11ShaderResourceView *resource)
 {
     if (!_vsMaterialProps)
         return;
@@ -68,7 +72,7 @@ void Material::SetVSResource(size_t uid, ID3D11ShaderResourceView *resource)
     _vsMaterialProps->SetResourceView(uid, resource);
 }
 
-void Material::SetPSResource(size_t uid, ID3D11ShaderResourceView *resource)
+void NSE::Material::SetPSResource(size_t uid, ID3D11ShaderResourceView *resource)
 {
     if (!_psMaterialProps)
         return;
@@ -76,7 +80,7 @@ void Material::SetPSResource(size_t uid, ID3D11ShaderResourceView *resource)
     _psMaterialProps->SetResourceView(uid, resource);
 }
 
-bool Material::UploadMaterialProperties(ID3D11DeviceContext *context)
+bool NSE::Material::UploadMaterialProperties(ID3D11DeviceContext *context)
 {
     if (_vsMaterialProps)
         _shader->GetVertexShader()->UploadBuffer(context, _vsMaterialProps);
@@ -86,24 +90,24 @@ bool Material::UploadMaterialProperties(ID3D11DeviceContext *context)
     return true; // ToDo
 }
 
-void Material::UploadDrawProperties(ID3D11DeviceContext *context, ConstBufferData* drawProps)
+void NSE::Material::UploadDrawProperties(ConstBufferData* drawProps)
 {
-    _shader->UploadDrawProperties(context, drawProps);
+    _shader->UploadDrawProperties(drawProps);
 }
 
-void Material::UploadGlobalProperties(ID3D11DeviceContext *context, ConstBufferData* globalProps)
+void NSE::Material::UploadGlobalProperties(ConstBufferData* globalProps)
 {
-    _shader->UploadGlobalProperties(context, globalProps);
+    _shader->UploadGlobalProperties(globalProps);
 }
 
-void Material::UploadAllProperties(ID3D11DeviceContext *context, ConstBufferData* globalProps, ConstBufferData* drawProps)
+void NSE::Material::UploadAllProperties(ID3D11DeviceContext *context, ConstBufferData* globalProps, ConstBufferData* drawProps)
 {
     UploadMaterialProperties(context);
-    UploadDrawProperties(context, drawProps);
-    UploadGlobalProperties(context, globalProps);
+    UploadDrawProperties(drawProps);
+    UploadGlobalProperties(globalProps);
 }
 
-void Material::EnumerateBuffers(_Out_ ID3D11Buffer* vsBuffers[3], _Out_ int& vsBuffersLength,
+void NSE::Material::EnumerateBuffers(_Out_ ID3D11Buffer* vsBuffers[3], _Out_ int& vsBuffersLength,
     _Out_ ID3D11Buffer* psBuffers[3], _Out_ int& psBuffersLength, ConstBufferData* globalProps, ConstBufferData* drawProps) const
 {
     vsBuffersLength = 0;

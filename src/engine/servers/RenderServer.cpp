@@ -2,15 +2,17 @@
 
 #include "../render/GlobalProperties.h"
 
-RenderServer::RenderServer()
+NSE::RenderServer::RenderServer()
 {
 
 }
 
-RenderServer::~RenderServer()
+NSE::RenderServer::~RenderServer()
 {
-	delete _errorShader;
-	delete _errorMaterial;
+	// delete _errorShader;
+	// delete _errorMaterial;
+	ObjectServer::Get()->Destroy(_errorShader);
+	ObjectServer::Get()->Destroy(_errorMaterial);
 
 	delete _globalProperties;
 	delete _globalPropertiesBuffer;
@@ -18,7 +20,7 @@ RenderServer::~RenderServer()
 	delete _drawPropertiesBuffer;
 }
 
-bool RenderServer::Initialize(int screenWidth, int screenHeight, HWND hwnd)
+bool NSE::RenderServer::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 {
     HRESULT result;
 
@@ -380,9 +382,13 @@ bool RenderServer::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	}
 
 	// ToDo
-	_errorShader = new Shader{L"Assets/Shaders/Error.hlsl"};
-	_errorShader->Compile(_device);
-	_errorMaterial = new Material{_device, _errorShader};
+	_errorShader = CreateObject<Shader>(L"Assets/Shaders/Error.hlsl");
+	_errorShader->Compile();
+	_errorMaterial = CreateObject<Material>(_errorShader);
+
+	// _errorShader = new Shader{L"Assets/Shaders/Error.hlsl"};
+	// _errorShader->Compile(_device);
+	// _errorMaterial = new Material{_device, _errorShader};
 
 	// ToDo
 	size_t globalPropsBufferSize = sizeof(GlobalProperties);
@@ -445,7 +451,7 @@ bool RenderServer::Initialize(int screenWidth, int screenHeight, HWND hwnd)
     return true;
 }
 
-void RenderServer::Shutdown()
+void NSE::RenderServer::Shutdown()
 {
 	// Before shutting down set to windowed mode or when you release the swap chain it will throw an exception.
 	if(_swapChain)
@@ -532,30 +538,30 @@ void RenderServer::Shutdown()
 	}
 }
 
-void RenderServer::PipelineMarkGlobalPropertiesDirty()
+void NSE::RenderServer::PipelineMarkGlobalPropertiesDirty()
 {
 	_globalPropertiesBuffer->MarkDirty();
 }
 
-void RenderServer::PipelineSetCamera(Camera *camera)
+void NSE::RenderServer::PipelineSetCamera(const NSE_Camera& camera)
 {
 	_drawProperties->ProjectionMatrix = camera->GetProjectionMatrix();
 	_drawProperties->ViewMatrix = camera->GetViewMatrix();
 	_drawPropertiesBuffer->MarkDirty();
 }
 
-void RenderServer::PipelineSetModelMatrix(const DirectX::XMMATRIX& matrix)
+void NSE::RenderServer::PipelineSetModelMatrix(const DirectX::XMMATRIX& matrix)
 {
 	_drawProperties->ModelMatrix = matrix;
 	_drawPropertiesBuffer->MarkDirty();
 }
 
-// void RenderServer::PipelineSetMainCameraReference(Camera *camera)
+// void NSE::RenderServer::PipelineSetMainCameraReference(Camera *camera)
 // {
 // 	_mainCamera = camera;
 // }
 
-void RenderServer::PipelineSetMesh(Mesh *mesh)
+void NSE::RenderServer::PipelineSetMesh(const NSE_Mesh& mesh)
 {
 	constexpr unsigned int offset = 0;
 	constexpr unsigned int stride = sizeof(VertexData);
@@ -565,7 +571,7 @@ void RenderServer::PipelineSetMesh(Mesh *mesh)
 	_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 }
 
-void RenderServer::PipelineSetMaterial(Material *material)
+void NSE::RenderServer::PipelineSetMaterial(const NSE_Material& material)
 {
 	// Upload props to GPU buffer if material or shaders were changed
 	material->UploadAllProperties(_deviceContext, _globalPropertiesBuffer, _drawPropertiesBuffer);
@@ -666,12 +672,12 @@ void RenderServer::PipelineSetMaterial(Material *material)
 	_deviceContext->PSSetShaderResources(0, psResourceCount, resources);
 }
 
-void RenderServer::PipelineDrawIndexed(Mesh *mesh)
+void NSE::RenderServer::PipelineDrawIndexed(const NSE_Mesh& mesh)
 {
 	_deviceContext->DrawIndexed(mesh->indexCount, 0, 0);
 }
 
-void RenderServer::PipelineSetRenderTarget(RenderTexture* target)
+void NSE::RenderServer::PipelineSetRenderTarget(const NSE_RenderTexture& target)
 {
 	D3D11_VIEWPORT viewport = {0, 0, (float)target->GetWidth(), (float)target->GetHeight(), 0.0f, 1.0f}; // ToDo ?
 
@@ -681,19 +687,19 @@ void RenderServer::PipelineSetRenderTarget(RenderTexture* target)
 	_deviceContext->RSSetViewports(1, &viewport);
 }
 
-void RenderServer::PipelineResetRenderTarget()
+void NSE::RenderServer::PipelineResetRenderTarget()
 {
 	_deviceContext->OMSetRenderTargets(1, &_renderTargetView, _depthStencilView);
 	_deviceContext->RSSetViewports(1, &_viewport);
 }
 
-void RenderServer::BeginScene(DirectX::XMFLOAT4 color)
+void NSE::RenderServer::BeginScene(DirectX::XMFLOAT4 color)
 {
 	_deviceContext->ClearRenderTargetView(_renderTargetView, reinterpret_cast<const float*>(&color));
 	_deviceContext->ClearDepthStencilView(_depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 }
 
-void RenderServer::EndScene()
+void NSE::RenderServer::EndScene()
 {
 	if(_isVSyncEnabled)
 	{
@@ -707,13 +713,13 @@ void RenderServer::EndScene()
 	}
 }
 
-void RenderServer::ClearRenderTarget(RenderTexture *target, DirectX::XMFLOAT4 color)
+void NSE::RenderServer::ClearRenderTarget(const NSE_RenderTexture& target, DirectX::XMFLOAT4 color)
 {
 	_deviceContext->ClearRenderTargetView(target->GetRTV(), reinterpret_cast<const float*>(&color));
 	_deviceContext->ClearDepthStencilView(target->GetDepthStencilView(), D3D11_CLEAR_DEPTH, 1.0f, 0);
 }
 
-void RenderServer::DrawMesh(Mesh *mesh, Material* material, const DirectX::XMMATRIX& matrix, Camera *camera)
+void NSE::RenderServer::DrawMesh(const NSE_Mesh& mesh, const NSE_Material& material, const DirectX::XMMATRIX& matrix, const NSE_Camera& camera)
 {
 	PipelineSetModelMatrix(matrix);
 

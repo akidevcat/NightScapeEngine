@@ -2,25 +2,23 @@
 
 #include <chrono>
 
-TimeServer::TimeServer()
+NSE::TimeServer::TimeServer()
 {
 
 }
 
-TimeServer::~TimeServer()
+NSE::TimeServer::~TimeServer()
 {
 
 }
 
-bool TimeServer::Initialize()
+bool NSE::TimeServer::Initialize()
 {
     return true;
 }
 
-void TimeServer::BeginFrame()
+void NSE::TimeServer::BeginFrame()
 {
-    // auto now = std::chrono::duration_cast<std::chrono::milliseconds>(
-    // std::chrono::system_clock::now().time_since_epoch());
     auto now = std::chrono::system_clock::now();
 
     _absoluteTimeMs = now;
@@ -37,7 +35,7 @@ void TimeServer::BeginFrame()
     _timeSeconds += deltaTime;
 }
 
-void TimeServer::EndFrame()
+void NSE::TimeServer::EndFrame()
 {
     _lastAbsoluteTimeMs = _absoluteTimeMs;
 }

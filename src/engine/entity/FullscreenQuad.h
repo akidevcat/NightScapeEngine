@@ -3,16 +3,24 @@
 
 #include "VisualEntity.h"
 
-class FullscreenQuad : public VisualEntity
+#define NSE_FullscreenQuad obj_ptr<NSE::FullscreenQuad>
+
+namespace NSE
 {
-public:
-    explicit FullscreenQuad(ID3D11Device* device);
-    ~FullscreenQuad();
+    class Mesh;
+    class Camera;
 
-    void RenderEntity(RenderServer* render, TimeServer* time, Camera *camera) override;
+    class FullscreenQuad : public VisualEntity
+    {
+    public:
+        explicit FullscreenQuad();
+        ~FullscreenQuad() override;
 
-private:
-    Mesh* _mesh = nullptr;
-};
+        void RenderEntity(const obj_ptr<Camera>& camera) override;
+
+    private:
+        obj_ptr<Mesh> _mesh;
+    };
+}
 
 #endif //FULLSCREENQUAD_H

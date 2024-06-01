@@ -1,31 +1,38 @@
 #ifndef SHADER_H
 #define SHADER_H
 
+#include "../obj_ptr.h"
 #include "VertexShader.h"
 #include "PixelShader.h"
+#include "../entity/Object.h"
 
-class Shader
+#define NSE_Shader obj_ptr<NSE::Shader>
+
+namespace NSE
 {
-public:
-    Shader() = delete;
-    explicit Shader(const wchar_t* path);
-    Shader(const wchar_t* vsPath, const wchar_t* psPath);
-    ~Shader();
+    class Shader : public Object
+    {
+    public:
+        Shader() = delete;
+        explicit Shader(const wchar_t* path);
+        Shader(const wchar_t* vsPath, const wchar_t* psPath);
+        ~Shader();
 
-    void Release();
-    bool Compile(ID3D11Device* device);
+        void Release();
+        bool Compile();
 
-    void UploadDrawProperties(ID3D11DeviceContext *context, ConstBufferData* drawProps);
-    void UploadGlobalProperties(ID3D11DeviceContext *context, ConstBufferData* globalProps);
+        void UploadDrawProperties(ConstBufferData* drawProps);
+        void UploadGlobalProperties(ConstBufferData* globalProps);
 
-    [[nodiscard]] VertexShader* GetVertexShader() const { return _vShader; }
-    [[nodiscard]] PixelShader* GetPixelShader() const { return _pShader; }
-    [[nodiscard]] bool IsCompiled() const { return _isCompiled; }
+        [[nodiscard]] VertexShader* GetVertexShader() const { return _vShader; }
+        [[nodiscard]] PixelShader* GetPixelShader() const { return _pShader; }
+        [[nodiscard]] bool IsCompiled() const { return _isCompiled; }
 
-private:
-    bool _isCompiled = false;
-    VertexShader* _vShader = nullptr;
-    PixelShader* _pShader = nullptr;
-};
+    private:
+        bool _isCompiled = false;
+        VertexShader* _vShader = nullptr;
+        PixelShader* _pShader = nullptr;
+    };
+}
 
 #endif //SHADER_H

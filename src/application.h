@@ -29,7 +29,7 @@ private:
     HINSTANCE _hinstance;
     HWND _hwnd;
 
-    Engine* _engine = nullptr;
+    NSE::Engine* _engine = nullptr;
     Game* _game = nullptr;
 };
 

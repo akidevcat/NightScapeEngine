@@ -1,20 +1,22 @@
 #include "Shader.h"
 
-Shader::Shader(const wchar_t *path) : Shader(path, path) { }
+#include "../servers/RenderServer.h"
 
-Shader::Shader(const wchar_t *vsPath, const wchar_t *psPath)
+NSE::Shader::Shader(const wchar_t *path) : Shader(path, path) { }
+
+NSE::Shader::Shader(const wchar_t *vsPath, const wchar_t *psPath)
 {
     _vShader = new VertexShader{vsPath};
     _pShader = new PixelShader{psPath};
 }
 
-Shader::~Shader()
+NSE::Shader::~Shader()
 {
     delete _vShader;
     delete _pShader;
 }
 
-void Shader::Release()
+void NSE::Shader::Release()
 {
     if (_vShader)
         _vShader->Release();
@@ -23,8 +25,10 @@ void Shader::Release()
         _pShader->Release();
 }
 
-bool Shader::Compile(ID3D11Device *device)
+bool NSE::Shader::Compile()
 {
+    auto device = RenderServer::Get()->GetDevice();
+
     if (_vShader)
         if (!_vShader->Compile(device))
             return false;
@@ -37,8 +41,10 @@ bool Shader::Compile(ID3D11Device *device)
     return true;
 }
 
-void Shader::UploadDrawProperties(ID3D11DeviceContext *context, ConstBufferData* drawProps)
+void NSE::Shader::UploadDrawProperties(ConstBufferData* drawProps)
 {
+    auto context = RenderServer::Get()->GetDeviceContext();
+
     if (_vShader)
     {
         _vShader->UploadBuffer(context, drawProps);
@@ -50,8 +56,10 @@ void Shader::UploadDrawProperties(ID3D11DeviceContext *context, ConstBufferData*
     }
 }
 
-void Shader::UploadGlobalProperties(ID3D11DeviceContext *context, ConstBufferData* globalProps)
+void NSE::Shader::UploadGlobalProperties(ConstBufferData* globalProps)
 {
+    auto context = RenderServer::Get()->GetDeviceContext();
+
     if (_vShader)
     {
         _vShader->UploadBuffer(context, globalProps);

@@ -1,11 +1,11 @@
 #include "Mesh.h"
 
-Mesh::Mesh()
+NSE::Mesh::Mesh()
 {
 
 }
 
-Mesh::Mesh(int vertexCount, int indexCount)
+NSE::Mesh::Mesh(int vertexCount, int indexCount)
 {
     this->vertexCount = vertexCount;
     this->indexCount = indexCount;
@@ -14,7 +14,7 @@ Mesh::Mesh(int vertexCount, int indexCount)
     indices = new uint32_t[indexCount];
 }
 
-Mesh::~Mesh()
+NSE::Mesh::~Mesh()
 {
     Release();
 
@@ -22,12 +22,12 @@ Mesh::~Mesh()
     delete[] indices;
 }
 
-int Mesh::GetVertexCount()
+int NSE::Mesh::GetVertexCount() const
 {
     return vertexCount;
 }
 
-bool Mesh::UploadData(ID3D11Device* device)
+bool NSE::Mesh::UploadData(ID3D11Device* device)
 {
     HRESULT result;
 
@@ -71,7 +71,7 @@ bool Mesh::UploadData(ID3D11Device* device)
     return true;
 }
 
-void Mesh::Release()
+void NSE::Mesh::Release()
 {
     if (indexBuffer)
     {

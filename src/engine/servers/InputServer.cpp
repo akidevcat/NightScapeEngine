@@ -2,19 +2,19 @@
 
 #include <iostream>
 
-InputServer::InputServer()
+NSE::InputServer::InputServer()
 {
     _directInput = nullptr;
     _keyboard = nullptr;
     _mouse = nullptr;
 }
 
-InputServer::~InputServer()
+NSE::InputServer::~InputServer()
 {
 
 }
 
-bool InputServer::Initialize(HINSTANCE hinstance, HWND hwnd, int screenWidth, int screenHeight)
+bool NSE::InputServer::Initialize(HINSTANCE hinstance, HWND hwnd, int screenWidth, int screenHeight)
 {
     HRESULT result;
     _hwnd = hwnd;
@@ -91,7 +91,7 @@ bool InputServer::Initialize(HINSTANCE hinstance, HWND hwnd, int screenWidth, in
     return true;
 }
 
-void InputServer::Shutdown()
+void NSE::InputServer::Shutdown()
 {
     // Release the mouse.
     if(_mouse)
@@ -117,7 +117,7 @@ void InputServer::Shutdown()
     }
 }
 
-bool InputServer::Update()
+bool NSE::InputServer::Update()
 {
     bool result;
 
@@ -141,7 +141,7 @@ bool InputServer::Update()
     return true;
 }
 
-bool InputServer::ReadKeyboard()
+bool NSE::InputServer::ReadKeyboard()
 {
     HRESULT result;
 
@@ -164,7 +164,7 @@ bool InputServer::ReadKeyboard()
     return true;
 }
 
-bool InputServer::ReadMouse()
+bool NSE::InputServer::ReadMouse()
 {
     HRESULT result;
 
@@ -186,7 +186,7 @@ bool InputServer::ReadMouse()
     return true;
 }
 
-void InputServer::ProcessInput()
+void NSE::InputServer::ProcessInput()
 {
     // Update the location of the mouse cursor based on the change of the mouse location during the frame.
     _mouseX += _mouseState.lX;
@@ -213,19 +213,19 @@ void InputServer::ProcessInput()
 //     return false;
 // }
 
-void InputServer::GetMouseLocation(int& mouseX, int& mouseY) const
+void NSE::InputServer::GetMouseLocation(int& mouseX, int& mouseY) const
 {
     mouseX = _mouseX;
     mouseY = _mouseY;
 }
 
-void InputServer::GetMouseDelta(int &dx, int &dy) const
+void NSE::InputServer::GetMouseDelta(int &dx, int &dy) const
 {
     dx = _mouseDX;
     dy = _mouseDY;
 }
 
-bool InputServer::GetKey(int key) const
+bool NSE::InputServer::GetKey(int key) const
 {
     if(_keyboardState[key] & 0x80)
     {
@@ -235,7 +235,7 @@ bool InputServer::GetKey(int key) const
     return false;
 }
 
-void InputServer::SetMouseLocked(const bool state) const
+void NSE::InputServer::SetMouseLocked(const bool state) const
 {
     _mouse->Unacquire();
     if (FAILED(_mouse->SetCooperativeLevel(_hwnd, state ? (DISCL_FOREGROUND | DISCL_EXCLUSIVE) : (DISCL_FOREGROUND | DISCL_NONEXCLUSIVE))))
@@ -246,7 +246,7 @@ void InputServer::SetMouseLocked(const bool state) const
     _mouse->Acquire();
 }
 
-bool InputServer::GetLMB() const
+bool NSE::InputServer::GetLMB() const
 {
     return _mouseState.rgbButtons[0] & 0x80;
 }

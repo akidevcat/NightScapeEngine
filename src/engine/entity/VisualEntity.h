@@ -1,23 +1,28 @@
 #ifndef VISUALENTITY_H
 #define VISUALENTITY_H
 
+// #include "Camera.h"
 #include "SceneEntity.h"
 #include "../render/Material.h"
-#include "../servers/RenderServer.h"
-#include "../servers/TimeServer.h"
 
-class VisualEntity : public SceneEntity
+#define NSE_VisualEntity obj_ptr<NSE::VisualEntity>
+
+namespace NSE
 {
-public:
-    VisualEntity();
-    ~VisualEntity();
+    class Camera;
 
-    virtual void RenderEntity(RenderServer* render, TimeServer* time, Camera *camera) = 0;
-    // ToDo GetAABB, change to local aabb...
-    // ToDo Material
-public:
-    Material* renderingMaterial = nullptr;
-    // XMVECTOR aabb;
-};
+    class VisualEntity : public SceneEntity
+    {
+    public:
+        VisualEntity() = default;
+        // virtual ~VisualEntity() = 0;
+
+        virtual void RenderEntity(const obj_ptr<Camera>& camera) = 0;
+
+    public:
+        NSE_Material renderingMaterial = nullptr;
+        // XMVECTOR aabb;
+    };
+}
 
 #endif //VISUALENTITY_H

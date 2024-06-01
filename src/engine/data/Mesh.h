@@ -4,78 +4,46 @@
 #include <d3d11.h>
 #include <directxmath.h>
 
-struct VertexData
+#include "../entity/Object.h"
+
+#define NSE_Mesh obj_ptr<NSE::Mesh>
+#define NSE_VertexData obj_ptr<NSE::VertexData>
+
+namespace NSE
 {
-    DirectX::XMFLOAT3 position = {0, 0, 0};
-    DirectX::XMFLOAT3 normal = {0, 0, 0};
-    DirectX::XMFLOAT2 uv = {0, 0};
-    DirectX::XMFLOAT4 color = {1, 1, 1, 1};
-    //
-    // VertexData()
-    // {
-    //     this->position = DirectX::XMFLOAT3(0, 0, 0);
-    //     this->normal = DirectX::XMFLOAT3(0, 0, 0);
-    //     this->uv = DirectX::XMFLOAT2(0, 0);
-    //     this->color = DirectX::XMFLOAT4(1, 1, 1, 1);
-    // }
-    //
-    // VertexData(DirectX::XMFLOAT3 position)
-    // {
-    //     this->position = position;
-    //     this->normal = DirectX::XMFLOAT3(0, 0, 0);
-    //     this->uv = DirectX::XMFLOAT2(0, 0);
-    //     this->color = DirectX::XMFLOAT4(1, 1, 1, 1);
-    // }
-    //
-    // VertexData(DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 normal)
-    // {
-    //     this->position = position;
-    //     this->normal = normal;
-    //     this->uv = DirectX::XMFLOAT2(0, 0);
-    //     this->color = DirectX::XMFLOAT4(1, 1, 1, 1);
-    // }
-    //
-    // VertexData(DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 normal, DirectX::XMFLOAT2 uv)
-    // {
-    //     this->position = position;
-    //     this->normal = normal;
-    //     this->uv = uv;
-    //     this->color = DirectX::XMFLOAT4(1, 1, 1, 1);
-    // }
-    //
-    // VertexData(DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 normal, DirectX::XMFLOAT2 uv, DirectX::XMFLOAT4 color)
-    // {
-    //     this->position = position;
-    //     this->normal = normal;
-    //     this->uv = uv;
-    //     this->color = color;
-    // }
-};
+    struct VertexData
+    {
+        DirectX::XMFLOAT3 position = {0, 0, 0};
+        DirectX::XMFLOAT3 normal = {0, 0, 0};
+        DirectX::XMFLOAT2 uv = {0, 0};
+        DirectX::XMFLOAT4 color = {1, 1, 1, 1};
+    };
 
-class Mesh
-{
-public:
-    Mesh();
-    Mesh(int vertexCount, int indexCount);
-    ~Mesh();
+    class Mesh : public Object
+    {
+    public:
+        Mesh();
+        Mesh(int vertexCount, int indexCount);
+        ~Mesh();
 
-    int GetVertexCount();
+        int GetVertexCount() const;
 
-    bool UploadData(ID3D11Device* device);
-    void Release();
+        bool UploadData(ID3D11Device* device);
+        void Release();
 
-public:
-    int vertexCount = 0;
-    int indexCount = 0;
-    VertexData* vertices = nullptr;
-    uint32_t* indices = nullptr;
+    public:
+        int vertexCount = 0;
+        int indexCount = 0;
+        VertexData* vertices = nullptr;
+        uint32_t* indices = nullptr;
 
-    ID3D11Buffer* vertexBuffer = nullptr;
-    ID3D11Buffer* indexBuffer = nullptr;
-    // ToDo Bounds, RecalculateBounds
+        ID3D11Buffer* vertexBuffer = nullptr;
+        ID3D11Buffer* indexBuffer = nullptr;
+        // ToDo Bounds, RecalculateBounds
 
-private:
-    bool _isModified = false; // ToDo
-};
+    private:
+        bool _isModified = false; // ToDo
+    };
+}
 
 #endif //MESH_H

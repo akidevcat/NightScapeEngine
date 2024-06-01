@@ -10,27 +10,30 @@
 
 using namespace std;
 
-Engine::Engine()
+NSE::Engine::Engine()
 {
 
 }
 
-Engine::~Engine()
+NSE::Engine::~Engine()
 {
     delete _gameInstance;
     delete _inputServer;
     delete _renderServer;
     delete _sceneServer;
     delete _timeServer;
+    delete _objectServer;
 }
 
-bool Engine::Initialize(IGame* game, HINSTANCE histance, int screenWidth, int screenHeight, HWND hwnd)
+bool NSE::Engine::Initialize(IGame* game, HINSTANCE histance, int screenWidth, int screenHeight, HWND hwnd)
 {
     bool result = true;
 
     _gameInstance = game;
     _screenWidth = screenWidth;
     _screenHeight = screenHeight;
+
+    _objectServer = new ObjectServer{};
 
     _timeServer = new TimeServer{};
     if (!_timeServer->Initialize())
@@ -59,12 +62,12 @@ bool Engine::Initialize(IGame* game, HINSTANCE histance, int screenWidth, int sc
     return true;
 }
 
-void Engine::Start()
+void NSE::Engine::Start()
 {
     _gameInstance->Start();
 }
 
-bool Engine::UpdateFrame()
+bool NSE::Engine::UpdateFrame()
 {
     _timeServer->BeginFrame();
 
@@ -85,10 +88,11 @@ bool Engine::UpdateFrame()
     return true;
 }
 
-void Engine::OnFrameInput()
+void NSE::Engine::OnFrameInput()
 {
     _inputServer->Update();
 
+    // ToDo GetLMBDown
     if (_inputServer->GetLMB())
     {
         _inputServer->SetMouseLocked(true);
@@ -99,10 +103,10 @@ void Engine::OnFrameInput()
     }
 }
 
-void Engine::OnFrameUpdate()
+void NSE::Engine::OnFrameUpdate()
 {
     vector<Scene*> scenes;
-    vector<SceneEntity*> entities;
+    vector<obj_ptr<SceneEntity>> entities;
 
     _sceneServer->GetAllScenes(scenes);
     for (auto scene : scenes)
@@ -110,13 +114,13 @@ void Engine::OnFrameUpdate()
         scene->GetAllEntities(entities);
     }
 
-    for (auto entity : entities)
+    for (const auto& entity : entities)
     {
         entity->OnUpdate();
     }
 }
 
-void Engine::OnFrameRender()
+void NSE::Engine::OnFrameRender()
 {
     // Fill global properties
     _renderServer->GetGlobalProperties()->Time = _timeServer->Time();
@@ -128,8 +132,8 @@ void Engine::OnFrameRender()
     // Get all visual entities
     // Camera* _camera = _sceneServer->GetMainCamera();
     vector<Scene*> scenes;
-    vector<VisualEntity*> entities;
-    vector<Camera*> cameras;
+    vector<NSE_VisualEntity> entities;
+    vector<NSE_Camera> cameras;
 
     _sceneServer->GetAllScenes(scenes);
     for (auto scene : scenes)
@@ -138,14 +142,14 @@ void Engine::OnFrameRender()
         scene->FindAllEntitiesFromBaseType(cameras);
     }
 
-    std::sort(cameras.begin(), cameras.end(), Camera::PriorityComp);
+    std::sort(cameras.begin(), cameras.end(), Camera::PriorityCompRef);
 
-    for (auto camera : cameras)
+    for (const auto& camera : cameras)
     {
         if (camera->targetRT)
             _renderServer->ClearRenderTarget(camera->targetRT, {0, 0, 0, 1});
 
-        for (auto entity : entities)
+        for (const auto& entity : entities)
         {
             size_t sceneUid;
             if (!entity->GetSceneUID(sceneUid))
@@ -154,7 +158,7 @@ void Engine::OnFrameRender()
             if (camera->targetSene && sceneUid != camera->targetSene->GetUID())
                 continue;
 
-            entity->RenderEntity(_renderServer, _timeServer, camera);
+            entity->RenderEntity(camera);
         }
     }
 
@@ -169,12 +173,12 @@ void Engine::OnFrameRender()
     _renderServer->EndScene();
 }
 
-void Engine::OnFrameCleanup()
+void NSE::Engine::OnFrameCleanup()
 {
 
 }
 
-void Engine::Shutdown()
+void NSE::Engine::Shutdown()
 {
 
 }
