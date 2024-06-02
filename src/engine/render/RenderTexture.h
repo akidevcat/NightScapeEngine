@@ -16,7 +16,7 @@ namespace NSE
     public:
         RenderTexture() = delete;
         RenderTexture(int width, int height, DXGI_FORMAT colorFormat, DXGI_FORMAT depthStencilFormat);
-        ~RenderTexture();
+        ~RenderTexture() override;
 
         void Release();
 

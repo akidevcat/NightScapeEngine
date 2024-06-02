@@ -6,7 +6,9 @@ NSE::Object::Object()
 {
     // Assign next UID
     _uid = _uidCount++;
+}
 
-    // Register in the ObjectServer
+NSE::Object::~Object()
+{
 
 }

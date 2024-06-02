@@ -98,5 +98,5 @@ void NSE::Scene::Destroy(const NSE_SceneEntity& entity)
     UnregisterEntity(entity);
 
     // Now call destroy
-    ObjectServer::Get()->Destroy(entity);
+    ObjectServer::Get()->DestroyAny(entity);
 }

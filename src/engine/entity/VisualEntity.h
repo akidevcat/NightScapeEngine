@@ -15,7 +15,7 @@ namespace NSE
     {
     public:
         VisualEntity() = default;
-        // virtual ~VisualEntity() = 0;
+        ~VisualEntity() override = 0;
 
         virtual void RenderEntity(const obj_ptr<Camera>& camera) = 0;
 

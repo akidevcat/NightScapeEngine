@@ -12,7 +12,7 @@ namespace NSE
         Entity();
 
     public:
-        virtual ~Entity() = 0;
+        ~Entity() override = 0;
 
     private:
     };

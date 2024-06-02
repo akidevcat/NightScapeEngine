@@ -10,9 +10,13 @@
 
 namespace NSE
 {
+    class Scene;
+
     class ObjectServer : public BaseServer<ObjectServer>
     {
     public:
+        friend class Scene;
+
         ObjectServer();
         ~ObjectServer();
 
@@ -23,8 +27,13 @@ namespace NSE
             _objects.emplace(static_cast<std::shared_ptr<Object>>(ent)->GetUID(), ent);
             return ent;
         }
+
         void Destroy(const NSE_Object& obj);
         void DestroyNow(const NSE_Object& obj);
+
+    private:
+        void DestroyAny(const NSE_Object& obj);
+        void DestroyAnyNow(const NSE_Object& obj);
 
     private:
         std::unordered_map<size_t, std::shared_ptr<Object>> _objects = {};
@@ -42,6 +51,16 @@ namespace NSE
         obj_ptr<T> CreateObject(ArgTypes &&...args)
     {
         return ObjectServer::Get()->Create<T>(std::forward<ArgTypes>(args)...);
+    }
+
+    inline void DestroyObject(const obj_ptr<Object>& obj)
+    {
+        ObjectServer::Get()->Destroy(obj);
+    }
+
+    inline void DestroyObjectNow(const obj_ptr<Object>& obj)
+    {
+        ObjectServer::Get()->DestroyNow(obj);
     }
 
     // typedef Create(x) Object::NSE::Create(x);

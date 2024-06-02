@@ -14,7 +14,7 @@ namespace NSE
     {
     public:
         SceneEntity() = default;
-
+        ~SceneEntity() override = 0;
         // ~SceneEntity() override;
 
         [[nodiscard]] DirectX::XMMATRIX GetModelMatrix(Vector3d relativeTo) const;

@@ -2,6 +2,10 @@
 
 using namespace DirectX;
 
+NSE::SceneEntity::~SceneEntity()
+{
+}
+
 XMMATRIX NSE::SceneEntity::GetModelMatrix(Vector3d relativeTo) const
 {
     auto positionCS = (XMFLOAT3)(position - relativeTo);
