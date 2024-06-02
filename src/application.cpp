@@ -11,7 +11,7 @@ Application::Application()
 
 Application::~Application()
 {
-
+	delete _game;
 }
 
 bool Application::Initialize()

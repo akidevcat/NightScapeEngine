@@ -74,6 +74,8 @@ add_executable(src WIN32
         src/engine/obj_ptr.h
         src/engine/servers/BaseServer.cpp
         src/engine/servers/BaseServer.h
+        src/engine/servers/ApplicationServer.cpp
+        src/engine/servers/ApplicationServer.h
 )
 
 target_link_libraries(src d3d9 d3d11 d3dcompiler dinput8 dxguid)

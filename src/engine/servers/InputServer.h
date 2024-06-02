@@ -25,8 +25,11 @@ namespace NSE
         void GetMouseLocation(int&, int&) const;
         void GetMouseDelta(int& dx, int& dy) const;
         [[nodiscard]] bool GetKey(int key) const;
-        void SetMouseLocked(bool state) const;
+        [[nodiscard]] bool GetKeyDown(int key) const;
+        void SetMouseLocked(bool state);
+        bool GetMouseLocked() const { return _isMouseLocked; }
         bool GetLMB() const;
+        bool GetLMBDown() const;
 
     private:
         bool ReadKeyboard();
@@ -37,8 +40,11 @@ namespace NSE
         IDirectInput8* _directInput;
         IDirectInputDevice8* _keyboard;
         IDirectInputDevice8* _mouse;
-        unsigned char _keyboardState[256];
+        unsigned char _keyboardState[256] = {};
+        unsigned char _pKeyboardState[256] = {};
         DIMOUSESTATE _mouseState;
+        DIMOUSESTATE _pMouseState;
+        bool _isMouseLocked = false;
         HWND _hwnd;
         int _screenWidth, _screenHeight, _mouseX, _mouseY, _mouseDX, _mouseDY;
     };

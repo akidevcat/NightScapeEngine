@@ -7,6 +7,7 @@
 #include "entity/SceneEntity.h"
 #include "entity/VisualEntity.h"
 #include "scene/Scene.h"
+#include "servers/ApplicationServer.h"
 
 using namespace std;
 
@@ -17,11 +18,11 @@ NSE::Engine::Engine()
 
 NSE::Engine::~Engine()
 {
-    delete _gameInstance;
     delete _inputServer;
     delete _renderServer;
     delete _sceneServer;
     delete _timeServer;
+    delete _applicationServer;
     delete _objectServer;
 }
 
@@ -34,6 +35,7 @@ bool NSE::Engine::Initialize(IGame* game, HINSTANCE histance, int screenWidth, i
     _screenHeight = screenHeight;
 
     _objectServer = new ObjectServer{};
+    _applicationServer = new ApplicationServer{};
 
     _timeServer = new TimeServer{};
     if (!_timeServer->Initialize())
@@ -69,6 +71,11 @@ void NSE::Engine::Start()
 
 bool NSE::Engine::UpdateFrame()
 {
+    if (!_applicationServer->Update())
+    {
+        return false;
+    }
+
     _timeServer->BeginFrame();
 
     OnFrameInput();
@@ -92,14 +99,21 @@ void NSE::Engine::OnFrameInput()
 {
     _inputServer->Update();
 
-    // ToDo GetLMBDown
-    if (_inputServer->GetLMB())
+    if (_inputServer->GetLMBDown())
     {
         _inputServer->SetMouseLocked(true);
     }
-    if (_inputServer->GetKey(DIK_ESCAPE))
+    if (_inputServer->GetKeyDown(DIK_ESCAPE))
     {
-        _inputServer->SetMouseLocked(false);
+        if (_inputServer->GetMouseLocked())
+        {
+            _inputServer->SetMouseLocked(false);
+        }
+        else
+        {
+            ApplicationServer::Get()->Exit();
+        }
+
     }
 }
 

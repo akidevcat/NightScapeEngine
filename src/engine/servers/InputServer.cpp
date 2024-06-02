@@ -145,6 +145,7 @@ bool NSE::InputServer::ReadKeyboard()
 {
     HRESULT result;
 
+    std::swap(_keyboardState, _pKeyboardState);
 
     // Read the keyboard device.
     result = _keyboard->GetDeviceState(sizeof(_keyboardState), &_keyboardState);
@@ -167,6 +168,8 @@ bool NSE::InputServer::ReadKeyboard()
 bool NSE::InputServer::ReadMouse()
 {
     HRESULT result;
+
+    std::swap(_mouseState, _pMouseState);
 
     // Read the mouse device.
     result = _mouse->GetDeviceState(sizeof(DIMOUSESTATE), &_mouseState);
@@ -235,7 +238,12 @@ bool NSE::InputServer::GetKey(int key) const
     return false;
 }
 
-void NSE::InputServer::SetMouseLocked(const bool state) const
+bool NSE::InputServer::GetKeyDown(int key) const
+{
+    return (_keyboardState[key] & 0x80) && !(_pKeyboardState[key] & 0x80);
+}
+
+void NSE::InputServer::SetMouseLocked(const bool state)
 {
     _mouse->Unacquire();
     if (FAILED(_mouse->SetCooperativeLevel(_hwnd, state ? (DISCL_FOREGROUND | DISCL_EXCLUSIVE) : (DISCL_FOREGROUND | DISCL_NONEXCLUSIVE))))
@@ -244,10 +252,16 @@ void NSE::InputServer::SetMouseLocked(const bool state) const
         std::cerr << "Failed to set mouse locked state" << std::endl;
     }
     _mouse->Acquire();
+    _isMouseLocked = state;
 }
 
 bool NSE::InputServer::GetLMB() const
 {
     return _mouseState.rgbButtons[0] & 0x80;
+}
+
+bool NSE::InputServer::GetLMBDown() const
+{
+    return (_mouseState.rgbButtons[0] & 0x80) && !(_pMouseState.rgbButtons[0] & 0x80);
 }
 

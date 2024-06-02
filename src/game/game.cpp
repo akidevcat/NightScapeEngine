@@ -81,8 +81,6 @@ void Game::Start()
     auto samplers = _engine->GetRenderServer()->GetDefaultPointSampler();
 
     _engine->GetRenderServer()->GetDeviceContext()->PSSetSamplers(0, 1, &samplers);
-
-    // ObjectServer::Get()->Destroy(_testMaterial);
 }
 
 bool Game::UpdateFrame()

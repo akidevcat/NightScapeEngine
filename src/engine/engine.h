@@ -1,6 +1,7 @@
 #ifndef ENGINE_H
 #define ENGINE_H
 
+#include "servers/ApplicationServer.h"
 #include "servers/InputServer.h"
 #include "servers/RenderServer.h"
 #include "servers/SceneServer.h"
@@ -33,6 +34,7 @@ namespace NSE
         void Shutdown();
 
         [[nodiscard]] ObjectServer* GetObjectServer() const { return _objectServer; }
+        [[nodiscard]] ApplicationServer* GetApplicationServer() const { return _applicationServer; }
         [[nodiscard]] RenderServer* GetRenderServer() const { return _renderServer; }
         [[nodiscard]] InputServer* GetInputServer() const { return _inputServer; }
         [[nodiscard]] SceneServer* GetSceneServer() const { return _sceneServer; }
@@ -50,6 +52,7 @@ namespace NSE
     private:
         IGame* _gameInstance = nullptr;
         ObjectServer* _objectServer = nullptr;
+        ApplicationServer* _applicationServer = nullptr;
         RenderServer* _renderServer = nullptr;
         InputServer* _inputServer = nullptr;
         SceneServer* _sceneServer = nullptr;
