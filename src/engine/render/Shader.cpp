@@ -41,32 +41,32 @@ bool NSE::Shader::Compile()
     return true;
 }
 
-void NSE::Shader::UploadDrawProperties(ConstBufferData* drawProps)
-{
-    auto context = RenderServer::Get()->GetDeviceContext();
+// void NSE::Shader::UploadDrawProperties(ConstBufferData* drawProps)
+// {
+//     auto context = RenderServer::Get()->GetDeviceContext();
+//
+//     if (_vShader)
+//     {
+//         _vShader->UploadBuffer(context, drawProps);
+//     }
+//
+//     if (_pShader)
+//     {
+//         _pShader->UploadBuffer(context, drawProps);
+//     }
+// }
 
-    if (_vShader)
-    {
-        _vShader->UploadBuffer(context, drawProps);
-    }
-
-    if (_pShader)
-    {
-        _pShader->UploadBuffer(context, drawProps);
-    }
-}
-
-void NSE::Shader::UploadGlobalProperties(ConstBufferData* globalProps)
-{
-    auto context = RenderServer::Get()->GetDeviceContext();
-
-    if (_vShader)
-    {
-        _vShader->UploadBuffer(context, globalProps);
-    }
-
-    if (_pShader)
-    {
-        _pShader->UploadBuffer(context, globalProps);
-    }
-}
+// void NSE::Shader::UploadGlobalProperties(ConstBufferData* globalProps)
+// {
+//     auto context = RenderServer::Get()->GetDeviceContext();
+//
+//     if (_vShader)
+//     {
+//         _vShader->UploadBuffer(context, globalProps);
+//     }
+//
+//     if (_pShader)
+//     {
+//         _pShader->UploadBuffer(context, globalProps);
+//     }
+// }

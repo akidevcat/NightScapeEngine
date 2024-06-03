@@ -41,7 +41,7 @@ using namespace NSE;
 
 void Game::Start()
 {
-    // static size_t tintId = ShaderUtils::PropertyToID("Tint");
+    static size_t mainTexID = ShaderUtils::PropertyToID("_MainTex");
 
     _engine->GetSceneServer()->CreateScene(_scene);
     _engine->GetSceneServer()->CreateScene(_presentScene);
@@ -72,15 +72,11 @@ void Game::Start()
     _triangle->renderingMaterial = _testMaterial;
     _triangle->position = {0, 0, 1};
 
-    _cameraRT = CreateObject<RenderTexture>(90, 90, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_D24_UNORM_S8_UINT);
+    _cameraRT = CreateObject<RenderTexture>(80, 60, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_D24_UNORM_S8_UINT);
 
     camera->targetRT = _cameraRT;
 
-    _presentMaterial->SetPSResource(ShaderUtils::PropertyToID("_MainTex"), _cameraRT->GetSRV());
-
-    auto samplers = _engine->GetRenderServer()->GetDefaultPointSampler();
-
-    _engine->GetRenderServer()->GetDeviceContext()->PSSetSamplers(0, 1, &samplers);
+    _presentMaterial->GetPSInputs()->SetResource(mainTexID, _cameraRT->GetSRV());
 }
 
 bool Game::UpdateFrame()

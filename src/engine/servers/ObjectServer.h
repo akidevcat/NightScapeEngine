@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <unordered_map>
+#include <unordered_set>
 
 #include "BaseServer.h"
 #include "../obj_ptr.h"
@@ -30,6 +31,7 @@ namespace NSE
 
         void Destroy(const NSE_Object& obj);
         void DestroyNow(const NSE_Object& obj);
+        void Update();
 
     private:
         void DestroyAny(const NSE_Object& obj);
@@ -37,6 +39,7 @@ namespace NSE
 
     private:
         std::unordered_map<size_t, std::shared_ptr<Object>> _objects = {};
+        std::unordered_map<size_t, std::shared_ptr<Object>> _objectsToDelete = {};
     };
 
     // template<class T, class ... ArgTypes, std::enable_if_t<std::is_base_of_v<Object, T>, int>>

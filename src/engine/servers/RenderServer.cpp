@@ -14,9 +14,9 @@ NSE::RenderServer::~RenderServer()
 	ObjectServer::Get()->Destroy(_errorShader);
 	ObjectServer::Get()->Destroy(_errorMaterial);
 
-	delete _globalProperties;
+	// delete _globalProperties;
 	delete _globalPropertiesBuffer;
-	delete _drawProperties;
+	// delete _drawProperties;
 	delete _drawPropertiesBuffer;
 }
 
@@ -386,25 +386,13 @@ bool NSE::RenderServer::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	_errorShader->Compile();
 	_errorMaterial = CreateObject<Material>(_errorShader);
 
-	// _errorShader = new Shader{L"Assets/Shaders/Error.hlsl"};
-	// _errorShader->Compile(_device);
-	// _errorMaterial = new Material{_device, _errorShader};
-
 	// ToDo
-	size_t globalPropsBufferSize = sizeof(GlobalProperties);
-	if (globalPropsBufferSize % 16 != 0)
-	{
-		globalPropsBufferSize += 16 - globalPropsBufferSize % 16;
-	}
-	_globalPropertiesBuffer = new ConstBufferData{_device, 0, ShaderUtils::PropertyToID("GlobalProperties"), globalPropsBufferSize, _globalProperties};
+	_globalPropertiesBuffer = new ConstantBuffer{ShaderUtils::PropertyToID("GlobalProperties"), sizeof(GlobalProperties)};
+	_globalPropertiesBuffer->EnableBufferData();
+	_globalShaderInputs = new ShaderInputsData{};
 
-	// ToDo
-	size_t drawPropsBufferSize = sizeof(DrawProperties);
-	if (drawPropsBufferSize % 16 != 0)
-	{
-		drawPropsBufferSize += 16 - drawPropsBufferSize % 16;
-	}
-	_drawPropertiesBuffer = new ConstBufferData{_device, 0, ShaderUtils::PropertyToID("DrawProperties"), drawPropsBufferSize, _drawProperties};
+	_drawPropertiesBuffer = new ConstantBuffer{ShaderUtils::PropertyToID("DrawProperties"), sizeof(DrawProperties)};
+	_drawPropertiesBuffer->EnableBufferData();
 
 	D3D11_SAMPLER_DESC samplerDesc;
 
@@ -447,6 +435,9 @@ bool NSE::RenderServer::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	{
 		return false;
 	}
+
+	_globalShaderInputs->SetSampler(ShaderUtils::PropertyToID("_LinearSampler"), _defaultLinearSampler);
+	_globalShaderInputs->SetSampler(ShaderUtils::PropertyToID("_PointSampler"), _defaultPointSampler);
 
     return true;
 }
@@ -538,28 +529,20 @@ void NSE::RenderServer::Shutdown()
 	}
 }
 
-void NSE::RenderServer::PipelineMarkGlobalPropertiesDirty()
-{
-	_globalPropertiesBuffer->MarkDirty();
-}
-
 void NSE::RenderServer::PipelineSetCamera(const NSE_Camera& camera)
 {
-	_drawProperties->ProjectionMatrix = camera->GetProjectionMatrix();
-	_drawProperties->ViewMatrix = camera->GetViewMatrix();
-	_drawPropertiesBuffer->MarkDirty();
+	auto drawProperties = _drawPropertiesBuffer->GetBufferData()->As<DrawProperties>();
+
+	drawProperties->ProjectionMatrix = camera->GetProjectionMatrix();
+	drawProperties->ViewMatrix = camera->GetViewMatrix();
 }
 
 void NSE::RenderServer::PipelineSetModelMatrix(const DirectX::XMMATRIX& matrix)
 {
-	_drawProperties->ModelMatrix = matrix;
-	_drawPropertiesBuffer->MarkDirty();
-}
+	auto drawProperties = _drawPropertiesBuffer->GetBufferData()->As<DrawProperties>();
 
-// void NSE::RenderServer::PipelineSetMainCameraReference(Camera *camera)
-// {
-// 	_mainCamera = camera;
-// }
+	drawProperties->ModelMatrix = matrix;
+}
 
 void NSE::RenderServer::PipelineSetMesh(const NSE_Mesh& mesh)
 {
@@ -574,7 +557,7 @@ void NSE::RenderServer::PipelineSetMesh(const NSE_Mesh& mesh)
 void NSE::RenderServer::PipelineSetMaterial(const NSE_Material& material)
 {
 	// Upload props to GPU buffer if material or shaders were changed
-	material->UploadAllProperties(_deviceContext, _globalPropertiesBuffer, _drawPropertiesBuffer);
+	material->Upload();
 
 	_deviceContext->IASetInputLayout(
 		material->GetShader()->GetVertexShader()->GetInputLayout());
@@ -597,79 +580,154 @@ void NSE::RenderServer::PipelineSetMaterial(const NSE_Material& material)
 		0, psBuffersLength, psBuffers);
 
 	// Set resources ToDo
-	static ID3D11ShaderResourceView* resources[128] = {};
-	UINT vsResourceCount = material->GetShader()->GetVertexShader()->GetDescription().BoundResources;
-	UINT psResourceCount = material->GetShader()->GetPixelShader()->GetDescription().BoundResources;
+	static ID3D11ShaderResourceView* resources[D3D11_COMMONSHADER_INPUT_RESOURCE_REGISTER_COUNT] = {};
+	static ID3D11SamplerState*		 samplers[D3D11_COMMONSHADER_SAMPLER_SLOT_COUNT] = {};
 
 	memset(resources, 0, sizeof(resources));
+	memset(resources, 0, sizeof(samplers));
 
-	for(auto rDesc : *material->GetShader()->GetVertexShader()->GetResourcesLookup())
+	UINT resourceBindCount = 0;
+	UINT samplersBindCount = 0;
+
+	for(auto [nameID, bindDescription] : *material->GetShader()->GetVertexShader()->GetInputsDescription())
 	{
-		auto rUid = rDesc.first;
-		auto bid = rDesc.second.BindPoint;
+		auto type = bindDescription.Type;
+		auto bindPoint = bindDescription.BindPoint;
+		bool flFound = false;
 
-		std::unordered_map<size_t, ID3D11ShaderResourceView *>::iterator it;
-
-		if (material->GetVSMaterialProps())
+		switch (type)
 		{
-			it = material->GetVSMaterialProps()->resMap.find(rUid);
-			if (it != material->GetVSMaterialProps()->resMap.end())
-			{
-				resources[bid] = it->second;
-				continue;
-			}
-		}
+			// Resources ToDo
+			case D3D_SIT_TEXTURE:
 
-		it = _drawPropertiesBuffer->resMap.find(rUid);
-		if (it != _drawPropertiesBuffer->resMap.end())
-		{
-			resources[bid] = it->second;
-			continue;
-		}
+				ID3D11ShaderResourceView* resource;
 
-		it = _globalPropertiesBuffer->resMap.find(rUid);
-		if (it != _globalPropertiesBuffer->resMap.end())
-		{
-			resources[bid] = it->second;
-			continue;
+				if (!flFound)
+				{
+					flFound |= material->GetVSInputs()->GetResource(nameID, resource);
+				}
+				// if (!flFound)
+				// {
+				// 	flFound |= _drawShaderInputs->GetResource(nameID, resource);
+				// }
+				if (!flFound)
+				{
+					flFound |= _globalShaderInputs->GetResource(nameID, resource);
+				}
+
+				if (flFound)
+				{
+					resources[bindPoint] = resource;
+					resourceBindCount = max(resourceBindCount, bindPoint + 1);
+				}
+
+			break;
+
+			// Samplers
+			case D3D_SIT_SAMPLER:
+
+				ID3D11SamplerState* sampler;
+
+				if (!flFound)
+				{
+					flFound |= material->GetVSInputs()->GetSampler(nameID, sampler);
+				}
+				// if (!flFound)
+				// {
+				// 	flFound |= _drawShaderInputs->GetSampler(nameID, sampler);
+				// }
+				if (!flFound)
+				{
+					flFound |= _globalShaderInputs->GetSampler(nameID, sampler);
+				}
+
+				if (flFound)
+				{
+					samplers[bindPoint] = sampler;
+					samplersBindCount = max(samplersBindCount, bindPoint + 1);
+				}
+
+				break;
+			default:
+				break;
 		}
 	}
-	_deviceContext->VSSetShaderResources(0, vsResourceCount, resources);
+
+	_deviceContext->VSSetShaderResources(0, resourceBindCount, resources);
+	_deviceContext->VSSetSamplers(0, samplersBindCount, samplers);
 
 	memset(resources, 0, sizeof(resources));
+	memset(resources, 0, sizeof(samplers));
 
-	for(auto rDesc : *material->GetShader()->GetPixelShader()->GetResourcesLookup())
+	resourceBindCount = 0;
+	samplersBindCount = 0;
+
+	for(auto [nameID, bindDescription] : *material->GetShader()->GetPixelShader()->GetInputsDescription())
 	{
-		auto rUid = rDesc.first;
-		auto bid = rDesc.second.BindPoint;
+		auto type = bindDescription.Type;
+		auto bindPoint = bindDescription.BindPoint;
+		bool flFound = false;
 
-		std::unordered_map<size_t, ID3D11ShaderResourceView *>::iterator it;
-
-		if (material->GetPSMaterialProps())
+		switch (type)
 		{
-			it = material->GetPSMaterialProps()->resMap.find(rUid);
-			if (it != material->GetPSMaterialProps()->resMap.end())
+			// Resources ToDo
+			case D3D_SIT_TEXTURE:
+
+				ID3D11ShaderResourceView* resource;
+
+			if (!flFound)
 			{
-				resources[bid] = it->second;
-				continue;
+				flFound |= material->GetPSInputs()->GetResource(nameID, resource);
 			}
-		}
+			// if (!flFound)
+			// {
+			// 	flFound |= _drawShaderInputs->GetResource(nameID, resource);
+			// }
+			if (!flFound)
+			{
+				flFound |= _globalShaderInputs->GetResource(nameID, resource);
+			}
 
-		it = _drawPropertiesBuffer->resMap.find(rUid);
-		if (it != _drawPropertiesBuffer->resMap.end())
-		{
-			resources[bid] = it->second;
-			continue;
-		}
+			if (flFound)
+			{
+				resources[bindPoint] = resource;
+				resourceBindCount = max(resourceBindCount, bindPoint + 1);
+			}
 
-		it = _globalPropertiesBuffer->resMap.find(rUid);
-		if (it != _globalPropertiesBuffer->resMap.end())
-		{
-			resources[bid] = it->second;
-			continue;
+			break;
+
+			// Samplers
+			case D3D_SIT_SAMPLER:
+
+				ID3D11SamplerState* sampler;
+
+			if (!flFound)
+			{
+				flFound |= material->GetPSInputs()->GetSampler(nameID, sampler);
+			}
+			// if (!flFound)
+			// {
+			// 	flFound |= _drawShaderInputs->GetSampler(nameID, sampler);
+			// }
+			if (!flFound)
+			{
+				flFound |= _globalShaderInputs->GetSampler(nameID, sampler);
+			}
+
+			if (flFound)
+			{
+				samplers[bindPoint] = sampler;
+				samplersBindCount = max(samplersBindCount, bindPoint + 1);
+			}
+
+			break;
+			default:
+				break;
 		}
 	}
-	_deviceContext->PSSetShaderResources(0, psResourceCount, resources);
+
+	_deviceContext->PSSetShaderResources(0, resourceBindCount, resources);
+	_deviceContext->PSSetSamplers(0, samplersBindCount, samplers);
 }
 
 void NSE::RenderServer::PipelineDrawIndexed(const NSE_Mesh& mesh)
@@ -735,5 +793,9 @@ void NSE::RenderServer::DrawMesh(const NSE_Mesh& mesh, const NSE_Material& mater
 
 	PipelineSetMesh(mesh);
 	PipelineSetMaterial(material ? material : _errorMaterial);
+
+	_globalPropertiesBuffer->UploadData();
+	_drawPropertiesBuffer->UploadData();
+
 	PipelineDrawIndexed(mesh);
 }

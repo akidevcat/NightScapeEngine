@@ -71,11 +71,6 @@ void NSE::Engine::Start()
 
 bool NSE::Engine::UpdateFrame()
 {
-    if (!_applicationServer->Update())
-    {
-        return false;
-    }
-
     _timeServer->BeginFrame();
 
     OnFrameInput();
@@ -91,6 +86,13 @@ bool NSE::Engine::UpdateFrame()
     _gameInstance->OnFrameCleanup();
 
     _timeServer->EndFrame();
+
+    _objectServer->Update();
+
+    if (!_applicationServer->Update())
+    {
+        return false;
+    }
 
     return true;
 }
@@ -139,7 +141,6 @@ void NSE::Engine::OnFrameRender()
     // Fill global properties
     _renderServer->GetGlobalProperties()->Time = _timeServer->Time();
     _renderServer->GetGlobalProperties()->DeltaTime = _timeServer->Delta();
-    _renderServer->PipelineMarkGlobalPropertiesDirty();
 
     _renderServer->BeginScene(DirectX::XMFLOAT4(0, 0, 0, 1));
 
@@ -175,14 +176,6 @@ void NSE::Engine::OnFrameRender()
             entity->RenderEntity(camera);
         }
     }
-
-    // if (_camera)
-    // {
-    //     for (auto entity : entities)
-    //     {
-    //         entity->RenderEntity(_renderServer, _timeServer, _camera);
-    //     }
-    // }
 
     _renderServer->EndScene();
 }

@@ -37,8 +37,8 @@ namespace NSE
         void UpdateProjectionMatrix();
 
         int priority = 0;
-        NSE_RenderTexture targetRT;
-        Scene* targetSene;
+        NSE_RenderTexture targetRT = nullptr;
+        Scene* targetSene = nullptr;
 
     private:
         float _fov = 60.0f;

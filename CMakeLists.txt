@@ -49,8 +49,6 @@ add_executable(src WIN32
         src/engine/render/PixelShader.h
         src/engine/render/Shader.cpp
         src/engine/render/Shader.h
-        src/engine/render/ConstBufferData.cpp
-        src/engine/render/ConstBufferData.h
         src/engine/servers/TimeServer.cpp
         src/engine/servers/TimeServer.h
         src/engine/entity/FullscreenQuad.cpp
@@ -76,6 +74,24 @@ add_executable(src WIN32
         src/engine/servers/BaseServer.h
         src/engine/servers/ApplicationServer.cpp
         src/engine/servers/ApplicationServer.h
+        src/engine/render/ShaderInputs.cpp
+        src/engine/render/ShaderInputs.h
+        src/engine/render/ConstantBuffer.cpp
+        src/engine/render/ConstantBuffer.h
+        src/engine/render/ConstantBufferData.cpp
+        src/engine/render/ConstantBufferData.h
+        src/engine/render/ConstantBufferDescription.cpp
+        src/engine/render/ConstantBufferDescription.h
+        src/engine/render/ShaderInputsData.cpp
+        src/engine/render/ShaderInputsData.h
+        src/engine/render/ShaderInputsDescription.cpp
+        src/engine/render/ShaderInputsDescription.h
+        src/engine/render/SamplerState.cpp
+        src/engine/render/SamplerState.h
+        src/engine/render/Texture.cpp
+        src/engine/render/Texture.h
+        src/engine/render/Texture2D.cpp
+        src/engine/render/Texture2D.h
 )
 
 target_link_libraries(src d3d9 d3d11 d3dcompiler dinput8 dxguid)

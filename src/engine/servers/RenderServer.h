@@ -27,7 +27,6 @@ namespace NSE
         void Shutdown();
 
         // ===== Pipeline Methods =====
-        void PipelineMarkGlobalPropertiesDirty();
         void PipelineSetCamera(const NSE_Camera& camera);
         void PipelineSetModelMatrix(const DirectX::XMMATRIX& matrix);
         void PipelineSetMesh(const NSE_Mesh& mesh);
@@ -43,7 +42,7 @@ namespace NSE
         void DrawMesh(const NSE_Mesh& mesh, const NSE_Material& material, const DirectX::XMMATRIX& matrix, const NSE_Camera& camera);
 
         // Property Accessors
-        [[nodiscard]] GlobalProperties*           GetGlobalProperties() const { return _globalProperties; }
+        [[nodiscard]] GlobalProperties*           GetGlobalProperties() const { return _globalPropertiesBuffer->GetBufferData()->As<GlobalProperties>(); }
         [[nodiscard]] bool                        GetFullscreenState() const { return _isFullscreen; }
         void                                      SetFullscreenState(bool state) { _isFullscreen = state; }
         [[nodiscard]] ID3D11Device*               GetDevice() const { return _device; }
@@ -77,10 +76,14 @@ namespace NSE
         NSE_Shader                  _errorShader = nullptr;
         NSE_Material                _errorMaterial = nullptr;
 
-        GlobalProperties*           _globalProperties = new GlobalProperties{};
-        ConstBufferData*            _globalPropertiesBuffer = nullptr;
-        DrawProperties*             _drawProperties = new DrawProperties{};
-        ConstBufferData*            _drawPropertiesBuffer = nullptr;
+        ConstantBuffer*             _globalPropertiesBuffer = nullptr;
+        ConstantBuffer*             _drawPropertiesBuffer = nullptr;
+
+        ShaderInputsData*           _globalShaderInputs = nullptr;
+        // GlobalProperties*           _globalProperties = new GlobalProperties{};
+        // ConstBufferData*            _globalPropertiesBuffer = nullptr;
+        // DrawProperties*             _drawProperties = new DrawProperties{};
+        // ConstBufferData*            _drawPropertiesBuffer = nullptr;
     };
 }
 
