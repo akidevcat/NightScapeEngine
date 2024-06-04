@@ -2,6 +2,7 @@
 
 #include <iostream>
 
+#include "StarsCamera.h"
 #include "../engine/entity/Camera.h"
 #include "../engine/entity/FreeCamera.h"
 #include "../engine/entity/TriangleVisual.h"
@@ -54,14 +55,16 @@ void Game::Start()
     _presentCamera = _presentScene->Create<Camera>();
     _presentCamera->priority = 100;
     _presentCamera->targetSene = _presentScene;
+    // _presentCamera->clearMode = CAMERA_CLEAR_MODE_NOTHING;
 
-    _presentPlane = _presentScene->Create<FullscreenQuad>();
+    _presentPlane = _presentScene->Create<QuadVisual>();
     _presentPlane->renderingMaterial = _presentMaterial;
 
     auto camera = _scene->Create<FreeCamera>();
     camera->targetSene = _scene;
     camera->SetParams(_engine->GetScreenAspect(), 60.0f, 0.1f, 1000.0f, false, 0.0f);
     camera->position = {0, 0, -1};
+    camera->clearMode = CAMERA_CLEAR_MODE_DEPTH;
 
     _testShader = CreateObject<Shader>(L"Assets/Shaders/Triangle.hlsl");
     _testShader->Compile();
@@ -77,6 +80,9 @@ void Game::Start()
     camera->targetRT = _cameraRT;
 
     _presentMaterial->GetPSInputs()->SetResource(mainTexID, _cameraRT->GetSRV());
+
+    // auto starsCamera = CreateObject<StarsCamera>(camera, _cameraRT);
+    auto starsCamera = _scene->Create<StarsCamera>(camera, _cameraRT);
 }
 
 bool Game::UpdateFrame()

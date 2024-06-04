@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.26)
-project(src)
+project(NightScapeEngine)
 
 set(CMAKE_CXX_STANDARD 17)
 
-add_executable(src WIN32
+add_executable(${PROJECT_NAME} WIN32
         src/main.cpp
         src/application.cpp
         src/application.h
@@ -39,7 +39,6 @@ add_executable(src WIN32
         src/engine/entity/TriangleVisual.h
         src/engine/data/Mesh.cpp
         src/engine/data/Mesh.h
-#        src/engine/render/ShaderProgramTemplate.cpp
         src/engine/render/ShaderProgramTemplate.h
         src/engine/render/VertexShader.cpp
         src/engine/render/VertexShader.h
@@ -51,8 +50,8 @@ add_executable(src WIN32
         src/engine/render/Shader.h
         src/engine/servers/TimeServer.cpp
         src/engine/servers/TimeServer.h
-        src/engine/entity/FullscreenQuad.cpp
-        src/engine/entity/FullscreenQuad.h
+        src/engine/entity/QuadVisual.cpp
+        src/engine/entity/QuadVisual.h
         src/engine/render/GlobalProperties.cpp
         src/engine/render/GlobalProperties.h
         src/engine/render/DrawProperties.h
@@ -92,9 +91,13 @@ add_executable(src WIN32
         src/engine/render/Texture.h
         src/engine/render/Texture2D.cpp
         src/engine/render/Texture2D.h
+        src/game/StarsCamera.cpp
+        src/game/StarsCamera.h
+        src/engine/servers/RenderPipelineServer.cpp
+        src/engine/servers/RenderPipelineServer.h
 )
 
-target_link_libraries(src d3d9 d3d11 d3dcompiler dinput8 dxguid)
+target_link_libraries(${PROJECT_NAME} d3d9 d3d11 d3dcompiler dinput8 dxguid)
 
 add_custom_target(copy_data
         COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different

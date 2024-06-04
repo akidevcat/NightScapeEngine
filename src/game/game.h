@@ -2,7 +2,7 @@
 #define GAME_H
 
 #include "../engine/engine.h"
-#include "../engine/entity/FullscreenQuad.h"
+#include "../engine/entity/QuadVisual.h"
 #include "../engine/entity/TriangleVisual.h"
 #include "../engine/render/Shader.h"
 #include "../engine/render/Material.h"
@@ -35,7 +35,7 @@ private:
     NSE_TriangleVisual _triangle = nullptr;
     NSE_RenderTexture _cameraRT = nullptr;
     NSE_Camera _presentCamera = nullptr;
-    NSE_FullscreenQuad _presentPlane = nullptr;
+    NSE_QuadVisual _presentPlane = nullptr;
     NSE_Shader _presentShader = nullptr;
     NSE_Material _presentMaterial = nullptr;
     // Shader* _test = nullptr;

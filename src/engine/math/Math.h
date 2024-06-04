@@ -48,5 +48,7 @@ namespace NSE
     class Math
     {
         // constexpr DirectX::XMVECTOR ZeroVector
+    public:
+        static float Random();
     };
 }

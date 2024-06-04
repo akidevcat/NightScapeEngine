@@ -8,23 +8,9 @@ NSE::ObjectServer::ObjectServer()
 
 NSE::ObjectServer::~ObjectServer()
 {
-    /*
-     * It'd be a problem just clearing the _objects map because we'd encounter object deletion while deleting objects
-     * and this might cause different problems. Basically chaning map while iterating it.
-     *
-     * So, we copy pointers to the _objectToDelete map instead. And then, while invoking object destructors,
-     * even if we encounter a Destroy() call, it'd do nothing because our _objects map is empty
-     *
-     * And, of course, we should never use DestroyNow inside a destructor because it'd cause problems
-     */
-
-    for (auto obj : _objects)
-    {
-        _objectsToDelete.try_emplace(obj.first, obj.second);
-    }
-    _objects.clear();
-
-    _objectsToDelete.clear();
+    // DestroyAll() should be called before calling the destructor
+    assert(_objects.empty());
+    assert(_objectsToDelete.empty());
 }
 
 void NSE::ObjectServer::Destroy(const NSE_Object& obj)
@@ -88,4 +74,25 @@ void NSE::ObjectServer::DestroyAnyNow(const NSE_Object& obj)
     }
 
     assert(!obj);
+}
+
+void NSE::ObjectServer::DestroyAll()
+{
+    /*
+     * It'd be a problem just clearing the _objects map because we'd encounter object deletion while deleting objects
+     * and this might cause different problems. Basically chaning map while iterating it.
+     *
+     * So, we copy pointers to the _objectToDelete map instead. And then, while invoking object destructors,
+     * even if we encounter a Destroy() call, it'd do nothing because our _objects map is empty
+     *
+     * And, of course, we should never use DestroyNow inside a destructor because it'd cause problems
+     */
+
+    for (auto obj : _objects)
+    {
+        _objectsToDelete.try_emplace(obj.first, obj.second);
+    }
+    _objects.clear();
+
+    _objectsToDelete.clear();
 }

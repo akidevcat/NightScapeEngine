@@ -17,6 +17,7 @@ namespace NSE
     {
     public:
         friend class Scene;
+        friend class Engine;
 
         ObjectServer();
         ~ObjectServer();
@@ -36,6 +37,7 @@ namespace NSE
     private:
         void DestroyAny(const NSE_Object& obj);
         void DestroyAnyNow(const NSE_Object& obj);
+        void DestroyAll();
 
     private:
         std::unordered_map<size_t, std::shared_ptr<Object>> _objects = {};

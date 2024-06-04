@@ -71,7 +71,7 @@ void NSE::ConstantBuffer::UploadData(ConstantBufferData *data) const
 
     auto deviceContext = RenderServer::Get()->GetDeviceContext();
 
-    D3D11_MAPPED_SUBRESOURCE mappedResource;
+    D3D11_MAPPED_SUBRESOURCE mappedResource = {};
 
     assert(("Failed to map constant buffer",
         SUCCEEDED(deviceContext->Map(_buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource))));

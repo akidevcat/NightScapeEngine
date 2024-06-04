@@ -34,10 +34,11 @@ namespace NSE
         void PipelineDrawIndexed(const NSE_Mesh& mesh);
         void PipelineSetRenderTarget(const NSE_RenderTexture& target);
         void PipelineResetRenderTarget();
+        void PipelineClearRenderTexture(const NSE_RenderTexture& target, bool clearColor, bool clearDepth, DirectX::XMFLOAT4 color, float depth);
+        void PipelineClearRenderTarget(bool clearColor, bool clearDepth, DirectX::XMFLOAT4 color, float depth);
 
         // ===== Render Methods =====
-        void BeginScene(DirectX::XMFLOAT4 color);
-        void EndScene();
+        void Present();
         void ClearRenderTarget(const NSE_RenderTexture& target, DirectX::XMFLOAT4 color);
         void DrawMesh(const NSE_Mesh& mesh, const NSE_Material& material, const DirectX::XMMATRIX& matrix, const NSE_Camera& camera);
 

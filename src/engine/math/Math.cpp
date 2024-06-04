@@ -1,5 +1,7 @@
 #include "Math.h"
 
+#include <cstdlib>
+
 namespace NSE
 {
     Vector3d::Vector3d(const DirectX::XMVECTOR& v)
@@ -148,5 +150,10 @@ namespace NSE
         v.z /= s;
 
         return v;
+    }
+
+    float Math::Random()
+    {
+        return static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
     }
 }

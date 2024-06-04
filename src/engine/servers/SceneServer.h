@@ -8,7 +8,7 @@
 
 namespace NSE
 {
-    class SceneServer : BaseServer<SceneServer>
+    class SceneServer : public BaseServer<SceneServer>
     {
     public:
         SceneServer();

@@ -1,10 +1,10 @@
-#include "FullscreenQuad.h"
+#include "QuadVisual.h"
 #include "../data/Mesh.h"
 #include "../servers/RenderServer.h"
 
 using namespace DirectX;
 
-NSE::FullscreenQuad::FullscreenQuad()
+NSE::QuadVisual::QuadVisual()
 {
     _mesh = CreateObject<Mesh>(4, 2 * 3);
 
@@ -20,15 +20,15 @@ NSE::FullscreenQuad::FullscreenQuad()
     _mesh->indices[4] = 3;
     _mesh->indices[5] = 0;
 
-    _mesh->UploadData(RenderServer::Get()->GetDevice());
+    _mesh->Upload();
 }
 
-NSE::FullscreenQuad::~FullscreenQuad()
+NSE::QuadVisual::~QuadVisual()
 {
     ObjectServer::Get()->Destroy(_mesh);
 }
 
-void NSE::FullscreenQuad::RenderEntity(const NSE_Camera& camera)
+void NSE::QuadVisual::RenderEntity(const NSE_Camera& camera)
 {
     RenderServer::Get()->DrawMesh(_mesh, renderingMaterial, GetModelMatrix(camera->position), camera);
 }

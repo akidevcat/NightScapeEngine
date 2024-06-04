@@ -11,6 +11,13 @@ namespace NSE
 {
     class SceneEntity;
 
+    enum CameraClearMode
+    {
+        CAMERA_CLEAR_MODE_COLOR,
+        CAMERA_CLEAR_MODE_DEPTH,
+        CAMERA_CLEAR_MODE_NOTHING
+    };
+
     class Camera : public SceneEntity
     {
     public:
@@ -36,9 +43,11 @@ namespace NSE
 
         void UpdateProjectionMatrix();
 
-        int priority = 0;
-        NSE_RenderTexture targetRT = nullptr;
-        Scene* targetSene = nullptr;
+        int                 priority = 0;
+        NSE_RenderTexture   targetRT = nullptr;
+        Scene*              targetSene = nullptr;
+        CameraClearMode     clearMode = CAMERA_CLEAR_MODE_COLOR;
+        DirectX::XMFLOAT4   clearColor = {0, 0, 0, 1};
 
     private:
         float _fov = 60.0f;

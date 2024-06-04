@@ -18,7 +18,9 @@ NSE::Engine::Engine()
 
 NSE::Engine::~Engine()
 {
+    _objectServer->DestroyAll();
     delete _inputServer;
+    delete _renderPipelineServer;
     delete _renderServer;
     delete _sceneServer;
     delete _timeServer;
@@ -54,6 +56,8 @@ bool NSE::Engine::Initialize(IGame* game, HINSTANCE histance, int screenWidth, i
     {
         return false;
     }
+
+    _renderPipelineServer = new RenderPipelineServer{};
 
     _sceneServer = new SceneServer{};
     if (!_sceneServer->Initialize())
@@ -138,46 +142,7 @@ void NSE::Engine::OnFrameUpdate()
 
 void NSE::Engine::OnFrameRender()
 {
-    // Fill global properties
-    _renderServer->GetGlobalProperties()->Time = _timeServer->Time();
-    _renderServer->GetGlobalProperties()->DeltaTime = _timeServer->Delta();
-
-    _renderServer->BeginScene(DirectX::XMFLOAT4(0, 0, 0, 1));
-
-    // Get all visual entities
-    // Camera* _camera = _sceneServer->GetMainCamera();
-    vector<Scene*> scenes;
-    vector<NSE_VisualEntity> entities;
-    vector<NSE_Camera> cameras;
-
-    _sceneServer->GetAllScenes(scenes);
-    for (auto scene : scenes)
-    {
-        scene->FindAllEntitiesFromBaseType(entities);
-        scene->FindAllEntitiesFromBaseType(cameras);
-    }
-
-    std::sort(cameras.begin(), cameras.end(), Camera::PriorityCompRef);
-
-    for (const auto& camera : cameras)
-    {
-        if (camera->targetRT)
-            _renderServer->ClearRenderTarget(camera->targetRT, {0, 0, 0, 1});
-
-        for (const auto& entity : entities)
-        {
-            size_t sceneUid;
-            if (!entity->GetSceneUID(sceneUid))
-                continue;
-
-            if (camera->targetSene && sceneUid != camera->targetSene->GetUID())
-                continue;
-
-            entity->RenderEntity(camera);
-        }
-    }
-
-    _renderServer->EndScene();
+    _renderPipelineServer->RenderFrame();
 }
 
 void NSE::Engine::OnFrameCleanup()

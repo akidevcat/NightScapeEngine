@@ -1,5 +1,7 @@
 #include "Mesh.h"
 
+#include "../servers/RenderServer.h"
+
 NSE::Mesh::Mesh()
 {
 
@@ -27,8 +29,10 @@ int NSE::Mesh::GetVertexCount() const
     return vertexCount;
 }
 
-bool NSE::Mesh::UploadData(ID3D11Device* device)
+bool NSE::Mesh::Upload()
 {
+    auto device = RenderServer::Get()->GetDevice();
+
     HRESULT result;
 
     D3D11_BUFFER_DESC vertexBufferDesc, indexBufferDesc;

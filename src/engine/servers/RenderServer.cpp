@@ -751,13 +751,34 @@ void NSE::RenderServer::PipelineResetRenderTarget()
 	_deviceContext->RSSetViewports(1, &_viewport);
 }
 
-void NSE::RenderServer::BeginScene(DirectX::XMFLOAT4 color)
+void NSE::RenderServer::PipelineClearRenderTexture(const NSE_RenderTexture& target, bool clearColor, bool clearDepth, DirectX::XMFLOAT4 color, float depth)
 {
-	_deviceContext->ClearRenderTargetView(_renderTargetView, reinterpret_cast<const float*>(&color));
-	_deviceContext->ClearDepthStencilView(_depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+	if (clearColor)
+	{
+		_deviceContext->ClearRenderTargetView(target->GetRTV(), reinterpret_cast<const float*>(&color));
+	}
+
+	if (clearDepth)
+	{
+		_deviceContext->ClearDepthStencilView(target->GetDepthStencilView(), D3D11_CLEAR_DEPTH, depth, 0);
+	}
 }
 
-void NSE::RenderServer::EndScene()
+void NSE::RenderServer::PipelineClearRenderTarget(bool clearColor, bool clearDepth, DirectX::XMFLOAT4 color,
+	float depth)
+{
+	if (clearColor)
+	{
+		_deviceContext->ClearRenderTargetView(_renderTargetView, reinterpret_cast<const float*>(&color));
+	}
+
+	if (clearDepth)
+	{
+		_deviceContext->ClearDepthStencilView(_depthStencilView, D3D11_CLEAR_DEPTH, depth, 0);
+	}
+}
+
+void NSE::RenderServer::Present()
 {
 	if(_isVSyncEnabled)
 	{

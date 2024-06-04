@@ -28,7 +28,7 @@ namespace NSE
 
         int GetVertexCount() const;
 
-        bool UploadData(ID3D11Device* device);
+        bool Upload();
         void Release();
 
     public:

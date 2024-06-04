@@ -17,7 +17,7 @@ NSE::TriangleVisual::TriangleVisual()
     _mesh->indices[1] = 1;
     _mesh->indices[2] = 2;
 
-    _mesh->UploadData(RenderServer::Get()->GetDevice());
+    _mesh->Upload();
 }
 
 NSE::TriangleVisual::~TriangleVisual()

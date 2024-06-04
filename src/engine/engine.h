@@ -3,6 +3,7 @@
 
 #include "servers/ApplicationServer.h"
 #include "servers/InputServer.h"
+#include "servers/RenderPipelineServer.h"
 #include "servers/RenderServer.h"
 #include "servers/SceneServer.h"
 #include "servers/TimeServer.h"
@@ -54,6 +55,7 @@ namespace NSE
         ObjectServer* _objectServer = nullptr;
         ApplicationServer* _applicationServer = nullptr;
         RenderServer* _renderServer = nullptr;
+        RenderPipelineServer* _renderPipelineServer = nullptr;
         InputServer* _inputServer = nullptr;
         SceneServer* _sceneServer = nullptr;
         TimeServer* _timeServer = nullptr;
