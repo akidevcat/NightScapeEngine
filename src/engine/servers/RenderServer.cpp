@@ -606,10 +606,6 @@ void NSE::RenderServer::PipelineSetMaterial(const NSE_Material& material)
 				{
 					flFound |= material->GetVSInputs()->GetResource(nameID, resource);
 				}
-				// if (!flFound)
-				// {
-				// 	flFound |= _drawShaderInputs->GetResource(nameID, resource);
-				// }
 				if (!flFound)
 				{
 					flFound |= _globalShaderInputs->GetResource(nameID, resource);
@@ -632,10 +628,6 @@ void NSE::RenderServer::PipelineSetMaterial(const NSE_Material& material)
 				{
 					flFound |= material->GetVSInputs()->GetSampler(nameID, sampler);
 				}
-				// if (!flFound)
-				// {
-				// 	flFound |= _drawShaderInputs->GetSampler(nameID, sampler);
-				// }
 				if (!flFound)
 				{
 					flFound |= _globalShaderInputs->GetSampler(nameID, sampler);
@@ -679,10 +671,6 @@ void NSE::RenderServer::PipelineSetMaterial(const NSE_Material& material)
 			{
 				flFound |= material->GetPSInputs()->GetResource(nameID, resource);
 			}
-			// if (!flFound)
-			// {
-			// 	flFound |= _drawShaderInputs->GetResource(nameID, resource);
-			// }
 			if (!flFound)
 			{
 				flFound |= _globalShaderInputs->GetResource(nameID, resource);
@@ -705,10 +693,6 @@ void NSE::RenderServer::PipelineSetMaterial(const NSE_Material& material)
 			{
 				flFound |= material->GetPSInputs()->GetSampler(nameID, sampler);
 			}
-			// if (!flFound)
-			// {
-			// 	flFound |= _drawShaderInputs->GetSampler(nameID, sampler);
-			// }
 			if (!flFound)
 			{
 				flFound |= _globalShaderInputs->GetSampler(nameID, sampler);
@@ -735,20 +719,42 @@ void NSE::RenderServer::PipelineDrawIndexed(const NSE_Mesh& mesh)
 	_deviceContext->DrawIndexed(mesh->indexCount, 0, 0);
 }
 
-void NSE::RenderServer::PipelineSetRenderTarget(const NSE_RenderTexture& target)
+void NSE::RenderServer::PipelineSetRenderTargets(ID3D11RenderTargetView *colorTarget,
+	ID3D11DepthStencilView *depthTarget, const D3D11_VIEWPORT& viewport)
 {
-	D3D11_VIEWPORT viewport = {0, 0, (float)target->GetWidth(), (float)target->GetHeight(), 0.0f, 1.0f}; // ToDo ?
-
-	auto rtv = target->GetRTV();
-
-	_deviceContext->OMSetRenderTargets(1, &rtv, target->GetDepthStencilView());
+	_deviceContext->OMSetRenderTargets(1, &colorTarget, depthTarget);
 	_deviceContext->RSSetViewports(1, &viewport);
+
+	auto drawProperties = _drawPropertiesBuffer->GetBufferData()->As<DrawProperties>();
+
+	drawProperties->TargetResolutionX = (uint32_t)viewport.Width;
+	drawProperties->TargetResolutionY = (uint32_t)viewport.Height;
+}
+
+void NSE::RenderServer::PipelineSetRenderTargets(const NSE_RenderTexture &renderTexture)
+{
+	D3D11_VIEWPORT viewport = {0, 0, (float)renderTexture->GetWidth(), (float)renderTexture->GetHeight(), 0.0f, 1.0f}; // ToDo ?
+
+	auto rtv = renderTexture->GetRTV();
+
+	_deviceContext->OMSetRenderTargets(1, &rtv, renderTexture->GetDepthStencilView());
+	_deviceContext->RSSetViewports(1, &viewport);
+
+	auto drawProperties = _drawPropertiesBuffer->GetBufferData()->As<DrawProperties>();
+
+	drawProperties->TargetResolutionX = renderTexture->GetWidth();
+	drawProperties->TargetResolutionY = renderTexture->GetHeight();
 }
 
 void NSE::RenderServer::PipelineResetRenderTarget()
 {
 	_deviceContext->OMSetRenderTargets(1, &_renderTargetView, _depthStencilView);
 	_deviceContext->RSSetViewports(1, &_viewport);
+
+	auto drawProperties = _drawPropertiesBuffer->GetBufferData()->As<DrawProperties>();
+
+	drawProperties->TargetResolutionX = (uint32_t)_viewport.Width;
+	drawProperties->TargetResolutionY = (uint32_t)_viewport.Height;
 }
 
 void NSE::RenderServer::PipelineClearRenderTexture(const NSE_RenderTexture& target, bool clearColor, bool clearDepth, DirectX::XMFLOAT4 color, float depth)
@@ -798,14 +804,14 @@ void NSE::RenderServer::ClearRenderTarget(const NSE_RenderTexture& target, Direc
 	_deviceContext->ClearDepthStencilView(target->GetDepthStencilView(), D3D11_CLEAR_DEPTH, 1.0f, 0);
 }
 
-void NSE::RenderServer::DrawMesh(const NSE_Mesh& mesh, const NSE_Material& material, const DirectX::XMMATRIX& matrix, const NSE_Camera& camera)
+void NSE::RenderServer::DrawMesh(const NSE_Mesh& mesh, const NSE_Material& material, const DirectX::XMMATRIX& matrix, const NSE_Camera& camera, size_t objectID)
 {
 	PipelineSetModelMatrix(matrix);
 
 	PipelineSetCamera(camera);
 	if (camera->targetRT)
 	{
-		PipelineSetRenderTarget(camera->targetRT);
+		PipelineSetRenderTargets(camera->targetRT);
 	}
 	else
 	{
@@ -814,6 +820,9 @@ void NSE::RenderServer::DrawMesh(const NSE_Mesh& mesh, const NSE_Material& mater
 
 	PipelineSetMesh(mesh);
 	PipelineSetMaterial(material ? material : _errorMaterial);
+
+	auto drawProperties = _drawPropertiesBuffer->GetBufferData()->As<DrawProperties>();
+	drawProperties->ObjectID = objectID;
 
 	_globalPropertiesBuffer->UploadData();
 	_drawPropertiesBuffer->UploadData();

@@ -32,7 +32,8 @@ namespace NSE
         void PipelineSetMesh(const NSE_Mesh& mesh);
         void PipelineSetMaterial(const NSE_Material& material);
         void PipelineDrawIndexed(const NSE_Mesh& mesh);
-        void PipelineSetRenderTarget(const NSE_RenderTexture& target);
+        void PipelineSetRenderTargets(ID3D11RenderTargetView* colorTarget, ID3D11DepthStencilView* depthTarget, const D3D11_VIEWPORT& viewport);
+        void PipelineSetRenderTargets(const NSE_RenderTexture& renderTexture);
         void PipelineResetRenderTarget();
         void PipelineClearRenderTexture(const NSE_RenderTexture& target, bool clearColor, bool clearDepth, DirectX::XMFLOAT4 color, float depth);
         void PipelineClearRenderTarget(bool clearColor, bool clearDepth, DirectX::XMFLOAT4 color, float depth);
@@ -40,7 +41,7 @@ namespace NSE
         // ===== Render Methods =====
         void Present();
         void ClearRenderTarget(const NSE_RenderTexture& target, DirectX::XMFLOAT4 color);
-        void DrawMesh(const NSE_Mesh& mesh, const NSE_Material& material, const DirectX::XMMATRIX& matrix, const NSE_Camera& camera);
+        void DrawMesh(const NSE_Mesh& mesh, const NSE_Material& material, const DirectX::XMMATRIX& matrix, const NSE_Camera& camera, size_t objectID = 0);
 
         // Property Accessors
         [[nodiscard]] GlobalProperties*           GetGlobalProperties() const { return _globalPropertiesBuffer->GetBufferData()->As<GlobalProperties>(); }
@@ -50,6 +51,9 @@ namespace NSE
         [[nodiscard]] ID3D11DeviceContext*        GetDeviceContext() const { return _deviceContext; }
         [[nodiscard]] ID3D11SamplerState*         GetDefaultPointSampler() const { return _defaultPointSampler; }
         [[nodiscard]] ID3D11SamplerState*         GetDefaultLinearSampler() const { return _defaultLinearSampler; }
+        [[nodiscard]] ID3D11RenderTargetView*     GetColorTargetView() const { return _renderTargetView; }
+        [[nodiscard]] ID3D11DepthStencilView*     GetDepthTargetView() const { return _depthStencilView; }
+        [[nodiscard]] D3D11_VIEWPORT              GetViewport() const { return _viewport; }
 
     private:
 
@@ -81,10 +85,6 @@ namespace NSE
         ConstantBuffer*             _drawPropertiesBuffer = nullptr;
 
         ShaderInputsData*           _globalShaderInputs = nullptr;
-        // GlobalProperties*           _globalProperties = new GlobalProperties{};
-        // ConstBufferData*            _globalPropertiesBuffer = nullptr;
-        // DrawProperties*             _drawProperties = new DrawProperties{};
-        // ConstBufferData*            _drawPropertiesBuffer = nullptr;
     };
 }
 

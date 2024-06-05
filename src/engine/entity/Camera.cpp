@@ -26,7 +26,7 @@ void NSE::Camera::SetParams(float aspect, float fov, float nearPane, float farPl
     UpdateProjectionMatrix();
 }
 
-void NSE::Camera::GetParams(float *aspect, float *fov, float *nearPane, float *farPlane, float *orthographicSize) const
+void NSE::Camera::GetParams(float *aspect, float *fov, float *nearPane, float *farPlane, float *orthographicSize) const // ToDo isOrthographic
 {
     if (aspect)
     {
@@ -52,6 +52,13 @@ void NSE::Camera::GetParams(float *aspect, float *fov, float *nearPane, float *f
     {
         *orthographicSize = _orthographicSize;
     }
+}
+
+void NSE::Camera::CopyParams(const obj_ptr<NSE::Camera> &other) // ToDo isOrthographic
+{
+    other->GetParams(&_aspect, &_fov, &_near, &_far, &_orthographicSize);
+
+    UpdateProjectionMatrix();
 }
 
 DirectX::XMMATRIX NSE::Camera::GetViewMatrix() const

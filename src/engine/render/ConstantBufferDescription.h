@@ -12,7 +12,7 @@ public:
     ~ConstantBufferDescription() = default;
 
     [[nodiscard]] D3D11_SHADER_BUFFER_DESC   GetDescription() const { return _description; }
-    [[nodiscard]] D3D11_SHADER_VARIABLE_DESC GetVDescription(const size_t nameID) const { return _variableDescriptions.at(nameID); }
+    [[nodiscard]] bool GetVDescription(size_t nameID, D3D11_SHADER_VARIABLE_DESC& desc);
 
 
 private:

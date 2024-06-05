@@ -31,7 +31,6 @@ void NSE::RenderPipelineServer::RenderFrame()
     globalProperties->DeltaTime = time->Delta();
 
     // Get all visual entities
-    // Camera* _camera = _sceneServer->GetMainCamera();
     vector<Scene*> scenes;
     vector<NSE_VisualEntity> entities;
     vector<NSE_Camera> cameras;

@@ -4,6 +4,9 @@
 
 StarsCamera::StarsCamera(const NSE_Camera& parentCamera, const NSE_RenderTexture& targetRT)
 {
+    static size_t sid_PixelSizeX = NSE::ShaderUtils::PropertyToID("_PixelSizeX");
+    static size_t sid_PixelSizeY = NSE::ShaderUtils::PropertyToID("_PixelSizeY");
+
     priority = -100;
     _parentCamera = parentCamera;
     NSE::SceneServer::Get()->CreateScene(_starsScene);
@@ -12,9 +15,13 @@ StarsCamera::StarsCamera(const NSE_Camera& parentCamera, const NSE_RenderTexture
     this->clearMode = NSE::CAMERA_CLEAR_MODE_COLOR;
     this->clearColor = {0, 0, 0, 1};
 
+    this->CopyParams(parentCamera);
+
     _quadShader = NSE::CreateObject<NSE::Shader>(L"Assets/Shaders/StarQuad.hlsl");
     _quadShader->Compile();
     _quadMaterial = NSE::CreateObject<NSE::Material>(_quadShader);
+    _quadMaterial->SetUnsignedInt(sid_PixelSizeX, 5);
+    _quadMaterial->SetUnsignedInt(sid_PixelSizeY, 9);
 
     for (int i = 0; i < 100; i++)
     {
@@ -24,7 +31,7 @@ StarsCamera::StarsCamera(const NSE_Camera& parentCamera, const NSE_RenderTexture
         quad->position = DirectX::XMMatrixRotationQuaternion(rot).r[2];
         quad->rotation = rot;
         // quad->position = DirectX::XMVector3Rotate({-1, 0, 0}, rot);
-        quad->position *= 15.0f + 20.0f * NSE::Math::Random();
+        quad->position *= 5.0f + 20.0f * NSE::Math::Random();
         quad->scale = {1, 1, 1};
 
         // quad->position = {0, 0, 0.5};

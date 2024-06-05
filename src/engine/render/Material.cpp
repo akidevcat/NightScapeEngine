@@ -153,3 +153,59 @@ void NSE::Material::EnumerateBuffers(_Out_ ID3D11Buffer* vsBuffers[3], _Out_ int
         psBuffersLength++;
     }
 }
+
+void NSE::Material::SetVar(const size_t nameID, void *valuePtr, const size_t valueSize) const
+{
+    D3D11_SHADER_VARIABLE_DESC desc;
+    bool result;
+
+    if (_vsMaterialPropertiesBuffer)
+    {
+        result = _shader->GetVertexShader()->GetMaterialPropertiesBuffer()->GetDescription()->GetVDescription(nameID, desc);
+        if (result)
+        {
+            assert((UINT)valueSize == desc.Size);
+            _vsMaterialPropertiesBuffer->Set(desc.StartOffset, valuePtr, valueSize);
+        }
+    }
+    if (_psMaterialPropertiesBuffer)
+    {
+        result = _shader->GetPixelShader()->GetMaterialPropertiesBuffer()->GetDescription()->GetVDescription(nameID, desc);
+        if (result)
+        {
+            assert((UINT)valueSize == desc.Size);
+            _psMaterialPropertiesBuffer->Set(desc.StartOffset, valuePtr, valueSize);
+        }
+    }
+}
+
+void NSE::Material::SetFloat(const size_t nameID, float value) const
+{
+    SetVar(nameID, &value, sizeof(float));
+}
+
+void NSE::Material::SetInt(size_t nameID, int value) const
+{
+    SetVar(nameID, &value, sizeof(int));
+}
+
+void NSE::Material::SetUnsignedInt(const size_t nameID, uint32_t value) const
+{
+    SetVar(nameID, &value, sizeof(uint32_t));
+}
+
+void NSE::Material::SetVector(const size_t nameID, DirectX::XMVECTOR value) const
+{
+    SetVar(nameID, &value, sizeof(DirectX::XMVECTOR));
+}
+
+void NSE::Material::SetColor(const size_t nameID, DirectX::XMVECTOR value) const
+{
+    // ToDo convert to linear space
+    SetVar(nameID, &value, sizeof(DirectX::XMVECTOR));
+}
+
+void NSE::Material::SetMatrix(const size_t nameID, DirectX::XMMATRIX value) const
+{
+    SetVar(nameID, &value, sizeof(DirectX::XMMATRIX));
+}

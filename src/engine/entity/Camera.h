@@ -26,6 +26,7 @@ namespace NSE
 
         void SetParams(float aspect, float fov, float nearPlane, float farPlane, bool isOrthographic, float orthographicSize);
         void GetParams(float* aspect, float* fov, float* nearPlane, float* farPlane, float* orthographicSize) const;
+        void CopyParams(const NSE_Camera& other);
 
         [[nodiscard]] bool IsOrthographic() const { return _isOrthographic; }
         [[nodiscard]] DirectX::XMMATRIX GetProjectionMatrix() const { return _projectionMatrix; }

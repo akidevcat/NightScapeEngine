@@ -32,5 +32,5 @@ void NSE::TriangleVisual::OnUpdate()
 
 void NSE::TriangleVisual::RenderEntity(const NSE_Camera& camera)
 {
-    RenderServer::Get()->DrawMesh(_mesh, renderingMaterial, GetModelMatrix(camera->position), camera);
+    RenderServer::Get()->DrawMesh(_mesh, renderingMaterial, GetModelMatrix(camera->position), camera, GetUID());
 }

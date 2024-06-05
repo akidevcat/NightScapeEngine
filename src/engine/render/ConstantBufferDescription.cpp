@@ -24,3 +24,15 @@ ConstantBufferDescription::ConstantBufferDescription(ID3D11ShaderReflection *ref
         _variableDescriptions.emplace(NSE::ShaderUtils::PropertyToID(varDescription.Name), varDescription);
     }
 }
+
+bool ConstantBufferDescription::GetVDescription(size_t nameID, D3D11_SHADER_VARIABLE_DESC &desc)
+{
+    auto result = _variableDescriptions.find(nameID);
+    if (result != _variableDescriptions.end())
+    {
+        desc = result->second;
+        return true;
+    }
+
+    return false;
+}
