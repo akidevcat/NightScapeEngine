@@ -56,10 +56,14 @@ namespace NSE
         [[nodiscard]] D3D11_VIEWPORT              GetViewport() const { return _viewport; }
         [[nodiscard]] NSE_Mesh                    GetPrimitiveQuadMesh() const { return _primitiveQuadMesh; }
 
+        [[nodiscard]] NSE_BlendState              GetBlendStateOpaque() const { return _defaultOpaqueBlendState; }
+        [[nodiscard]] NSE_BlendState              GetBlendStateAdditive() const { return _defaultAdditiveBlendState; }
+        [[nodiscard]] NSE_BlendState              GetBlendStateTransparent() const { return _defaultTransparentBlendState; }
+
     private:
 
         bool                        _currentStateDepthWrite = true;
-        ID3D11BlendState*           _currentStateBlend = nullptr;
+        NSE_BlendState              _currentStateBlend = nullptr;
         NSE_Mesh                    _currentStateMesh = nullptr;
         D3D11_PRIMITIVE_TOPOLOGY    _currentStatePrimitiveTopology = D3D_PRIMITIVE_TOPOLOGY_UNDEFINED;
         ID3D11VertexShader*         _currentStateVertexShader = nullptr;
@@ -90,6 +94,9 @@ namespace NSE
         ID3D11BlendState*           _alphaDisableBlendingState = nullptr;
         ID3D11SamplerState*         _defaultPointSampler = nullptr;
         ID3D11SamplerState*         _defaultLinearSampler = nullptr;
+        NSE_BlendState              _defaultOpaqueBlendState = nullptr;
+        NSE_BlendState              _defaultAdditiveBlendState = nullptr;
+        NSE_BlendState              _defaultTransparentBlendState = nullptr;
 
         NSE_Shader                  _errorShader = nullptr;
         NSE_Material                _errorMaterial = nullptr;

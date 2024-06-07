@@ -1,5 +1,6 @@
 #include "StarsCamera.h"
 
+#include "../engine/servers/RenderServer.h"
 #include "../engine/servers/SceneServer.h"
 
 StarsCamera::StarsCamera(const NSE_Camera& parentCamera, const NSE_RenderTexture& targetRT)
@@ -20,7 +21,8 @@ StarsCamera::StarsCamera(const NSE_Camera& parentCamera, const NSE_RenderTexture
     _quadShader = NSE::CreateObject<NSE::Shader>(L"Assets/Shaders/StarQuad.hlsl");
     _quadShader->Compile();
     _quadMaterial = NSE::CreateObject<NSE::Material>(_quadShader);
-    _quadMaterial->SetBlendStateAdditive();
+    _quadMaterial->SetBlendState(NSE::RenderServer::Get()->GetBlendStateAdditive());
+    _quadMaterial->SetDepthWrite(false);
     _quadMaterial->SetUnsignedInt(sid_PixelSizeX, 5*3);
     _quadMaterial->SetUnsignedInt(sid_PixelSizeY, 9*3);
 

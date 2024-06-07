@@ -3,6 +3,7 @@
 
 #include <directxmath.h>
 
+#include "BlendState.h"
 #include "ConstantBufferData.h"
 #include "../obj_ptr.h"
 #include "Shader.h"
@@ -55,23 +56,19 @@ namespace NSE
         void SetColor(size_t nameID, DirectX::XMVECTOR value) const;
         void SetMatrix(size_t nameID, DirectX::XMMATRIX value) const;
 
-        void SetBlendState(const D3D11_BLEND_DESC& description);
-        void SetBlendStateTransparency();
-        void SetBlendStateAdditive();
-        void SetBlendStateOpaque();
-        [[nodiscard]] ID3D11BlendState* GetBlendState() const { return _blendState; }
+        void SetBlendState(const NSE_BlendState& state);
+        void SetDepthWrite(bool state) { _depthWriteEnabled = state; }
+        [[nodiscard]] NSE_BlendState GetBlendState() const { return _blendState; }
         [[nodiscard]] bool GetDepthWrite() const { return _depthWriteEnabled; }
-
-        // [[nodiscard]] ConstBufferData* GetVSMaterialProps() const { return _vsMaterialProps; }
-        // [[nodiscard]] ConstBufferData* GetPSMaterialProps() const { return _psMaterialProps; }
 
     public:
         int               renderQueue = MATERIAL_RENDER_QUEUE_OPAQUE;
 
     private:
         NSE_Shader       _shader = nullptr;
-        ID3D11BlendState* _blendState = nullptr;
-        bool                _depthWriteEnabled = true;
+
+        NSE_BlendState   _blendState = nullptr;
+        bool             _depthWriteEnabled = true;
 
         ConstantBufferData* _vsMaterialPropertiesBuffer = nullptr;
         ConstantBufferData* _psMaterialPropertiesBuffer = nullptr;

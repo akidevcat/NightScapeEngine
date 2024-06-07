@@ -112,7 +112,7 @@ public:
         return this->use_count() == 0;
     }
 
-    explicit operator bool() const noexcept {
+    operator bool() const noexcept {
         // return this->_Ptr_base<_Ty>::get() != nullptr; // ToDo use_count?
         return this->use_count() != 0;
     }
@@ -134,6 +134,73 @@ public:
         assert(("Object null reference occured", !expired())); // ToDo
         return this->_Mybase::get();
     }
+
+    bool operator==(const obj_ptr& other)
+    {
+        bool leftNotNull = *this;
+        bool rightNotNull = other;
+
+        if (leftNotNull && rightNotNull)
+        {
+            // return false; // ToDo
+            return this->_Mybase::get() == other._Mybase::get();
+        }
+
+        if (leftNotNull || rightNotNull)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    bool operator!=(const obj_ptr& other)
+    {
+        return !(*this == other);
+    }
+
+    bool operator==(nullptr_t)
+    {
+        return !*this;
+    }
+
+    bool operator!=(nullptr_t)
+    {
+        return *this;
+    }
+
+    // bool operator==(const obj_ptr& _Left, const obj_ptr& _Right)
+    // {
+    //     bool leftNotNull = _Left;
+    //     bool rightNotNull = _Right;
+    //
+    //     if (leftNotNull && rightNotNull)
+    //     {
+    //         return _Left._Ptr == _Right._Ptr;
+    //     }
+    //
+    //     if (leftNotNull || rightNotNull)
+    //     {
+    //         return false;
+    //     }
+    //
+    //     return true;
+    // }
+
+    // bool operator!=(const obj_ptr& _Left, const obj_ptr& _Right)
+    // {
+    //     return !(_Left == _Right);
+    // }
+    //
+    // bool operator==(const obj_ptr& _Left, nullptr_t)
+    // {
+    //     return !_Left;
+    // }
+    //
+    // bool operator!=(const obj_ptr& _Left, nullptr_t)
+    // {
+    //     return _Left;
+    // }
 
     using _Mybase::get;
 };

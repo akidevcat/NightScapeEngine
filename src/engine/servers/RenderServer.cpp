@@ -436,8 +436,45 @@ bool NSE::RenderServer::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		return false;
 	}
 
+	// Create Resources ToDo
 	_globalShaderInputs->SetSampler(ShaderUtils::PropertyToID("_LinearSampler"), _defaultLinearSampler);
 	_globalShaderInputs->SetSampler(ShaderUtils::PropertyToID("_PointSampler"), _defaultPointSampler);
+
+	D3D11_BLEND_DESC blendDescription;
+	ZeroMemory(&blendDescription, sizeof(D3D11_BLEND_DESC));
+
+	blendDescription.RenderTarget[0].BlendEnable = TRUE;
+	blendDescription.RenderTarget[0].SrcBlend = D3D11_BLEND_ONE;
+	blendDescription.RenderTarget[0].DestBlend = D3D11_BLEND_ZERO;
+	blendDescription.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+	blendDescription.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+	blendDescription.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+	blendDescription.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	blendDescription.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+
+	_defaultOpaqueBlendState = CreateObject<BlendState>(blendDescription);
+
+	blendDescription.RenderTarget[0].BlendEnable = TRUE;
+	blendDescription.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+	blendDescription.RenderTarget[0].DestBlend = D3D11_BLEND_ONE;
+	blendDescription.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+	blendDescription.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ZERO;
+	blendDescription.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ONE;
+	blendDescription.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	blendDescription.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+
+	_defaultAdditiveBlendState = CreateObject<BlendState>(blendDescription);
+
+	blendDescription.RenderTarget[0].BlendEnable = TRUE;
+	blendDescription.RenderTarget[0].SrcBlend = D3D11_BLEND_ONE;
+	blendDescription.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+	blendDescription.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+	blendDescription.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+	blendDescription.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_INV_SRC_ALPHA;
+	blendDescription.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	blendDescription.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+
+	_defaultTransparentBlendState = CreateObject<BlendState>(blendDescription);
 
 	// ToDo
 	_primitiveQuadMesh = CreateObject<Mesh>(4, 2 * 3);
@@ -587,7 +624,7 @@ void NSE::RenderServer::PipelineSetMaterial(const NSE_Material& material)
 
 	if (_currentStateBlend != material->GetBlendState())
 	{
-		_deviceContext->OMSetBlendState(material->GetBlendState(), nullptr, 0xffffffff);
+		_deviceContext->OMSetBlendState((ID3D11BlendState*)*material->GetBlendState(), nullptr, 0xffffffff);
 		_currentStateBlend = material->GetBlendState();
 	}
 

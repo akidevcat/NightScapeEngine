@@ -23,7 +23,7 @@ NSE::Material::Material(const NSE_Shader& shader)
     _vsInputs = new ShaderInputsData{};
     _psInputs = new ShaderInputsData{};
 
-    SetBlendStateOpaque();
+    SetBlendState(RenderServer::Get()->GetBlendStateOpaque());
 }
 
 NSE::Material::~Material()
@@ -262,67 +262,66 @@ void NSE::Material::SetMatrix(const size_t nameID, DirectX::XMMATRIX value) cons
     SetVar(nameID, &value, sizeof(DirectX::XMMATRIX));
 }
 
-void NSE::Material::SetBlendState(const D3D11_BLEND_DESC &description)
+void NSE::Material::SetBlendState(const NSE_BlendState& state)
 {
-    assert(("Unable to create blend state",
-        SUCCEEDED(RenderServer::Get()->GetDevice()->CreateBlendState(&description, &_blendState))));
+    _blendState = state;
 }
 
-void NSE::Material::SetBlendStateTransparency()
-{
-    D3D11_BLEND_DESC description;
-    ZeroMemory(&description, sizeof(D3D11_BLEND_DESC));
-
-    description.RenderTarget[0].BlendEnable = TRUE;
-    description.RenderTarget[0].SrcBlend = D3D11_BLEND_ONE;
-    description.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
-    description.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
-    // description.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
-    // description.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
-    description.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
-    description.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_INV_SRC_ALPHA;
-    description.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
-    description.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
-
-    _depthWriteEnabled = false;
-
-    SetBlendState(description);
-}
-
-void NSE::Material::SetBlendStateAdditive()
-{
-    D3D11_BLEND_DESC description;
-    ZeroMemory(&description, sizeof(D3D11_BLEND_DESC));
-
-    description.RenderTarget[0].BlendEnable = TRUE;
-    description.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
-    description.RenderTarget[0].DestBlend = D3D11_BLEND_ONE;
-    description.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
-    description.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ZERO;
-    description.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ONE;
-    description.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
-    description.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
-
-    _depthWriteEnabled = false;
-
-    SetBlendState(description);
-}
-
-void NSE::Material::SetBlendStateOpaque() // ToDo
-{
-    D3D11_BLEND_DESC description;
-    ZeroMemory(&description, sizeof(D3D11_BLEND_DESC));
-
-    description.RenderTarget[0].BlendEnable = TRUE;
-    description.RenderTarget[0].SrcBlend = D3D11_BLEND_ONE;
-    description.RenderTarget[0].DestBlend = D3D11_BLEND_ZERO;
-    description.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
-    description.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
-    description.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
-    description.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
-    description.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
-
-    _depthWriteEnabled = true;
-
-    SetBlendState(description);
-}
+// void NSE::Material::SetBlendStateTransparency()
+// {
+//     D3D11_BLEND_DESC description;
+//     ZeroMemory(&description, sizeof(D3D11_BLEND_DESC));
+//
+//     description.RenderTarget[0].BlendEnable = TRUE;
+//     description.RenderTarget[0].SrcBlend = D3D11_BLEND_ONE;
+//     description.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+//     description.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+//     // description.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+//     // description.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+//     description.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+//     description.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_INV_SRC_ALPHA;
+//     description.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+//     description.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+//
+//     _depthWriteEnabled = false;
+//
+//     SetBlendState(description);
+// }
+//
+// void NSE::Material::SetBlendStateAdditive()
+// {
+//     D3D11_BLEND_DESC description;
+//     ZeroMemory(&description, sizeof(D3D11_BLEND_DESC));
+//
+//     description.RenderTarget[0].BlendEnable = TRUE;
+//     description.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+//     description.RenderTarget[0].DestBlend = D3D11_BLEND_ONE;
+//     description.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+//     description.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ZERO;
+//     description.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ONE;
+//     description.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+//     description.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+//
+//     _depthWriteEnabled = false;
+//
+//     SetBlendState(description);
+// }
+//
+// void NSE::Material::SetBlendStateOpaque() // ToDo
+// {
+//     D3D11_BLEND_DESC description;
+//     ZeroMemory(&description, sizeof(D3D11_BLEND_DESC));
+//
+//     description.RenderTarget[0].BlendEnable = TRUE;
+//     description.RenderTarget[0].SrcBlend = D3D11_BLEND_ONE;
+//     description.RenderTarget[0].DestBlend = D3D11_BLEND_ZERO;
+//     description.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+//     description.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+//     description.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+//     description.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+//     description.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+//
+//     _depthWriteEnabled = true;
+//
+//     SetBlendState(description);
+// }
