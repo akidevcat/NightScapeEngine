@@ -66,11 +66,12 @@ float4 PixelMain(PixelInput input) : SV_TARGET
     input.uv = (floor(input.uv * px) + 0.5) / px;
 //     return float4(input.uv, 0, 1);
     float2 p = abs(input.uv - 0.5) * 2.0;
-    float i = 1.0 / pow(p.x + p.y, 1.0) * 0.1;
+    float i = 1.0 / pow(p.x + p.y, 0.7) * 0.1;
     i -= 0.01;
     i = smoothstep(0, 1, i);
-    i *= sin(_Time * (0.8 * input.params.y + 0.2) * 2.0 + input.params.x * 100.0) * 0.5 + 0.5;
+    i *= (sin(_Time * (0.8 * input.params.y + 0.2) * 2.0 + input.params.x * 100.0) * 0.5 + 0.5) * 0.5 + 0.5;
     i *= input.params.z * 0.5 + 0.5;
-    clip(i);
-    return i;
+    i = (i - 0.05) / 0.95;
+    i = saturate(i);
+    return float4(i, i, i, 1.0);
 }

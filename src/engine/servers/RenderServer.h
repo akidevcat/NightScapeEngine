@@ -54,8 +54,21 @@ namespace NSE
         [[nodiscard]] ID3D11RenderTargetView*     GetColorTargetView() const { return _renderTargetView; }
         [[nodiscard]] ID3D11DepthStencilView*     GetDepthTargetView() const { return _depthStencilView; }
         [[nodiscard]] D3D11_VIEWPORT              GetViewport() const { return _viewport; }
+        [[nodiscard]] NSE_Mesh                    GetPrimitiveQuadMesh() const { return _primitiveQuadMesh; }
 
     private:
+
+        bool                        _currentStateDepthWrite = true;
+        ID3D11BlendState*           _currentStateBlend = nullptr;
+        NSE_Mesh                    _currentStateMesh = nullptr;
+        D3D11_PRIMITIVE_TOPOLOGY    _currentStatePrimitiveTopology = D3D_PRIMITIVE_TOPOLOGY_UNDEFINED;
+        ID3D11VertexShader*         _currentStateVertexShader = nullptr;
+        ID3D11PixelShader*          _currentStatePixelShader = nullptr;
+        ID3D11RenderTargetView*     _currentRenderTargetView = nullptr;
+        ID3D11DepthStencilView*     _currentDepthStencilView = nullptr;
+
+        // ToDo primitives
+        NSE_Mesh                    _primitiveQuadMesh = nullptr;
 
         bool                        _isFullscreen = false;
         bool                        _isVSyncEnabled = false;

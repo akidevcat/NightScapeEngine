@@ -32,20 +32,36 @@ void NSE::RenderPipelineServer::RenderFrame()
 
     // Get all visual entities
     vector<Scene*> scenes;
-    vector<NSE_VisualEntity> entities;
     vector<NSE_Camera> cameras;
+
+    static unordered_map<size_t, vector<NSE_VisualEntity>> entitiesPerScene = {};
+    entitiesPerScene.clear();
 
     scene->GetAllScenes(scenes);
     for (auto s : scenes)
     {
-        s->FindAllEntitiesFromBaseType(entities);
+        vector<NSE_VisualEntity> sceneEntities{};
+        s->FindAllEntitiesFromBaseType(sceneEntities);
         s->FindAllEntitiesFromBaseType(cameras);
+        entitiesPerScene.emplace(s->GetUID(), sceneEntities);
     }
 
+    // Sort entities
+    for (auto& sceneEntitiesPair : entitiesPerScene)
+    {
+        std::sort(sceneEntitiesPair.second.begin(), sceneEntitiesPair.second.end(), VisualEntity::PriorityCompRef);
+
+        // Sort by render queue
+        // Sort by shader
+        // Sort by inputs hash
+    }
+
+    // Sort cameras
     std::sort(cameras.begin(), cameras.end(), Camera::PriorityCompRef);
 
     for (const auto& camera : cameras)
     {
+        // Clear render target
         switch (camera->clearMode)
         {
             case CAMERA_CLEAR_MODE_COLOR:
@@ -65,13 +81,19 @@ void NSE::RenderPipelineServer::RenderFrame()
                 break;
         }
 
-        for (const auto& entity : entities)
+        if (!camera->targetScene)
+            continue;
+
+        auto& sceneEntities = entitiesPerScene.at(camera->targetScene->GetUID());
+
+        // Render entities
+        for (const auto& entity : sceneEntities)
         {
             size_t sceneUid;
             if (!entity->GetSceneUID(sceneUid))
                 continue;
 
-            if (camera->targetSene && sceneUid != camera->targetSene->GetUID())
+            if (camera->targetScene && sceneUid != camera->targetScene->GetUID())
                 continue;
 
             entity->RenderEntity(camera);

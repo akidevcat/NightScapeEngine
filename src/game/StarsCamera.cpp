@@ -10,7 +10,7 @@ StarsCamera::StarsCamera(const NSE_Camera& parentCamera, const NSE_RenderTexture
     priority = -100;
     _parentCamera = parentCamera;
     NSE::SceneServer::Get()->CreateScene(_starsScene);
-    this->targetSene = _starsScene;
+    this->targetScene = _starsScene;
     this->targetRT = targetRT;
     this->clearMode = NSE::CAMERA_CLEAR_MODE_COLOR;
     this->clearColor = {0, 0, 0, 1};
@@ -20,8 +20,10 @@ StarsCamera::StarsCamera(const NSE_Camera& parentCamera, const NSE_RenderTexture
     _quadShader = NSE::CreateObject<NSE::Shader>(L"Assets/Shaders/StarQuad.hlsl");
     _quadShader->Compile();
     _quadMaterial = NSE::CreateObject<NSE::Material>(_quadShader);
-    _quadMaterial->SetUnsignedInt(sid_PixelSizeX, 5);
-    _quadMaterial->SetUnsignedInt(sid_PixelSizeY, 9);
+    _quadMaterial->SetBlendStateAdditive();
+    _quadMaterial->SetUnsignedInt(sid_PixelSizeX, 5*3);
+    _quadMaterial->SetUnsignedInt(sid_PixelSizeY, 9*3);
+
 
     for (int i = 0; i < 100; i++)
     {
@@ -47,7 +49,8 @@ StarsCamera::~StarsCamera()
 
     for (const auto& quad : _largeStars)
     {
-        DestroyObject(quad);
+        if (quad) // ToDo why?
+        _starsScene->Destroy(quad);
     }
 
     NSE::DestroyObject(_quadMaterial);

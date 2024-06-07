@@ -22,6 +22,8 @@ NSE::Material::Material(const NSE_Shader& shader)
 
     _vsInputs = new ShaderInputsData{};
     _psInputs = new ShaderInputsData{};
+
+    SetBlendStateOpaque();
 }
 
 NSE::Material::~Material()
@@ -30,6 +32,12 @@ NSE::Material::~Material()
     delete _psMaterialPropertiesBuffer;
     delete _vsInputs;
     delete _psInputs;
+
+    if (_blendState)
+    {
+        _blendState->Release();
+        _blendState = nullptr;
+    }
 }
 
 void NSE::Material::Upload()
@@ -154,6 +162,50 @@ void NSE::Material::EnumerateBuffers(_Out_ ID3D11Buffer* vsBuffers[3], _Out_ int
     }
 }
 
+void NSE::Material::EnumerateVertexBuffers(ID3D11Buffer *vsBuffers[3], int &vsBuffersLength,
+    const ConstantBuffer *globalPropertiesBuffer, const ConstantBuffer *drawPropertiesBuffer) const
+{
+    vsBuffersLength = 0;
+
+    if (_shader->GetVertexShader()->HasGlobalProps())
+    {
+        vsBuffers[vsBuffersLength] = globalPropertiesBuffer->GetGPUBuffer();
+        vsBuffersLength++;
+    }
+    if (_shader->GetVertexShader()->HasDrawProps())
+    {
+        vsBuffers[vsBuffersLength] = drawPropertiesBuffer->GetGPUBuffer();
+        vsBuffersLength++;
+    }
+    if (_shader->GetVertexShader()->HasMaterialProps())
+    {
+        vsBuffers[vsBuffersLength] = _shader->GetVertexShader()->GetMaterialPropertiesBuffer()->GetGPUBuffer();
+        vsBuffersLength++;
+    }
+}
+
+void NSE::Material::EnumeratePixelBuffers(ID3D11Buffer *psBuffers[3], int &psBuffersLength,
+    const ConstantBuffer *globalPropertiesBuffer, const ConstantBuffer *drawPropertiesBuffer) const
+{
+    psBuffersLength = 0;
+
+    if (_shader->GetPixelShader()->HasGlobalProps())
+    {
+        psBuffers[psBuffersLength] = globalPropertiesBuffer->GetGPUBuffer();
+        psBuffersLength++;
+    }
+    if (_shader->GetPixelShader()->HasDrawProps())
+    {
+        psBuffers[psBuffersLength] = drawPropertiesBuffer->GetGPUBuffer();
+        psBuffersLength++;
+    }
+    if (_shader->GetPixelShader()->HasMaterialProps())
+    {
+        psBuffers[psBuffersLength] = _shader->GetPixelShader()->GetMaterialPropertiesBuffer()->GetGPUBuffer();
+        psBuffersLength++;
+    }
+}
+
 void NSE::Material::SetVar(const size_t nameID, void *valuePtr, const size_t valueSize) const
 {
     D3D11_SHADER_VARIABLE_DESC desc;
@@ -208,4 +260,69 @@ void NSE::Material::SetColor(const size_t nameID, DirectX::XMVECTOR value) const
 void NSE::Material::SetMatrix(const size_t nameID, DirectX::XMMATRIX value) const
 {
     SetVar(nameID, &value, sizeof(DirectX::XMMATRIX));
+}
+
+void NSE::Material::SetBlendState(const D3D11_BLEND_DESC &description)
+{
+    assert(("Unable to create blend state",
+        SUCCEEDED(RenderServer::Get()->GetDevice()->CreateBlendState(&description, &_blendState))));
+}
+
+void NSE::Material::SetBlendStateTransparency()
+{
+    D3D11_BLEND_DESC description;
+    ZeroMemory(&description, sizeof(D3D11_BLEND_DESC));
+
+    description.RenderTarget[0].BlendEnable = TRUE;
+    description.RenderTarget[0].SrcBlend = D3D11_BLEND_ONE;
+    description.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+    description.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+    // description.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+    // description.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+    description.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+    description.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_INV_SRC_ALPHA;
+    description.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+    description.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+
+    _depthWriteEnabled = false;
+
+    SetBlendState(description);
+}
+
+void NSE::Material::SetBlendStateAdditive()
+{
+    D3D11_BLEND_DESC description;
+    ZeroMemory(&description, sizeof(D3D11_BLEND_DESC));
+
+    description.RenderTarget[0].BlendEnable = TRUE;
+    description.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+    description.RenderTarget[0].DestBlend = D3D11_BLEND_ONE;
+    description.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+    description.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ZERO;
+    description.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ONE;
+    description.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+    description.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+
+    _depthWriteEnabled = false;
+
+    SetBlendState(description);
+}
+
+void NSE::Material::SetBlendStateOpaque() // ToDo
+{
+    D3D11_BLEND_DESC description;
+    ZeroMemory(&description, sizeof(D3D11_BLEND_DESC));
+
+    description.RenderTarget[0].BlendEnable = TRUE;
+    description.RenderTarget[0].SrcBlend = D3D11_BLEND_ONE;
+    description.RenderTarget[0].DestBlend = D3D11_BLEND_ZERO;
+    description.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+    description.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+    description.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+    description.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+    description.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+
+    _depthWriteEnabled = true;
+
+    SetBlendState(description);
 }

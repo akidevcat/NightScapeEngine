@@ -54,14 +54,14 @@ void Game::Start()
 
     _presentCamera = _presentScene->Create<Camera>();
     _presentCamera->priority = 100;
-    _presentCamera->targetSene = _presentScene;
+    _presentCamera->targetScene = _presentScene;
     // _presentCamera->clearMode = CAMERA_CLEAR_MODE_NOTHING;
 
     _presentPlane = _presentScene->Create<QuadVisual>();
     _presentPlane->renderingMaterial = _presentMaterial;
 
     auto camera = _scene->Create<FreeCamera>();
-    camera->targetSene = _scene;
+    camera->targetScene = _scene;
     camera->SetParams(_engine->GetScreenAspect(), 60.0f, 0.1f, 1000.0f, false, 0.0f);
     camera->position = {0, 0, -1};
     camera->clearMode = CAMERA_CLEAR_MODE_DEPTH;

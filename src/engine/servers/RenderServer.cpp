@@ -439,6 +439,22 @@ bool NSE::RenderServer::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	_globalShaderInputs->SetSampler(ShaderUtils::PropertyToID("_LinearSampler"), _defaultLinearSampler);
 	_globalShaderInputs->SetSampler(ShaderUtils::PropertyToID("_PointSampler"), _defaultPointSampler);
 
+	// ToDo
+	_primitiveQuadMesh = CreateObject<Mesh>(4, 2 * 3);
+	_primitiveQuadMesh->vertices[0] = VertexData{{-1, -1, 0}, {0, 0, 1}, {0, 0}};
+	_primitiveQuadMesh->vertices[1] = VertexData{{-1, 1, 0}, {0, 0, 1}, {0, 1}};
+	_primitiveQuadMesh->vertices[2] = VertexData{{1, 1, 0}, {0, 0, 1}, {1, 1}};
+	_primitiveQuadMesh->vertices[3] = VertexData{{1, -1, 0}, {0, 0, 1}, {1, 0}};
+
+	_primitiveQuadMesh->indices[0] = 0;
+	_primitiveQuadMesh->indices[1] = 1;
+	_primitiveQuadMesh->indices[2] = 2;
+	_primitiveQuadMesh->indices[3] = 2;
+	_primitiveQuadMesh->indices[4] = 3;
+	_primitiveQuadMesh->indices[5] = 0;
+
+	_primitiveQuadMesh->Upload();
+
     return true;
 }
 
@@ -549,9 +565,19 @@ void NSE::RenderServer::PipelineSetMesh(const NSE_Mesh& mesh)
 	constexpr unsigned int offset = 0;
 	constexpr unsigned int stride = sizeof(VertexData);
 
-	_deviceContext->IASetVertexBuffers(0, 1, &mesh->vertexBuffer, &stride, &offset);
-	_deviceContext->IASetIndexBuffer(mesh->indexBuffer, DXGI_FORMAT_R32_UINT, 0);
-	_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	// ToDo invalidate mesh on upload
+	if (!_currentStateMesh || _currentStateMesh.get() != mesh.get())
+	{
+		_deviceContext->IASetVertexBuffers(0, 1, &mesh->vertexBuffer, &stride, &offset);
+		_deviceContext->IASetIndexBuffer(mesh->indexBuffer, DXGI_FORMAT_R32_UINT, 0);
+		_currentStateMesh = mesh;
+	}
+
+	if (_currentStatePrimitiveTopology != D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST)
+	{
+		_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		_currentStatePrimitiveTopology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	}
 }
 
 void NSE::RenderServer::PipelineSetMaterial(const NSE_Material& material)
@@ -559,27 +585,61 @@ void NSE::RenderServer::PipelineSetMaterial(const NSE_Material& material)
 	// Upload props to GPU buffer if material or shaders were changed
 	material->Upload();
 
-	_deviceContext->IASetInputLayout(
-		material->GetShader()->GetVertexShader()->GetInputLayout());
-	_deviceContext->VSSetShader(
-		material->GetShader()->GetVertexShader()->AsID3D11(), nullptr, 0);
-	_deviceContext->PSSetShader(
-		material->GetShader()->GetPixelShader()->AsID3D11(), nullptr, 0);
+	if (_currentStateBlend != material->GetBlendState())
+	{
+		_deviceContext->OMSetBlendState(material->GetBlendState(), nullptr, 0xffffffff);
+		_currentStateBlend = material->GetBlendState();
+	}
 
-	static ID3D11Buffer* vsBuffers[3];
-	static ID3D11Buffer* psBuffers[3];
-	int vsBuffersLength = 0;
-	int psBuffersLength = 0;
+	if (_currentStateDepthWrite != material->GetDepthWrite())
+	{
+		if (_currentStateDepthWrite)
+		{
+			_deviceContext->OMSetDepthStencilState(_depthDisabledStencilState, 1);
+		}
+		else
+		{
+			_deviceContext->OMSetDepthStencilState(_depthStencilState, 1);
+		}
+		_currentStateDepthWrite = material->GetDepthWrite();
+	}
 
-	material->EnumerateBuffers(vsBuffers, vsBuffersLength, psBuffers, psBuffersLength,
-		_globalPropertiesBuffer, _drawPropertiesBuffer);
+	if (_currentStateVertexShader != material->GetShader()->GetVertexShader()->AsID3D11())
+	{
+		_deviceContext->IASetInputLayout(
+			material->GetShader()->GetVertexShader()->GetInputLayout());
+		_deviceContext->VSSetShader(
+			material->GetShader()->GetVertexShader()->AsID3D11(), nullptr, 0);
 
-	_deviceContext->VSSetConstantBuffers(
-		0, vsBuffersLength, vsBuffers);
-	_deviceContext->PSSetConstantBuffers(
-		0, psBuffersLength, psBuffers);
+		static ID3D11Buffer* vsBuffers[3];
+		int vsBuffersLength = 0;
 
-	// Set resources ToDo
+		material->EnumerateVertexBuffers(vsBuffers, vsBuffersLength, _globalPropertiesBuffer, _drawPropertiesBuffer);
+
+		if (vsBuffersLength > 0)
+		{
+			_deviceContext->VSSetConstantBuffers(0, vsBuffersLength, vsBuffers);
+			_currentStateVertexShader = material->GetShader()->GetVertexShader()->AsID3D11();
+		}
+	}
+
+	if (_currentStatePixelShader != material->GetShader()->GetPixelShader()->AsID3D11())
+	{
+		_deviceContext->PSSetShader(
+			material->GetShader()->GetPixelShader()->AsID3D11(), nullptr, 0);
+
+		static ID3D11Buffer* psBuffers[3];
+		int psBuffersLength = 0;
+
+		material->EnumeratePixelBuffers(psBuffers, psBuffersLength, _globalPropertiesBuffer, _drawPropertiesBuffer);
+
+		if (psBuffersLength > 0)
+		{
+			_deviceContext->PSSetConstantBuffers(0, psBuffersLength, psBuffers);
+			_currentStatePixelShader = material->GetShader()->GetPixelShader()->AsID3D11();
+		}
+	}
+
 	static ID3D11ShaderResourceView* resources[D3D11_COMMONSHADER_INPUT_RESOURCE_REGISTER_COUNT] = {};
 	static ID3D11SamplerState*		 samplers[D3D11_COMMONSHADER_SAMPLER_SLOT_COUNT] = {};
 
@@ -645,8 +705,11 @@ void NSE::RenderServer::PipelineSetMaterial(const NSE_Material& material)
 		}
 	}
 
-	_deviceContext->VSSetShaderResources(0, resourceBindCount, resources);
-	_deviceContext->VSSetSamplers(0, samplersBindCount, samplers);
+	if (resourceBindCount > 0)
+	{
+		_deviceContext->VSSetShaderResources(0, resourceBindCount, resources);
+		_deviceContext->VSSetSamplers(0, samplersBindCount, samplers);
+	}
 
 	memset(resources, 0, sizeof(resources));
 	memset(resources, 0, sizeof(samplers));
@@ -710,8 +773,11 @@ void NSE::RenderServer::PipelineSetMaterial(const NSE_Material& material)
 		}
 	}
 
-	_deviceContext->PSSetShaderResources(0, resourceBindCount, resources);
-	_deviceContext->PSSetSamplers(0, samplersBindCount, samplers);
+	if (resourceBindCount > 0)
+	{
+		_deviceContext->PSSetShaderResources(0, resourceBindCount, resources);
+		_deviceContext->PSSetSamplers(0, samplersBindCount, samplers);
+	}
 }
 
 void NSE::RenderServer::PipelineDrawIndexed(const NSE_Mesh& mesh)
@@ -733,12 +799,18 @@ void NSE::RenderServer::PipelineSetRenderTargets(ID3D11RenderTargetView *colorTa
 
 void NSE::RenderServer::PipelineSetRenderTargets(const NSE_RenderTexture &renderTexture)
 {
-	D3D11_VIEWPORT viewport = {0, 0, (float)renderTexture->GetWidth(), (float)renderTexture->GetHeight(), 0.0f, 1.0f}; // ToDo ?
+	if (renderTexture->GetDepthStencilView() != _currentDepthStencilView || renderTexture->GetRTV() != _currentRenderTargetView)
+	{
+		D3D11_VIEWPORT viewport = {0, 0, (float)renderTexture->GetWidth(), (float)renderTexture->GetHeight(), 0.0f, 1.0f}; // ToDo ?
 
-	auto rtv = renderTexture->GetRTV();
+		auto rtv = renderTexture->GetRTV();
 
-	_deviceContext->OMSetRenderTargets(1, &rtv, renderTexture->GetDepthStencilView());
-	_deviceContext->RSSetViewports(1, &viewport);
+		_deviceContext->OMSetRenderTargets(1, &rtv, renderTexture->GetDepthStencilView());
+		_deviceContext->RSSetViewports(1, &viewport);
+
+		_currentDepthStencilView = renderTexture->GetDepthStencilView();
+		_currentRenderTargetView = renderTexture->GetRTV();
+	}
 
 	auto drawProperties = _drawPropertiesBuffer->GetBufferData()->As<DrawProperties>();
 
@@ -748,8 +820,14 @@ void NSE::RenderServer::PipelineSetRenderTargets(const NSE_RenderTexture &render
 
 void NSE::RenderServer::PipelineResetRenderTarget()
 {
-	_deviceContext->OMSetRenderTargets(1, &_renderTargetView, _depthStencilView);
-	_deviceContext->RSSetViewports(1, &_viewport);
+	if (_renderTargetView != _currentRenderTargetView || _depthStencilView != _currentDepthStencilView)
+	{
+		_deviceContext->OMSetRenderTargets(1, &_renderTargetView, _depthStencilView);
+		_deviceContext->RSSetViewports(1, &_viewport);
+
+		_currentRenderTargetView = _renderTargetView;
+		_currentDepthStencilView = _depthStencilView;
+	}
 
 	auto drawProperties = _drawPropertiesBuffer->GetBufferData()->As<DrawProperties>();
 

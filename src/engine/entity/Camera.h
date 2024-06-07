@@ -46,7 +46,7 @@ namespace NSE
 
         int                 priority = 0;
         NSE_RenderTexture   targetRT = nullptr;
-        Scene*              targetSene = nullptr;
+        Scene*              targetScene = nullptr;
         CameraClearMode     clearMode = CAMERA_CLEAR_MODE_COLOR;
         DirectX::XMFLOAT4   clearColor = {0, 0, 0, 1};
 

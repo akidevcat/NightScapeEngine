@@ -13,7 +13,7 @@
 
 namespace NSE
 {
-    enum MATERIAL_RENDER_QUEUE : int
+    enum MATERIAL_RENDER_QUEUE : short
     {
         MATERIAL_RENDER_QUEUE_BACKGROUND = -10000,
         MATERIAL_RENDER_QUEUE_OPAQUE = 0,
@@ -35,6 +35,10 @@ namespace NSE
         void EnumerateBuffers(_Out_ ID3D11Buffer* vsBuffers[3], _Out_ int& vsBuffersLength,
                               _Out_ ID3D11Buffer* psBuffers[3], _Out_ int& psBuffersLength,
                               ConstantBuffer* globalProps, ConstantBuffer* drawProps) const;
+        void EnumerateVertexBuffers(_Out_ ID3D11Buffer* vsBuffers[3], _Out_ int& vsBuffersLength,
+                                    const ConstantBuffer* globalPropertiesBuffer, const ConstantBuffer* drawPropertiesBuffer) const;
+        void EnumeratePixelBuffers(_Out_ ID3D11Buffer* psBuffers[3], _Out_ int& psBuffersLength,
+                                   const ConstantBuffer* globalPropertiesBuffer, const ConstantBuffer* drawPropertiesBuffer) const;
 
     public:
         [[nodiscard]] NSE_Shader GetShader() const { return _shader; }
@@ -51,6 +55,13 @@ namespace NSE
         void SetColor(size_t nameID, DirectX::XMVECTOR value) const;
         void SetMatrix(size_t nameID, DirectX::XMMATRIX value) const;
 
+        void SetBlendState(const D3D11_BLEND_DESC& description);
+        void SetBlendStateTransparency();
+        void SetBlendStateAdditive();
+        void SetBlendStateOpaque();
+        [[nodiscard]] ID3D11BlendState* GetBlendState() const { return _blendState; }
+        [[nodiscard]] bool GetDepthWrite() const { return _depthWriteEnabled; }
+
         // [[nodiscard]] ConstBufferData* GetVSMaterialProps() const { return _vsMaterialProps; }
         // [[nodiscard]] ConstBufferData* GetPSMaterialProps() const { return _psMaterialProps; }
 
@@ -59,8 +70,8 @@ namespace NSE
 
     private:
         NSE_Shader       _shader = nullptr;
-        // ConstBufferData* _vsMaterialProps = nullptr;
-        // ConstBufferData* _psMaterialProps = nullptr;
+        ID3D11BlendState* _blendState = nullptr;
+        bool                _depthWriteEnabled = true;
 
         ConstantBufferData* _vsMaterialPropertiesBuffer = nullptr;
         ConstantBufferData* _psMaterialPropertiesBuffer = nullptr;
