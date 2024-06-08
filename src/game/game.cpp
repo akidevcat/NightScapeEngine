@@ -77,7 +77,7 @@ void Game::Start()
     _triangle->renderingMaterial = _testMaterial;
     _triangle->position = {0, 0, 6};
 
-    _cameraRT = CreateObject<RenderTexture>(80, 60, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_D24_UNORM_S8_UINT);
+    _cameraRT = CreateObject<RenderTexture>(120, 90, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_D24_UNORM_S8_UINT);
 
 
 
@@ -90,6 +90,15 @@ void Game::Start()
 
     auto starsCamera = _scene->Create<StarsCamera>(controller->GetCamera(), _cameraRT);
 
+    auto test = _scene->Create<VisualMeshEntity>();
+    auto baseShader = CreateObject<Shader>(L"Assets/Shaders/Base.hlsl");
+    baseShader->Compile();
+    auto baseMaterial = CreateObject<Material>(baseShader);
+    test->mesh = NSE::AssetsServer::Get()->LoadMeshAsset("Assets/Models/destructor.obj");
+    test->scale = {0.2, 0.2, 0.2};
+    test->renderingMaterial = _testMaterial;
+    test->position = {0, 0, 100};
+    test->rotation = DirectX::XMQuaternionRotationAxis({0, 1, 0}, 180);
 
 }
 

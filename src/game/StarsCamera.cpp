@@ -62,7 +62,12 @@ StarsCamera::~StarsCamera()
 
 void StarsCamera::OnUpdate()
 {
-    Camera::OnUpdate();
+    float aspect;
+    float fov;
+    float n, f;
+
+    _parentCamera->GetParams(&aspect, &fov, &n, &f, nullptr);
+    SetParams(aspect, fov, n, f, false, 0);
 
     rotation = _parentCamera->rotation;
 }

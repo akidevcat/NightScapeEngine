@@ -61,6 +61,13 @@ void NSE::Camera::CopyParams(const obj_ptr<NSE::Camera> &other) // ToDo isOrthog
     UpdateProjectionMatrix();
 }
 
+void NSE::Camera::SetFov(float fov)
+{
+    _fov = fov;
+
+    UpdateProjectionMatrix();
+}
+
 DirectX::XMMATRIX NSE::Camera::GetViewMatrix() const
 {
 

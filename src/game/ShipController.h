@@ -20,7 +20,9 @@ public:
 private:
     float _camMomentumX = 0;
     float _camMomentumY = 0;
+    float _camMomentumR = 0;
     float _speedMomentum = 0;
+    NSE::Vector3d _shipVelocity = {};
 
     NSE_Camera _camera = nullptr;
     obj_ptr<ShipRadarController> _shipRadar = nullptr;
