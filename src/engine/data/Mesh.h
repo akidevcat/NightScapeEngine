@@ -5,6 +5,7 @@
 #include <directxmath.h>
 
 #include "../entity/Object.h"
+#include"../obj_ptr.h"
 
 #define NSE_Mesh obj_ptr<NSE::Mesh>
 #define NSE_VertexData obj_ptr<NSE::VertexData>

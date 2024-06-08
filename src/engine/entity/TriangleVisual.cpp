@@ -2,6 +2,7 @@
 
 #include "Camera.h"
 #include "../servers/RenderServer.h"
+#include "../servers/AssetServer.h"
 
 using namespace DirectX;
 

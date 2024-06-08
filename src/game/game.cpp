@@ -2,10 +2,12 @@
 
 #include <iostream>
 
+#include "ShipController.h"
 #include "StarsCamera.h"
 #include "../engine/entity/Camera.h"
 #include "../engine/entity/FreeCamera.h"
 #include "../engine/entity/TriangleVisual.h"
+#include "../engine/servers/AssetServer.h"
 
 using namespace NSE;
 
@@ -83,6 +85,8 @@ void Game::Start()
 
     // auto starsCamera = CreateObject<StarsCamera>(camera, _cameraRT);
     auto starsCamera = _scene->Create<StarsCamera>(camera, _cameraRT);
+
+    auto controller = _scene->Create<ShipController>();
 }
 
 bool Game::UpdateFrame()
@@ -97,7 +101,7 @@ void Game::OnFrameInput()
 
 void Game::OnFrameUpdate()
 {
-    _triangle->rotation = DirectX::XMQuaternionRotationAxis({0, 0, 1}, _engine->GetTimeServer()->Time() * 2.0f);
+    // _triangle->rotation = DirectX::XMQuaternionRotationAxis({0, 0, 1}, _engine->GetTimeServer()->Time() * 2.0f);
 }
 
 void Game::OnFrameRender()

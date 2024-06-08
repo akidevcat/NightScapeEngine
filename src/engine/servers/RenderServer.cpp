@@ -382,11 +382,6 @@ bool NSE::RenderServer::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	}
 
 	// ToDo
-	_errorShader = CreateObject<Shader>(L"Assets/Shaders/Error.hlsl");
-	_errorShader->Compile();
-	_errorMaterial = CreateObject<Material>(_errorShader);
-
-	// ToDo
 	_globalPropertiesBuffer = new ConstantBuffer{ShaderUtils::PropertyToID("GlobalProperties"), sizeof(GlobalProperties)};
 	_globalPropertiesBuffer->EnableBufferData();
 	_globalShaderInputs = new ShaderInputsData{};
@@ -477,6 +472,11 @@ bool NSE::RenderServer::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	_defaultTransparentBlendState = CreateObject<BlendState>(blendDescription);
 
 	// ToDo
+	_errorShader = CreateObject<Shader>(L"Assets/Shaders/Error.hlsl");
+	_errorShader->Compile();
+	_errorMaterial = CreateObject<Material>(_errorShader);
+
+	// ToDo
 	_primitiveQuadMesh = CreateObject<Mesh>(4, 2 * 3);
 	_primitiveQuadMesh->vertices[0] = VertexData{{-1, -1, 0}, {0, 0, 1}, {0, 0}};
 	_primitiveQuadMesh->vertices[1] = VertexData{{-1, 1, 0}, {0, 0, 1}, {0, 1}};
@@ -500,7 +500,7 @@ void NSE::RenderServer::Shutdown()
 	// Before shutting down set to windowed mode or when you release the swap chain it will throw an exception.
 	if(_swapChain)
 	{
-		_swapChain->SetFullscreenState(false, NULL);
+		_swapChain->SetFullscreenState(false, nullptr);
 	}
 
 	if(_alphaEnableBlendingState)

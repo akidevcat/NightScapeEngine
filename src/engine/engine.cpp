@@ -25,6 +25,7 @@ NSE::Engine::~Engine()
     delete _sceneServer;
     delete _timeServer;
     delete _applicationServer;
+    delete _assetsServer;
     delete _objectServer;
 }
 
@@ -37,6 +38,7 @@ bool NSE::Engine::Initialize(IGame* game, HINSTANCE histance, int screenWidth, i
     _screenHeight = screenHeight;
 
     _objectServer = new ObjectServer{};
+    _assetsServer = new AssetsServer{};
     _applicationServer = new ApplicationServer{};
 
     _timeServer = new TimeServer{};

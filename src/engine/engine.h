@@ -2,6 +2,7 @@
 #define ENGINE_H
 
 #include "servers/ApplicationServer.h"
+#include "servers/AssetServer.h"
 #include "servers/InputServer.h"
 #include "servers/RenderPipelineServer.h"
 #include "servers/RenderServer.h"
@@ -59,6 +60,7 @@ namespace NSE
         InputServer* _inputServer = nullptr;
         SceneServer* _sceneServer = nullptr;
         TimeServer* _timeServer = nullptr;
+        AssetsServer* _assetsServer = nullptr;
         int _screenWidth;
         int _screenHeight;
     };

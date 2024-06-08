@@ -19,6 +19,11 @@ namespace NSE
 
         explicit operator int64_t() const
         {
+            if (!renderingMaterial)
+            {
+                return 0;
+            }
+
             int64_t queue = renderingMaterial->renderQueue;
             queue -= SHRT_MIN;
 
