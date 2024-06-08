@@ -16,9 +16,19 @@ XMMATRIX NSE::SceneEntity::GetModelMatrix(Vector3d relativeTo) const
     return XMMatrixAffineTransformation(s, g_XMZero, rotation, p);
 }
 
-XMFLOAT3 NSE::SceneEntity::Forward()
+XMVECTOR NSE::SceneEntity::Forward() const
 {
-    return {}; // ToDo
+    return XMVector4Transform({0, 0, 1, 0}, GetModelMatrix({}));
+}
+
+XMVECTOR NSE::SceneEntity::Right() const
+{
+    return XMVector4Transform({1, 0, 0, 0}, GetModelMatrix({}));
+}
+
+XMVECTOR NSE::SceneEntity::Up() const
+{
+    return XMVector4Transform({0, 1, 0, 0}, GetModelMatrix({}));
 }
 
 bool NSE::SceneEntity::GetSceneUID(size_t &uid) const

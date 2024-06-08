@@ -20,7 +20,7 @@ cbuffer DrawProperties
 struct DefaultVertexInput
 {
     float3 position : POSITION;
-    float3 normal : POSITION;
+    float3 normal : NORMAL;
     float2 uv : TEXCOORD;
     float4 color : COLOR;
 };
@@ -28,6 +28,7 @@ struct DefaultVertexInput
 struct DefaultPixelInput
 {
     float4 position : SV_POSITION;
+    float4 normal : NORMAL;
     float2 uv : TEXCOORD0;
 };
 
@@ -36,6 +37,31 @@ float4 TransformObjectToClip(float3 position)
     float4 result = mul(_ModelMatrix, float4(position, 1));
     result = mul(_ViewMatrix, result);
     result = mul(_ProjectionMatrix, result);
+
+    return result;
+}
+
+float4 TransformObjectToView(float3 position)
+{
+    float4 result = mul(_ModelMatrix, float4(position, 1));
+    result = mul(_ViewMatrix, result);
+
+    return result;
+}
+
+float4 TransformObjectToClipDirection(float3 direction)
+{
+    float4 result = mul(_ModelMatrix, float4(direction, 0));
+    result = mul(_ViewMatrix, result);
+    result = mul(_ProjectionMatrix, result);
+
+    return result;
+}
+
+float4 TransformObjectToViewDirection(float3 direction)
+{
+    float4 result = mul(_ModelMatrix, float4(direction, 0));
+    result = mul(_ViewMatrix, result);
 
     return result;
 }

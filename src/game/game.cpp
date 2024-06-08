@@ -62,11 +62,11 @@ void Game::Start()
     _presentPlane = _presentScene->Create<QuadVisual>();
     _presentPlane->renderingMaterial = _presentMaterial;
 
-    auto camera = _scene->Create<FreeCamera>();
-    camera->targetScene = _scene;
-    camera->SetParams(_engine->GetScreenAspect(), 60.0f, 0.1f, 1000.0f, false, 0.0f);
-    camera->position = {0, 0, -1};
-    camera->clearMode = CAMERA_CLEAR_MODE_DEPTH;
+    // auto camera = _scene->Create<FreeCamera>();
+    // camera->targetScene = _scene;
+    // camera->SetParams(_engine->GetScreenAspect(), 60.0f, 0.1f, 1000.0f, false, 0.0f);
+    // camera->position = {0, 0, -1};
+    // camera->clearMode = CAMERA_CLEAR_MODE_DEPTH;
 
     _testShader = CreateObject<Shader>(L"Assets/Shaders/Triangle.hlsl");
     _testShader->Compile();
@@ -75,18 +75,22 @@ void Game::Start()
 
     _triangle = _scene->Create<TriangleVisual>();
     _triangle->renderingMaterial = _testMaterial;
-    _triangle->position = {0, 0, 1};
+    _triangle->position = {0, 0, 6};
 
     _cameraRT = CreateObject<RenderTexture>(80, 60, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_D24_UNORM_S8_UINT);
 
-    camera->targetRT = _cameraRT;
+
 
     _presentMaterial->GetPSInputs()->SetResource(mainTexID, _cameraRT->GetSRV());
 
     // auto starsCamera = CreateObject<StarsCamera>(camera, _cameraRT);
-    auto starsCamera = _scene->Create<StarsCamera>(camera, _cameraRT);
 
-    auto controller = _scene->Create<ShipController>();
+    auto controller = _scene->Create<ShipController>(_scene, _engine->GetScreenAspect());
+    controller->GetCamera()->targetRT = _cameraRT;
+
+    auto starsCamera = _scene->Create<StarsCamera>(controller->GetCamera(), _cameraRT);
+
+
 }
 
 bool Game::UpdateFrame()
@@ -101,7 +105,7 @@ void Game::OnFrameInput()
 
 void Game::OnFrameUpdate()
 {
-    // _triangle->rotation = DirectX::XMQuaternionRotationAxis({0, 0, 1}, _engine->GetTimeServer()->Time() * 2.0f);
+    _triangle->rotation = DirectX::XMQuaternionRotationAxis({0, 0, 1}, _engine->GetTimeServer()->Time() * 2.0f);
 }
 
 void Game::OnFrameRender()

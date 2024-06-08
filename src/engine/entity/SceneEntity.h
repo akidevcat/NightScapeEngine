@@ -18,7 +18,9 @@ namespace NSE
         // ~SceneEntity() override;
 
         [[nodiscard]] DirectX::XMMATRIX GetModelMatrix(Vector3d relativeTo) const;
-        DirectX::XMFLOAT3 Forward();
+        [[nodiscard]] DirectX::XMVECTOR Forward() const;
+        [[nodiscard]] DirectX::XMVECTOR Right() const;
+        [[nodiscard]] DirectX::XMVECTOR Up() const;
 
         bool GetSceneUID(size_t& uid) const;
         void SetSceneUID(size_t uid);
@@ -26,7 +28,7 @@ namespace NSE
 
         virtual void OnUpdate() {}
 
-        Vector3d     position = Vector3d{};
+        Vector3d          position = Vector3d{};
         DirectX::XMVECTOR rotation = DirectX::XMQuaternionIdentity();
         DirectX::XMFLOAT3 scale    = DirectX::XMFLOAT3(1, 1, 1);
 
