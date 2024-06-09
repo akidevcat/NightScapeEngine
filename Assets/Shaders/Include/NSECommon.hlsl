@@ -1,6 +1,12 @@
 #ifndef NSE_COMMON_INCLUDED
 #define NSE_COMMON_INCLUDED
 
+struct Light
+{
+    float3 Position;
+    float Intensity;
+};
+
 cbuffer GlobalProperties
 {
     float _Time;
@@ -15,6 +21,7 @@ cbuffer DrawProperties
     float4x4 _ViewMatrix;
     float4x4 _MVPMatrix;
     uint2 _TargetResolution;
+    Light _Lights[8];
 };
 
 struct DefaultVertexInput

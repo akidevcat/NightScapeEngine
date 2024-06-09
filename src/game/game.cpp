@@ -90,15 +90,15 @@ void Game::Start()
 
     auto starsCamera = _scene->Create<StarsCamera>(controller->GetCamera(), _cameraRT);
 
-    auto test = _scene->Create<VisualMeshEntity>();
-    auto baseShader = CreateObject<Shader>(L"Assets/Shaders/Base.hlsl");
-    baseShader->Compile();
-    auto baseMaterial = CreateObject<Material>(baseShader);
-    test->mesh = NSE::AssetsServer::Get()->LoadMeshAsset("Assets/Models/destructor.obj");
-    test->scale = {0.2, 0.2, 0.2};
-    test->renderingMaterial = _testMaterial;
-    test->position = {0, 0, 100};
-    test->rotation = DirectX::XMQuaternionRotationAxis({0, 1, 0}, 180);
+    // auto test = _scene->Create<VisualMeshEntity>();
+    // auto baseShader = CreateObject<Shader>(L"Assets/Shaders/Base.hlsl");
+    // baseShader->Compile();
+    // auto baseMaterial = CreateObject<Material>(baseShader);
+    // test->mesh = NSE::AssetsServer::Get()->LoadMeshAsset("Assets/Models/destructor.obj");
+    // test->scale = {0.2, 0.2, 0.2};
+    // test->renderingMaterial = _testMaterial;
+    // test->position = {0, 0, 100};
+    // test->rotation = DirectX::XMQuaternionRotationAxis({0, 1, 0}, 180);
 
 }
 

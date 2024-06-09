@@ -104,6 +104,8 @@ add_executable(${PROJECT_NAME} WIN32
         src/engine/NightScapeEngine.h
         src/game/ShipRadarController.cpp
         src/game/ShipRadarController.h
+        src/engine/data/Light.cpp
+        src/engine/data/Light.h
 )
 
 target_link_libraries(${PROJECT_NAME} d3d9 d3d11 d3dcompiler dinput8 dxguid)

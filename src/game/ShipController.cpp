@@ -41,7 +41,14 @@ void ShipController::OnUpdate()
 
     if (input->GetKey(DIK_W))
     {
-        targetVelocity += Forward() * 50.0f;
+        if (input->GetKey(DIK_LSHIFT))
+        {
+            targetVelocity += Forward() * 50.0f;
+        }
+        else
+        {
+            targetVelocity += Forward() * 20.0f;
+        }
     }
     if (input->GetKey(DIK_S))
     {
@@ -100,7 +107,7 @@ void ShipController::OnUpdate()
     _camera->rotation = XMQuaternionSlerp(_camera->rotation, rotation, 0.03f);
     // _camera->
 
-    _shipRadar->position = position + Forward() * 2.0f - Up() * 0.29f;
+    _shipRadar->position = position + Forward() * 2.0f - Up() * 0.25f;
 
     float velDot = (float)NSE::Vector3d::Dot(_shipVelocity.Normalized(), Forward());
 
