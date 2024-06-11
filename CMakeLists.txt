@@ -106,6 +106,8 @@ add_executable(${PROJECT_NAME} WIN32
         src/game/ShipRadarController.h
         src/engine/data/Light.cpp
         src/engine/data/Light.h
+        src/engine/addon/DDSTextureLoader11.cpp
+        src/engine/addon/DDSTextureLoader11.h
 )
 
 target_link_libraries(${PROJECT_NAME} d3d9 d3d11 d3dcompiler dinput8 dxguid)

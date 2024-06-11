@@ -7,8 +7,8 @@
 class StarsCamera : public NSE::Camera
 {
 public:
-    StarsCamera(const NSE_Camera& parentCamera, const NSE_RenderTexture& targetRT);
-    ~StarsCamera();
+    explicit StarsCamera(const NSE_Camera& parentCamera);
+    ~StarsCamera() override;
 
     void OnUpdate() override;
 private:

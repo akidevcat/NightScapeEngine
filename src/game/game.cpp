@@ -77,18 +77,20 @@ void Game::Start()
     _triangle->renderingMaterial = _testMaterial;
     _triangle->position = {0, 0, 6};
 
-    _cameraRT = CreateObject<RenderTexture>(120, 90, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_D24_UNORM_S8_UINT);
+    // _cameraRT = CreateObject<RenderTexture>(120, 90, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_D24_UNORM_S8_UINT);
+    _renderColorRT = CreateObject<RenderTexture>(120, 90, DXGI_FORMAT_R8G8B8A8_UNORM, false);
+    _renderDepthRT = CreateObject<RenderTexture>(120, 90, DXGI_FORMAT_D24_UNORM_S8_UINT, true);
 
-
-
-    _presentMaterial->GetPSInputs()->SetResource(mainTexID, _cameraRT->GetSRV());
+    _presentMaterial->GetPSInputs()->SetResource(mainTexID, _renderColorRT->ResourceView());
 
     // auto starsCamera = CreateObject<StarsCamera>(camera, _cameraRT);
 
     auto controller = _scene->Create<ShipController>(_scene, _engine->GetScreenAspect());
-    controller->GetCamera()->targetRT = _cameraRT;
 
-    auto starsCamera = _scene->Create<StarsCamera>(controller->GetCamera(), _cameraRT);
+    controller->GetCamera()->colorTarget = _renderColorRT;
+    controller->GetCamera()->depthTarget = _renderDepthRT;
+
+    auto starsCamera = _scene->Create<StarsCamera>(controller->GetCamera());
 
     // auto test = _scene->Create<VisualMeshEntity>();
     // auto baseShader = CreateObject<Shader>(L"Assets/Shaders/Base.hlsl");

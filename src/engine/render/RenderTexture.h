@@ -5,40 +5,28 @@
 #include <d3d11.h>
 #include <dxgiformat.h>
 
-#include "../entity/Object.h"
+#include "Texture.h"
 
 #define NSE_RenderTexture obj_ptr<NSE::RenderTexture>
 
 namespace NSE
 {
-    class RenderTexture : public Object
+    class RenderTexture : public Texture
     {
     public:
         RenderTexture() = delete;
-        RenderTexture(int width, int height, DXGI_FORMAT colorFormat, DXGI_FORMAT depthStencilFormat);
+        RenderTexture(int width, int height, DXGI_FORMAT format, bool isDepthStencil);
         ~RenderTexture() override;
 
-        void Release();
+        void Release() override;
 
-        [[nodiscard]] DXGI_FORMAT GetColorFormat() const { return _colorFormat; }
-        [[nodiscard]] DXGI_FORMAT GetDepthStencilFormat() const { return _depthStencilFormat; }
-        [[nodiscard]] ID3D11RenderTargetView* GetRTV() const { return _colorRTV; }
-        [[nodiscard]] ID3D11ShaderResourceView* GetSRV() const { return _colorSRV; }
-        [[nodiscard]] ID3D11DepthStencilView* GetDepthStencilView() const { return _depthStencilView; }
-        [[nodiscard]] int GetWidth() const { return _width; }
-        [[nodiscard]] int GetHeight() const { return _height; }
+        [[nodiscard]] ID3D11RenderTargetView* RenderTargetView() const { assert(!_isDepthStencil); return _renderTargetView; }
+        [[nodiscard]] ID3D11DepthStencilView* DepthStencilView() const { assert( _isDepthStencil); return _depthStencilView; }
 
-    private:
-        int _width = 1;
-        int _height = 1;
-        DXGI_FORMAT _colorFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
-        DXGI_FORMAT _depthStencilFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
-        ID3D11Texture2D* _colorTexture = nullptr;
-        ID3D11Texture2D* _depthStencilTexture = nullptr;
-        ID3D11RenderTargetView* _colorRTV = nullptr;
-        ID3D11ShaderResourceView* _colorSRV = nullptr;
+    protected:
+        bool _isDepthStencil = false;
+        ID3D11RenderTargetView* _renderTargetView = nullptr;
         ID3D11DepthStencilView* _depthStencilView = nullptr;
-        D3D11_VIEWPORT _viewport = {};
     };
 }
 

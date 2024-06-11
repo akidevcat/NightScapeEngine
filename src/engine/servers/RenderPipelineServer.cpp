@@ -65,14 +65,14 @@ void NSE::RenderPipelineServer::RenderFrame()
         switch (camera->clearMode)
         {
             case CAMERA_CLEAR_MODE_COLOR:
-                if (camera->targetRT)
-                    render->PipelineClearRenderTexture(camera->targetRT, true, true, camera->clearColor, 1.0f);
+                if (camera->colorTarget)
+                    render->ClearRenderTextureColor(camera->colorTarget, camera->clearColor);
                 else
                     render->PipelineClearRenderTarget(true, true, camera->clearColor, 1.0f);
             break;
             case CAMERA_CLEAR_MODE_DEPTH:
-                if (camera->targetRT)
-                    render->PipelineClearRenderTexture(camera->targetRT, false, true, {}, 1.0f);
+                if (camera->depthTarget)
+                    render->ClearRenderTextureDepth(camera->depthTarget, 1.0f);
                 else
                     render->PipelineClearRenderTarget(false, true, {}, 1.0f);
             break;

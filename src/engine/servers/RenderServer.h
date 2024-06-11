@@ -33,14 +33,18 @@ namespace NSE
         void PipelineSetMaterial(const NSE_Material& material);
         void PipelineDrawIndexed(const NSE_Mesh& mesh);
         void PipelineSetRenderTargets(ID3D11RenderTargetView* colorTarget, ID3D11DepthStencilView* depthTarget, const D3D11_VIEWPORT& viewport);
-        void PipelineSetRenderTargets(const NSE_RenderTexture& renderTexture);
-        void PipelineResetRenderTarget();
-        void PipelineClearRenderTexture(const NSE_RenderTexture& target, bool clearColor, bool clearDepth, DirectX::XMFLOAT4 color, float depth);
+        void PipelineSetRenderTargets(const NSE_RenderTexture& colorTarget, const NSE_RenderTexture& depthTarget);
+        // void PipelineResetRenderTarget();
+
+        void ClearRenderTextureColor(const NSE_RenderTexture& target, DirectX::XMFLOAT4 color) const;
+        void ClearRenderTextureDepth(const NSE_RenderTexture& target, float depth) const;
+
+        // void PipelineClearRenderTexture(const NSE_RenderTexture& target, bool clearColor, bool clearDepth, DirectX::XMFLOAT4 color, float depth);
         void PipelineClearRenderTarget(bool clearColor, bool clearDepth, DirectX::XMFLOAT4 color, float depth);
 
         // ===== Render Methods =====
         void Present();
-        void ClearRenderTarget(const NSE_RenderTexture& target, DirectX::XMFLOAT4 color);
+        // void ClearRenderTarget(const NSE_RenderTexture& target, DirectX::XMFLOAT4 color);
         void DrawMesh(const NSE_Mesh& mesh, const NSE_Material& material, const DirectX::XMMATRIX& matrix, const NSE_Camera& camera, size_t objectID = 0);
 
         // Property Accessors

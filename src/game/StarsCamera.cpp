@@ -3,7 +3,7 @@
 #include "../engine/servers/RenderServer.h"
 #include "../engine/servers/SceneServer.h"
 
-StarsCamera::StarsCamera(const NSE_Camera& parentCamera, const NSE_RenderTexture& targetRT)
+StarsCamera::StarsCamera(const NSE_Camera& parentCamera)
 {
     static size_t sid_PixelSizeX = NSE::ShaderUtils::PropertyToID("_PixelSizeX");
     static size_t sid_PixelSizeY = NSE::ShaderUtils::PropertyToID("_PixelSizeY");
@@ -12,7 +12,12 @@ StarsCamera::StarsCamera(const NSE_Camera& parentCamera, const NSE_RenderTexture
     _parentCamera = parentCamera;
     NSE::SceneServer::Get()->CreateScene(_starsScene);
     this->targetScene = _starsScene;
-    this->targetRT = targetRT;
+
+    // this->targetRT = targetRT;
+    this->colorTarget = parentCamera->colorTarget;
+    this->depthTarget = parentCamera->depthTarget;
+
+
     this->clearMode = NSE::CAMERA_CLEAR_MODE_COLOR;
     // this->clearColor = {0, 0, 0, 1};
     // this->clearColor = {0.35 / 9.0, 0.26 / 9.0, 0.38 / 9.0, 1};

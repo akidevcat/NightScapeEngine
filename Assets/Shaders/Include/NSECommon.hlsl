@@ -21,7 +21,7 @@ cbuffer DrawProperties
     float4x4 _ViewMatrix;
     float4x4 _MVPMatrix;
     uint2 _TargetResolution;
-    Light _Lights[8];
+//     Light _Lights[8];
 };
 
 struct DefaultVertexInput

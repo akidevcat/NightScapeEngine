@@ -5,145 +5,112 @@
 
 #include "../servers/RenderServer.h"
 
-NSE::RenderTexture::RenderTexture(int width, int height, DXGI_FORMAT colorFormat, DXGI_FORMAT depthStencilFormat)
+NSE::RenderTexture::RenderTexture(int width, int height, DXGI_FORMAT format, bool isDepthStencil) : Texture(width, height)
 {
-    auto device = RenderServer::Get()->GetDevice();
+    _format = format;
+    _isDepthStencil = isDepthStencil;
 
-    _width = width;
-    _height = height;
-    _colorFormat = colorFormat;
-    _depthStencilFormat = depthStencilFormat;
+    auto device = RenderServer::Get()->GetDevice();
 
     HRESULT result;
 
-    // D3D11_TEXTURE2D_DESC textureDesc;
-    D3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc;
-    D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
-    D3D11_TEXTURE2D_DESC depthBufferDesc;
-    D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc;
-    DXGI_FORMAT textureFormat;
+    { // Create 2D Texture
+        D3D11_TEXTURE2D_DESC desc;
+        ZeroMemory(&desc, sizeof(desc));
 
-    D3D11_TEXTURE2D_DESC textureDesc;
+        desc.Width = width;
+        desc.Height = height;
+        desc.MipLevels = 1; // ToDo
+        desc.ArraySize = 1;
+        desc.Format = format;
+        desc.SampleDesc.Count = 1;
+        desc.SampleDesc.Quality = 0; // ToDo? Depth Only?
+        desc.Usage = D3D11_USAGE_DEFAULT;
+        desc.CPUAccessFlags = 0;
+        desc.MiscFlags = 0;
 
-    ZeroMemory(&textureDesc, sizeof(textureDesc));
+        // ToDo ...
+        if (desc.Format == DXGI_FORMAT_D24_UNORM_S8_UINT)
+        {
+            desc.Format = DXGI_FORMAT_R24G8_TYPELESS;
+        }
 
-    // Setup the render target texture description.
-    textureDesc.Width = width;
-    textureDesc.Height = height;
-    textureDesc.MipLevels = 1;
-    textureDesc.ArraySize = 1;
-    textureDesc.Format = colorFormat;
-    textureDesc.SampleDesc.Count = 1;
-    textureDesc.Usage = D3D11_USAGE_DEFAULT;
-    textureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
-    textureDesc.CPUAccessFlags = 0;
-    textureDesc.MiscFlags = 0;
+        if (isDepthStencil)
+        {
+            desc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
+        }
+        else
+        {
+            desc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+        }
 
-    result = device->CreateTexture2D(&textureDesc, nullptr, &_colorTexture);
-    if(FAILED(result))
-    {
-        std::cerr << "Failed to create color texture" << std::endl << result;
-        return;
+        ID3D11Texture2D* tex2D;
+
+        result = device->CreateTexture2D(&desc, nullptr, &tex2D);
+        assert(SUCCEEDED(result));
+
+        _d3dResource = tex2D;
     }
 
-    renderTargetViewDesc.Format = textureDesc.Format;
-    renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
-    renderTargetViewDesc.Texture2D.MipSlice = 0;
+    if (!isDepthStencil) { // Create Render Target View
+        D3D11_RENDER_TARGET_VIEW_DESC desc;
 
-    result = device->CreateRenderTargetView(_colorTexture, &renderTargetViewDesc, &_colorRTV);
-    if(FAILED(result))
-    {
-        std::cerr << "Failed to create rtv" << std::endl;
-        return;
+        desc.Format = format;
+        desc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+        desc.Texture2D.MipSlice = 0;
+
+        result = device->CreateRenderTargetView(_d3dResource, &desc, &_renderTargetView);
+        assert(SUCCEEDED(result));
     }
 
-    shaderResourceViewDesc.Format = textureDesc.Format;
-    shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-    shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
-    shaderResourceViewDesc.Texture2D.MipLevels = 1;
+    { // Create Shader Resource View
+        D3D11_SHADER_RESOURCE_VIEW_DESC desc;
 
-    result = device->CreateShaderResourceView(_colorTexture, &shaderResourceViewDesc, &_colorSRV);
-    if(FAILED(result))
-    {
-        std::cerr << "Failed to create srv" << std::endl;
-        return;
+        desc.Format = format;
+        desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+        desc.Texture2D.MostDetailedMip = 0;
+        desc.Texture2D.MipLevels = 1;
+
+        if (desc.Format == DXGI_FORMAT_D24_UNORM_S8_UINT)
+        {
+            desc.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS; // ToDo
+        }
+
+        result = device->CreateShaderResourceView(_d3dResource, &desc, &_d3dTextureView);
+        assert(SUCCEEDED(result));
     }
 
-    ZeroMemory(&depthBufferDesc, sizeof(depthBufferDesc));
-    depthBufferDesc.Width = width;
-    depthBufferDesc.Height = height;
-    depthBufferDesc.MipLevels = 1;
-    depthBufferDesc.ArraySize = 1;
-    depthBufferDesc.Format = depthStencilFormat;
-    depthBufferDesc.SampleDesc.Count = 1;
-    depthBufferDesc.SampleDesc.Quality = 0;
-    depthBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-    depthBufferDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
-    depthBufferDesc.CPUAccessFlags = 0;
-    depthBufferDesc.MiscFlags = 0;
+    if (isDepthStencil) { // Create Depth Stencil View
+        D3D11_DEPTH_STENCIL_VIEW_DESC desc;
+        ZeroMemory(&desc, sizeof(desc));
 
-    result = device->CreateTexture2D(&depthBufferDesc, nullptr, &_depthStencilTexture);
-    if(FAILED(result))
-    {
-        std::cerr << "Failed to create depth stencil texture" << std::endl;
-        return;
+        desc.Format = format;
+        desc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+        desc.Texture2D.MipSlice = 0;
+
+        result = device->CreateDepthStencilView(_d3dResource, &desc, &_depthStencilView);
+        assert(SUCCEEDED(result));
     }
-
-    ZeroMemory(&depthStencilViewDesc, sizeof(depthStencilViewDesc));
-
-    depthStencilViewDesc.Format = depthStencilFormat;
-    depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
-    depthStencilViewDesc.Texture2D.MipSlice = 0;
-
-    result = device->CreateDepthStencilView(_depthStencilTexture, &depthStencilViewDesc, &_depthStencilView);
-    if(FAILED(result))
-    {
-        std::cerr << "Failed to create depth stencil view" << std::endl;
-        return;
-    }
-
-    _viewport.Width = (float)width;
-    _viewport.Height = (float)height;
-    _viewport.MinDepth = 0.0f;
-    _viewport.MaxDepth = 1.0f;
-    _viewport.TopLeftX = 0;
-    _viewport.TopLeftY = 0;
 }
 
 NSE::RenderTexture::~RenderTexture()
 {
-    Release();
+    RenderTexture::Release();
 }
 
 void NSE::RenderTexture::Release()
 {
+    Texture::Release();
+
     if(_depthStencilView)
     {
         _depthStencilView->Release();
         _depthStencilView = nullptr;
     }
 
-    if(_depthStencilTexture)
+    if(_renderTargetView)
     {
-        _depthStencilTexture->Release();
-        _depthStencilTexture = nullptr;
-    }
-
-    if(_colorSRV)
-    {
-        _colorSRV->Release();
-        _colorSRV = nullptr;
-    }
-
-    if(_colorRTV)
-    {
-        _colorRTV->Release();
-        _colorRTV = nullptr;
-    }
-
-    if(_colorTexture)
-    {
-        _colorTexture->Release();
-        _colorTexture = nullptr;
+        _renderTargetView->Release();
+        _renderTargetView = nullptr;
     }
 }

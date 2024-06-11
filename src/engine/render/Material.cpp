@@ -182,6 +182,9 @@ void NSE::Material::EnumerateVertexBuffers(ID3D11Buffer *vsBuffers[3], int &vsBu
         vsBuffers[vsBuffersLength] = _shader->GetVertexShader()->GetMaterialPropertiesBuffer()->GetGPUBuffer();
         vsBuffersLength++;
     }
+
+    // ToDo
+    // _vsInputs->GetResource()...
 }
 
 void NSE::Material::EnumeratePixelBuffers(ID3D11Buffer *psBuffers[3], int &psBuffersLength,

@@ -33,7 +33,9 @@ private:
     NSE_Shader _testShader = nullptr;
     NSE_Material _testMaterial = nullptr;
     NSE_TriangleVisual _triangle = nullptr;
-    NSE_RenderTexture _cameraRT = nullptr;
+    // NSE_RenderTexture _cameraRT = nullptr;
+    NSE_RenderTexture _renderColorRT = nullptr;
+    NSE_RenderTexture _renderDepthRT = nullptr;
     NSE_Camera _presentCamera = nullptr;
     NSE_QuadVisual _presentPlane = nullptr;
     NSE_Shader _presentShader = nullptr;

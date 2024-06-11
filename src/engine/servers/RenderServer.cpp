@@ -834,56 +834,88 @@ void NSE::RenderServer::PipelineSetRenderTargets(ID3D11RenderTargetView *colorTa
 	drawProperties->TargetResolutionY = (uint32_t)viewport.Height;
 }
 
-void NSE::RenderServer::PipelineSetRenderTargets(const NSE_RenderTexture &renderTexture)
+void NSE::RenderServer::PipelineSetRenderTargets(const NSE_RenderTexture& colorTarget,
+	const NSE_RenderTexture& depthTarget)
 {
-	if (renderTexture->GetDepthStencilView() != _currentDepthStencilView || renderTexture->GetRTV() != _currentRenderTargetView)
+	ID3D11RenderTargetView* rtv = colorTarget ? colorTarget->RenderTargetView() : _renderTargetView;
+	ID3D11DepthStencilView* dsv = depthTarget ? depthTarget->DepthStencilView() : _depthStencilView;
+	D3D11_VIEWPORT viewport = colorTarget ? D3D11_VIEWPORT{0, 0, (float)colorTarget->Width(), (float)colorTarget->Height(), 0.0f, 1.0f} : _viewport; // ToDo
+
+	if (rtv != _currentRenderTargetView || dsv != _currentDepthStencilView)
 	{
-		D3D11_VIEWPORT viewport = {0, 0, (float)renderTexture->GetWidth(), (float)renderTexture->GetHeight(), 0.0f, 1.0f}; // ToDo ?
-
-		auto rtv = renderTexture->GetRTV();
-
-		_deviceContext->OMSetRenderTargets(1, &rtv, renderTexture->GetDepthStencilView());
+		_deviceContext->OMSetRenderTargets(1, &rtv, dsv);
 		_deviceContext->RSSetViewports(1, &viewport);
 
-		_currentDepthStencilView = renderTexture->GetDepthStencilView();
-		_currentRenderTargetView = renderTexture->GetRTV();
+		_currentRenderTargetView = rtv;
+		_currentDepthStencilView = dsv;
 	}
 
 	auto drawProperties = _drawPropertiesBuffer->GetBufferData()->As<DrawProperties>();
 
-	drawProperties->TargetResolutionX = renderTexture->GetWidth();
-	drawProperties->TargetResolutionY = renderTexture->GetHeight();
+	drawProperties->TargetResolutionX = (uint32_t)viewport.Width;
+	drawProperties->TargetResolutionY = (uint32_t)viewport.Height;
 }
 
-void NSE::RenderServer::PipelineResetRenderTarget()
+// void NSE::RenderServer::PipelineSetRenderTargets(const NSE_RenderTexture &renderTexture)
+// {
+// 	if (renderTexture->GetDepthStencilView() != _currentDepthStencilView || renderTexture->GetRTV() != _currentRenderTargetView)
+// 	{
+// 		D3D11_VIEWPORT viewport = {0, 0, (float)renderTexture->GetWidth(), (float)renderTexture->GetHeight(), 0.0f, 1.0f}; // ToDo ?
+//
+// 		auto rtv = renderTexture->GetRTV();
+//
+// 		_deviceContext->OMSetRenderTargets(1, &rtv, renderTexture->GetDepthStencilView());
+// 		_deviceContext->RSSetViewports(1, &viewport);
+//
+// 		_currentDepthStencilView = renderTexture->GetDepthStencilView();
+// 		_currentRenderTargetView = renderTexture->GetRTV();
+// 	}
+//
+// 	auto drawProperties = _drawPropertiesBuffer->GetBufferData()->As<DrawProperties>();
+//
+// 	drawProperties->TargetResolutionX = renderTexture->GetWidth();
+// 	drawProperties->TargetResolutionY = renderTexture->GetHeight();
+// }
+
+// void NSE::RenderServer::PipelineResetRenderTarget()
+// {
+// 	if (_renderTargetView != _currentRenderTargetView || _depthStencilView != _currentDepthStencilView)
+// 	{
+// 		_deviceContext->OMSetRenderTargets(1, &_renderTargetView, _depthStencilView);
+// 		_deviceContext->RSSetViewports(1, &_viewport);
+//
+// 		_currentRenderTargetView = _renderTargetView;
+// 		_currentDepthStencilView = _depthStencilView;
+// 	}
+//
+// 	auto drawProperties = _drawPropertiesBuffer->GetBufferData()->As<DrawProperties>();
+//
+// 	drawProperties->TargetResolutionX = (uint32_t)_viewport.Width;
+// 	drawProperties->TargetResolutionY = (uint32_t)_viewport.Height;
+// }
+
+void NSE::RenderServer::ClearRenderTextureColor(const NSE_RenderTexture& target, DirectX::XMFLOAT4 color) const
 {
-	if (_renderTargetView != _currentRenderTargetView || _depthStencilView != _currentDepthStencilView)
-	{
-		_deviceContext->OMSetRenderTargets(1, &_renderTargetView, _depthStencilView);
-		_deviceContext->RSSetViewports(1, &_viewport);
-
-		_currentRenderTargetView = _renderTargetView;
-		_currentDepthStencilView = _depthStencilView;
-	}
-
-	auto drawProperties = _drawPropertiesBuffer->GetBufferData()->As<DrawProperties>();
-
-	drawProperties->TargetResolutionX = (uint32_t)_viewport.Width;
-	drawProperties->TargetResolutionY = (uint32_t)_viewport.Height;
+	_deviceContext->ClearRenderTargetView(target->RenderTargetView(), reinterpret_cast<const float*>(&color));
 }
 
-void NSE::RenderServer::PipelineClearRenderTexture(const NSE_RenderTexture& target, bool clearColor, bool clearDepth, DirectX::XMFLOAT4 color, float depth)
+void NSE::RenderServer::ClearRenderTextureDepth(const NSE_RenderTexture& target, float depth) const
 {
-	if (clearColor)
-	{
-		_deviceContext->ClearRenderTargetView(target->GetRTV(), reinterpret_cast<const float*>(&color));
-	}
-
-	if (clearDepth)
-	{
-		_deviceContext->ClearDepthStencilView(target->GetDepthStencilView(), D3D11_CLEAR_DEPTH, depth, 0);
-	}
+	_deviceContext->ClearDepthStencilView(target->DepthStencilView(), D3D11_CLEAR_DEPTH, depth, 0);
 }
+
+// void NSE::RenderServer::PipelineClearRenderTexture(const NSE_RenderTexture& target, bool clearColor, bool clearDepth, DirectX::XMFLOAT4 color, float depth)
+// {
+// 	if (clearColor)
+// 	{
+// 		_deviceContext->ClearRenderTargetView(target->GetRTV(), reinterpret_cast<const float*>(&color));
+// 	}
+//
+// 	if (clearDepth)
+// 	{
+// 		_deviceContext->ClearDepthStencilView(target->GetDepthStencilView(), D3D11_CLEAR_DEPTH, depth, 0);
+// 	}
+// }
 
 void NSE::RenderServer::PipelineClearRenderTarget(bool clearColor, bool clearDepth, DirectX::XMFLOAT4 color,
 	float depth)
@@ -913,25 +945,28 @@ void NSE::RenderServer::Present()
 	}
 }
 
-void NSE::RenderServer::ClearRenderTarget(const NSE_RenderTexture& target, DirectX::XMFLOAT4 color)
-{
-	_deviceContext->ClearRenderTargetView(target->GetRTV(), reinterpret_cast<const float*>(&color));
-	_deviceContext->ClearDepthStencilView(target->GetDepthStencilView(), D3D11_CLEAR_DEPTH, 1.0f, 0);
-}
+// void NSE::RenderServer::ClearRenderTarget(const NSE_RenderTexture& target, DirectX::XMFLOAT4 color)
+// {
+// 	_deviceContext->ClearRenderTargetView(target->GetRTV(), reinterpret_cast<const float*>(&color));
+// 	_deviceContext->ClearDepthStencilView(target->GetDepthStencilView(), D3D11_CLEAR_DEPTH, 1.0f, 0);
+// }
 
 void NSE::RenderServer::DrawMesh(const NSE_Mesh& mesh, const NSE_Material& material, const DirectX::XMMATRIX& matrix, const NSE_Camera& camera, size_t objectID)
 {
 	PipelineSetModelMatrix(matrix);
 
+
+
 	PipelineSetCamera(camera);
-	if (camera->targetRT)
-	{
-		PipelineSetRenderTargets(camera->targetRT);
-	}
-	else
-	{
-		PipelineResetRenderTarget();
-	}
+	PipelineSetRenderTargets(camera->colorTarget, camera->depthTarget);
+	// if (camera->colorTarget)
+	// {
+	// 	PipelineSetRenderTargets(camera->targetRT);
+	// }
+	// else
+	// {
+	// 	PipelineResetRenderTarget();
+	// }
 
 	PipelineSetMesh(mesh);
 	PipelineSetMaterial(material ? material : _errorMaterial);
