@@ -13,11 +13,10 @@ public:
 
     void SetResource(size_t nameID, ID3D11ShaderResourceView* resource); // ToDo nullptr?
     void SetSampler(size_t nameID, ID3D11SamplerState* sampler);
-    // void SetBuffer(size_t nameID, ID3D11Buffer* buffer);
     bool GetResource(size_t nameID, ID3D11ShaderResourceView*& resource);
     bool GetSampler(size_t nameID, ID3D11SamplerState*& sampler);
-    // bool GetBuffer(size_t nameID, ID3D11Buffer*& buffer);
 
+    void SetConstantBuffer(const NSE_ConstantBuffer& buffer);
     void SetConstantBuffer(size_t nameID, const NSE_ConstantBuffer& buffer);
     bool GetConstantBuffer(size_t nameID, NSE_ConstantBuffer& buffer);
 

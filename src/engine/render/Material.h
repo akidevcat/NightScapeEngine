@@ -16,10 +16,10 @@ namespace NSE
 {
     enum MATERIAL_RENDER_QUEUE : short
     {
-        MATERIAL_RENDER_QUEUE_BACKGROUND = -10000,
+        MATERIAL_RENDER_QUEUE_BACKGROUND = -1000,
         MATERIAL_RENDER_QUEUE_OPAQUE = 0,
-        MATERIAL_RENDER_QUEUE_TRANSPARENT = 10000,
-        MATERIAL_RENDER_QUEUE_OVERLAY = 20000
+        MATERIAL_RENDER_QUEUE_TRANSPARENT = 1000,
+        MATERIAL_RENDER_QUEUE_OVERLAY = 2000
     };
 
     class Material : public Object
@@ -29,17 +29,6 @@ namespace NSE
         ~Material() override;
 
         void Upload();
-        // bool UploadMaterialProperties(ID3D11DeviceContext *context);
-        // void UploadDrawProperties(ConstBufferData* drawProps);
-        // void UploadGlobalProperties(ConstBufferData* globalProps);
-        // void UploadAllProperties(ID3D11DeviceContext *context, ConstBufferData* globalProps, ConstBufferData* drawProps);
-        void EnumerateBuffers(_Out_ ID3D11Buffer* vsBuffers[3], _Out_ int& vsBuffersLength,
-                              _Out_ ID3D11Buffer* psBuffers[3], _Out_ int& psBuffersLength,
-                              ConstantBuffer* globalProps, ConstantBuffer* drawProps) const;
-        void EnumerateVertexBuffers(_Out_ ID3D11Buffer* vsBuffers[3], _Out_ int& vsBuffersLength,
-                                    const ConstantBuffer* globalPropertiesBuffer, const ConstantBuffer* drawPropertiesBuffer) const;
-        void EnumeratePixelBuffers(_Out_ ID3D11Buffer* psBuffers[3], _Out_ int& psBuffersLength,
-                                   const ConstantBuffer* globalPropertiesBuffer, const ConstantBuffer* drawPropertiesBuffer) const;
 
         void EnumerateVertexConstantBuffers(
             _Out_ ID3D11Buffer* vsBuffers[D3D11_COMMONSHADER_CONSTANT_BUFFER_HW_SLOT_COUNT],
@@ -63,6 +52,8 @@ namespace NSE
         void SetVector(size_t nameID, DirectX::XMVECTOR value) const;
         void SetColor(size_t nameID, DirectX::XMVECTOR value) const;
         void SetMatrix(size_t nameID, DirectX::XMMATRIX value) const;
+        void SetConstantBuffer(size_t nameID, const NSE_ConstantBuffer& buffer) const;
+        void SetConstantBuffer(const NSE_ConstantBuffer& buffer) const;
 
         void SetBlendState(const NSE_BlendState& state);
         void SetDepthWrite(bool state) { _depthWriteEnabled = state; }
@@ -74,7 +65,6 @@ namespace NSE
 
     private:
         NSE_Shader       _shader = nullptr;
-
         NSE_BlendState   _blendState = nullptr;
         bool             _depthWriteEnabled = true;
 

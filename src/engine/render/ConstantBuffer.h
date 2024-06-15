@@ -29,6 +29,7 @@ namespace NSE
         void Release();
 
         [[nodiscard]] bool                       IsReflected() const { return _isReflected; }
+        [[nodiscard]] size_t                     GetNameID() const { return _nameID; }
         [[nodiscard]] ID3D11Buffer*              GetGPUBuffer() const { return _buffer; }
         [[nodiscard]] ConstantBufferDescription* GetDescription() const { return _description; }
         [[nodiscard]] ConstantBufferData*        GetBufferData() const { return _data; }

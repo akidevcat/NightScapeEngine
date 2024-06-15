@@ -63,6 +63,16 @@ bool ShaderInputsData::GetSampler(size_t nameID, ID3D11SamplerState *&sampler)
     return false;
 }
 
+void ShaderInputsData::SetConstantBuffer(const obj_ptr<NSE::ConstantBuffer> &buffer)
+{
+    if (!buffer)
+    {
+        return;
+    }
+
+    SetConstantBuffer(buffer->GetNameID(), buffer);
+}
+
 // bool ShaderInputsData::GetBuffer(size_t nameID, ID3D11Buffer *&buffer)
 // {
 //     auto result = _buffers.find(nameID);

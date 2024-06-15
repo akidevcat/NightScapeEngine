@@ -3,6 +3,8 @@
 
 #include "../entity/SceneEntity.h"
 
+#define NSE_Light obj_ptr<NSE::Light>
+
 namespace NSE
 {
     class Light : public SceneEntity
@@ -12,7 +14,7 @@ namespace NSE
         ~Light() override;
 
     public:
-        DirectX::FXMVECTOR  lightColor = {1,1,1,1};
+        DirectX::XMFLOAT4  lightColor = {1,1,1,0};
         float               lightIntensity = 1.0f;
         float               lightRadius = 1.0f;
     };

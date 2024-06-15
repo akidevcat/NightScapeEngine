@@ -1,12 +1,6 @@
 #ifndef NSE_COMMON_INCLUDED
 #define NSE_COMMON_INCLUDED
 
-struct Light
-{
-    float3 Position;
-    float Intensity;
-};
-
 cbuffer GlobalProperties
 {
     float _Time;
@@ -21,7 +15,6 @@ cbuffer DrawProperties
     float4x4 _ViewMatrix;
     float4x4 _MVPMatrix;
     uint2 _TargetResolution;
-//     Light _Lights[8];
 };
 
 struct DefaultVertexInput
@@ -37,6 +30,8 @@ struct DefaultPixelInput
     float4 position : SV_POSITION;
     float4 normal : NORMAL;
     float2 uv : TEXCOORD0;
+    float4 positionRS : TEXCOORD1;
+    float4 normalRS : TEXCOORD2;
 };
 
 float4 TransformObjectToClip(float3 position)
@@ -54,6 +49,16 @@ float4 TransformObjectToView(float3 position)
     result = mul(_ViewMatrix, result);
 
     return result;
+}
+
+float4 TransformObjectToWorld(float3 position)
+{
+    return mul(_ModelMatrix, float4(position, 1));
+}
+
+float4 TransformObjectToWorldDirection(float3 position)
+{
+    return mul(_ModelMatrix, float4(position, 0));
 }
 
 float4 TransformObjectToClipDirection(float3 direction)

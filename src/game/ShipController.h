@@ -1,6 +1,7 @@
 #ifndef SHIPCONTROLLER_H
 #define SHIPCONTROLLER_H
 #include "ShipRadarController.h"
+#include "../engine/data/Light.h"
 #include "../engine/entity/VisualMeshEntity.h"
 
 class ShipController : public NSE::VisualMeshEntity
@@ -25,6 +26,7 @@ private:
     NSE::Vector3d _shipVelocity = {};
 
     NSE_Camera _camera = nullptr;
+    NSE_Light _cockpitLight = nullptr;
     obj_ptr<ShipRadarController> _shipRadar = nullptr;
 };
 

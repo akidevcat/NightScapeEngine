@@ -1,5 +1,6 @@
 #include "RenderServer.h"
 
+#include "../data/LightsProperties.h"
 #include "../render/GlobalProperties.h"
 
 NSE::RenderServer::RenderServer()
@@ -13,6 +14,7 @@ NSE::RenderServer::~RenderServer()
 	// delete _errorMaterial;
 	DestroyObject(_errorShader);
 	DestroyObject(_errorMaterial);
+	DestroyObject(_lightsPropertiesBuffer);
 
 	// delete _globalProperties;
 	// delete _globalPropertiesBuffer;
@@ -388,6 +390,9 @@ bool NSE::RenderServer::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 
 	_drawPropertiesBuffer = CreateObject<ConstantBuffer>(ShaderUtils::PropertyToID("DrawProperties"), sizeof(DrawProperties));
 	_drawPropertiesBuffer->EnableBufferData();
+
+	_lightsPropertiesBuffer = CreateObject<ConstantBuffer>(ShaderUtils::PropertyToID("LightsProperties"), sizeof(LightsProperties));
+	_lightsPropertiesBuffer->EnableBufferData();
 
 	D3D11_SAMPLER_DESC samplerDesc;
 
@@ -910,6 +915,7 @@ void NSE::RenderServer::DrawMesh(const NSE_Mesh& mesh, const NSE_Material& mater
 
 	_globalPropertiesBuffer->UploadData();
 	_drawPropertiesBuffer->UploadData();
+	_lightsPropertiesBuffer->UploadData();
 
 	PipelineDrawIndexed(mesh);
 }

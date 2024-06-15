@@ -12,6 +12,7 @@
 #include "../render/GlobalProperties.h"
 #include "../render/Material.h"
 #include "../render/RenderTexture.h"
+#include "../data/LightsProperties.h"
 
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "dxgi.lib")
@@ -48,8 +49,10 @@ namespace NSE
         void DrawMesh(const NSE_Mesh& mesh, const NSE_Material& material, const DirectX::XMMATRIX& matrix, const NSE_Camera& camera, size_t objectID = 0);
 
         // Property Accessors
+        [[nodiscard]] LightsProperties*           GetLightsProperties() const { return GetLightsPropertiesBuffer()->GetBufferData()->As<LightsProperties>(); }
         [[nodiscard]] NSE_ConstantBuffer          GetGlobalPropertiesBuffer() const { return _globalPropertiesBuffer; }
         [[nodiscard]] NSE_ConstantBuffer          GetDrawPropertiesBuffer() const { return _drawPropertiesBuffer; }
+        [[nodiscard]] NSE_ConstantBuffer          GetLightsPropertiesBuffer() const { return _lightsPropertiesBuffer; }
         [[nodiscard]] GlobalProperties*           GetGlobalProperties() const { return _globalPropertiesBuffer->GetBufferData()->As<GlobalProperties>(); }
         [[nodiscard]] bool                        GetFullscreenState() const { return _isFullscreen; }
         void                                      SetFullscreenState(bool state) { _isFullscreen = state; }
@@ -109,6 +112,7 @@ namespace NSE
 
         NSE_ConstantBuffer          _globalPropertiesBuffer = nullptr;
         NSE_ConstantBuffer          _drawPropertiesBuffer = nullptr;
+        NSE_ConstantBuffer          _lightsPropertiesBuffer = nullptr;
 
         ShaderInputsData*           _globalShaderInputs = nullptr;
     };

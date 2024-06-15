@@ -23,8 +23,12 @@ ShipController::ShipController(NSE::Scene* scene, float screenAspect)
     _camera->position = {0, 0, -1};
     _camera->clearMode = NSE::CAMERA_CLEAR_MODE_DEPTH;
 
+    _cockpitLight = scene->Create<NSE::Light>();
+    _cockpitLight->lightColor = {0.22f, 0.13f, 0.02f, 1.0f};
+    _cockpitLight->lightIntensity = 6.0f;
+
     _shipRadar = scene->Create<ShipRadarController>();
-    _shipRadar->scale = {0.3f, 0.3f, 0.3f};
+    _shipRadar->scale = {0.45f, 0.45f, 0.45f};
 }
 
 ShipController::~ShipController()
@@ -107,7 +111,8 @@ void ShipController::OnUpdate()
     _camera->rotation = XMQuaternionSlerp(_camera->rotation, rotation, 0.03f);
     // _camera->
 
-    _shipRadar->position = position + Forward() * 2.0f - Up() * 0.25f;
+    _shipRadar->position = position + Forward() * 2.4f - Up() * 0.35f;
+    _cockpitLight->position = position + Forward() * 2.4f - Up() * 0.35f;
 
     float velDot = (float)NSE::Vector3d::Dot(_shipVelocity.Normalized(), Forward());
 
