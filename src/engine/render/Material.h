@@ -41,6 +41,14 @@ namespace NSE
         void EnumeratePixelBuffers(_Out_ ID3D11Buffer* psBuffers[3], _Out_ int& psBuffersLength,
                                    const ConstantBuffer* globalPropertiesBuffer, const ConstantBuffer* drawPropertiesBuffer) const;
 
+        void EnumerateVertexConstantBuffers(
+            _Out_ ID3D11Buffer* vsBuffers[D3D11_COMMONSHADER_CONSTANT_BUFFER_HW_SLOT_COUNT],
+            _Out_ int& vsBuffersLength) const;
+
+        void EnumeratePixelConstantBuffers(
+            _Out_ ID3D11Buffer* psBuffers[D3D11_COMMONSHADER_CONSTANT_BUFFER_HW_SLOT_COUNT],
+            _Out_ int& psBuffersLength) const;
+
     public:
         [[nodiscard]] NSE_Shader GetShader() const { return _shader; }
         [[nodiscard]] ShaderInputsData* GetVSInputs() const { return _vsInputs; }

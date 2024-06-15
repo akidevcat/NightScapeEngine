@@ -13,11 +13,12 @@
 #if !defined(SHADER_PROGRAM_TEMPLATE_TYPE_VERTEX) && !defined(SHADER_PROGRAM_TEMPLATE_TYPE_PIXEL)
 #define SHADER_PROGRAM_TEMPLATE_TYPE_VERTEX
 #endif
-#include <assert.h>
 
+#include <cassert>
 #include "ConstantBuffer.h"
 #include "ConstantBufferData.h"
 #include "ShaderInputsDescription.h"
+#include "../servers/ObjectServer.h"
 
 #ifdef SHADER_PROGRAM_TEMPLATE_HEADER
 
@@ -51,7 +52,7 @@ namespace NSE
 
         [[nodiscard]] D3D11_SHADER_DESC        GetDescription() const { return _description; }
         [[nodiscard]] ShaderInputsDescription* GetInputsDescription() const { return _inputsDescription; }
-        [[nodiscard]] ConstantBuffer*          GetMaterialPropertiesBuffer() const { return _materialPropertiesBuffer; }
+        [[nodiscard]] NSE_ConstantBuffer       GetMaterialPropertiesBuffer() const { return _materialPropertiesBuffer; }
         [[nodiscard]] UINT                     GetMaterialPropertiesBufferSize() const { return _materialPropertiesBuffer->GetDescription()->GetDescription().Size; }
         [[nodiscard]] bool                     HasMaterialProps() const { return _hasMaterialProps; }
         [[nodiscard]] bool                     HasGlobalProps() const { return _hasGlobalProps; }
@@ -89,7 +90,7 @@ namespace NSE
 
         // ConstBufferData*        _globalProps = nullptr;
 
-        ConstantBuffer*            _materialPropertiesBuffer = nullptr;
+        NSE_ConstantBuffer         _materialPropertiesBuffer = nullptr;
         D3D11_SHADER_DESC          _description;
         ShaderInputsDescription*   _inputsDescription;
         bool                       _hasMaterialProps = false;
@@ -134,7 +135,7 @@ namespace NSE
         Release();
 
         delete _path;
-        delete _materialPropertiesBuffer;
+        // delete _materialPropertiesBuffer;
         delete _inputsDescription;
 
         // delete _globalProps;
@@ -174,6 +175,8 @@ namespace NSE
             _inputLayout = nullptr;
         }
 #endif
+
+        DestroyObject(_materialPropertiesBuffer);
     }
 
     bool SHADER_PROGRAM_TEMPLATE_CLASS_NAME::Compile(ID3D11Device* device)
@@ -324,7 +327,8 @@ namespace NSE
 
         if (_inputsDescription->GetDescription(nameID, desc))
         {
-            _materialPropertiesBuffer = new ConstantBuffer{nameID};
+            // _materialPropertiesBuffer = new ConstantBuffer{nameID};
+            _materialPropertiesBuffer = CreateObject<ConstantBuffer>(nameID);
             _materialPropertiesBuffer->Reflect(_reflection, desc.BindPoint, true);
             _hasMaterialProps = true;
         }

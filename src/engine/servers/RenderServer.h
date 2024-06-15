@@ -48,6 +48,8 @@ namespace NSE
         void DrawMesh(const NSE_Mesh& mesh, const NSE_Material& material, const DirectX::XMMATRIX& matrix, const NSE_Camera& camera, size_t objectID = 0);
 
         // Property Accessors
+        [[nodiscard]] NSE_ConstantBuffer          GetGlobalPropertiesBuffer() const { return _globalPropertiesBuffer; }
+        [[nodiscard]] NSE_ConstantBuffer          GetDrawPropertiesBuffer() const { return _drawPropertiesBuffer; }
         [[nodiscard]] GlobalProperties*           GetGlobalProperties() const { return _globalPropertiesBuffer->GetBufferData()->As<GlobalProperties>(); }
         [[nodiscard]] bool                        GetFullscreenState() const { return _isFullscreen; }
         void                                      SetFullscreenState(bool state) { _isFullscreen = state; }
@@ -105,8 +107,8 @@ namespace NSE
         NSE_Shader                  _errorShader = nullptr;
         NSE_Material                _errorMaterial = nullptr;
 
-        ConstantBuffer*             _globalPropertiesBuffer = nullptr;
-        ConstantBuffer*             _drawPropertiesBuffer = nullptr;
+        NSE_ConstantBuffer          _globalPropertiesBuffer = nullptr;
+        NSE_ConstantBuffer          _drawPropertiesBuffer = nullptr;
 
         ShaderInputsData*           _globalShaderInputs = nullptr;
     };

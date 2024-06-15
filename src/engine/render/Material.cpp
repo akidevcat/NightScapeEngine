@@ -1,5 +1,4 @@
 #include "Material.h"
-
 #include <iostream>
 #include <cassert>
 
@@ -22,6 +21,14 @@ NSE::Material::Material(const NSE_Shader& shader)
 
     _vsInputs = new ShaderInputsData{};
     _psInputs = new ShaderInputsData{};
+
+    // ToDO
+    _vsInputs->SetConstantBuffer(ShaderUtils::PropertyToID("GlobalProperties"), RenderServer::Get()->GetGlobalPropertiesBuffer());
+    _vsInputs->SetConstantBuffer(ShaderUtils::PropertyToID("DrawProperties"), RenderServer::Get()->GetDrawPropertiesBuffer());
+    _vsInputs->SetConstantBuffer(ShaderUtils::PropertyToID("MaterialProperties"), shader->GetVertexShader()->GetMaterialPropertiesBuffer());
+    _psInputs->SetConstantBuffer(ShaderUtils::PropertyToID("GlobalProperties"), RenderServer::Get()->GetGlobalPropertiesBuffer());
+    _psInputs->SetConstantBuffer(ShaderUtils::PropertyToID("DrawProperties"), RenderServer::Get()->GetDrawPropertiesBuffer());
+    _psInputs->SetConstantBuffer(ShaderUtils::PropertyToID("MaterialProperties"), shader->GetPixelShader()->GetMaterialPropertiesBuffer());
 
     SetBlendState(RenderServer::Get()->GetBlendStateOpaque());
 }
@@ -183,6 +190,8 @@ void NSE::Material::EnumerateVertexBuffers(ID3D11Buffer *vsBuffers[3], int &vsBu
         vsBuffersLength++;
     }
 
+    // desc.
+
     // ToDo
     // _vsInputs->GetResource()...
 }
@@ -207,6 +216,56 @@ void NSE::Material::EnumeratePixelBuffers(ID3D11Buffer *psBuffers[3], int &psBuf
         psBuffers[psBuffersLength] = _shader->GetPixelShader()->GetMaterialPropertiesBuffer()->GetGPUBuffer();
         psBuffersLength++;
     }
+}
+
+void NSE::Material::EnumerateVertexConstantBuffers(ID3D11Buffer* vsBuffers[D3D11_COMMONSHADER_CONSTANT_BUFFER_HW_SLOT_COUNT], int &vsBuffersLength) const
+{
+    int length = 0;
+
+    memset(vsBuffers, 0, sizeof(vsBuffers));
+
+    NSE_ConstantBuffer buffer;
+
+    for (const auto& desc : *_shader->GetVertexShader()->GetInputsDescription())
+    {
+        length = max(length, desc.second.BindPoint + desc.second.BindCount);
+
+        if (_vsInputs->GetConstantBuffer(desc.first, buffer))
+        {
+            vsBuffers[desc.second.BindPoint] = buffer->GetGPUBuffer();
+        }
+        else
+        {
+            vsBuffers[desc.second.BindPoint] = nullptr;
+        }
+    }
+
+    vsBuffersLength = length;
+}
+
+void NSE::Material::EnumeratePixelConstantBuffers(ID3D11Buffer* psBuffers[D3D11_COMMONSHADER_CONSTANT_BUFFER_HW_SLOT_COUNT], int& psBuffersLength) const
+{
+    int length = 0;
+
+    memset(psBuffers, 0, sizeof(psBuffers));
+
+    NSE_ConstantBuffer buffer;
+
+    for (const auto& desc : *_shader->GetPixelShader()->GetInputsDescription())
+    {
+        length = max(length, desc.second.BindPoint + desc.second.BindCount);
+
+        if (_psInputs->GetConstantBuffer(desc.first, buffer))
+        {
+            psBuffers[desc.second.BindPoint] = buffer->GetGPUBuffer();
+        }
+        else
+        {
+            psBuffers[desc.second.BindPoint] = nullptr;
+        }
+    }
+
+    psBuffersLength = length;
 }
 
 void NSE::Material::SetVar(const size_t nameID, void *valuePtr, const size_t valueSize) const
