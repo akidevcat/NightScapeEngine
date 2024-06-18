@@ -5,7 +5,9 @@
 #include <iostream>
 #include <sstream>
 
+#include "../addon/DDSTextureLoader11.h"
 #include "ObjectServer.h"
+#include "RenderServer.h"
 
 NSE::AssetsServer::AssetsServer()
 {
@@ -173,4 +175,19 @@ NSE_Mesh NSE::AssetsServer::LoadMeshAsset(const std::string &path)
     mesh->Upload();
 
     return mesh;
+}
+
+NSE_Texture2D NSE::AssetsServer::LoadTextureAsset(const wchar_t* path)
+{
+    auto device = RenderServer::Get()->GetDevice();
+
+    ID3D11Resource* resource;
+    ID3D11ShaderResourceView* view;
+
+    auto status = DirectX::CreateDDSTextureFromFile(device, path, &resource, &view);
+    assert(SUCCEEDED(status));
+
+    auto result = CreateObject<Texture2D>(resource, view);
+
+    return result;
 }

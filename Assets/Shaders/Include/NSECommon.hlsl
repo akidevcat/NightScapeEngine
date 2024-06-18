@@ -17,6 +17,9 @@ cbuffer DrawProperties
     uint2 _TargetResolution;
 };
 
+SamplerState _PointSampler;
+SamplerState _LinearSampler;
+
 struct DefaultVertexInput
 {
     float3 position : POSITION;

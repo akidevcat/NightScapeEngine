@@ -180,6 +180,12 @@ void NSE::Material::SetConstantBuffer(const NSE_ConstantBuffer& buffer) const
     _psInputs->SetConstantBuffer(buffer->GetNameID(), buffer);
 }
 
+void NSE::Material::SetTexture(size_t nameID, const NSE_Texture& texture) const
+{
+    _vsInputs->SetResource(nameID, texture->ResourceView());
+    _psInputs->SetResource(nameID, texture->ResourceView());
+}
+
 void NSE::Material::SetBlendState(const NSE_BlendState& state)
 {
     _blendState = state;

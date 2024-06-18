@@ -4,6 +4,7 @@
 
 #include "BaseServer.h"
 #include "../data/Mesh.h"
+#include "../render/Texture2D.h"
 
 namespace NSE
 {
@@ -13,8 +14,8 @@ namespace NSE
         AssetsServer();
         ~AssetsServer();
 
-        NSE_Mesh LoadMeshAsset(const std::string& path);
-        // NSE_Texture LoadTexture();
+        NSE_Mesh        LoadMeshAsset(const std::string& path);
+        NSE_Texture2D   LoadTextureAsset(const wchar_t* path);
     };
 }
 

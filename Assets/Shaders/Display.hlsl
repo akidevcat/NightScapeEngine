@@ -1,12 +1,6 @@
 #include "Include/NSECommon.hlsl"
 
-cbuffer MaterialProperties
-{
-    float FUUCK;
-};
-
 Texture2D _MainTex;
-SamplerState _PointSampler;
 
 struct VertexInput
 {
@@ -37,5 +31,5 @@ PixelInput VertexMain(VertexInput input)
 float4 PixelMain(PixelInput input) : SV_TARGET
 {
 //     return float4(input.uv.x, input.uv.y, 1.0 - input.uv.x, 1.0) + _MainTex.Sample(_PointSampler, input.uv);
-    return _MainTex.Sample(_PointSampler, input.uv) + FUUCK;
+    return _MainTex.Sample(_PointSampler, input.uv);
 }

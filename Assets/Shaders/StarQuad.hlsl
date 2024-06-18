@@ -1,11 +1,8 @@
 #include "Include/NSECommon.hlsl"
 #include "Include/NSEHash.hlsl"
 
-cbuffer MaterialProperties
-{
-    uint _PixelSizeX;
-    uint _PixelSizeY;
-};
+uint _PixelSizeX;
+uint _PixelSizeY;
 
 struct VertexInput
 {

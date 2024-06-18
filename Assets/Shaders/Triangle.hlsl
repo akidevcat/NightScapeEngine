@@ -1,10 +1,5 @@
 #include "Include/NSECommon.hlsl"
 
-cbuffer MaterialProperties
-{
-
-};
-
 DefaultPixelInput VertexMain(DefaultVertexInput input)
 {
     DefaultPixelInput output;

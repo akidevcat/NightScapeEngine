@@ -4,6 +4,7 @@
 #include <iostream>
 #include <ostream>
 
+#include "../engine/entity/QuadVisual.h"
 #include "../engine/servers/AssetServer.h"
 #include "../engine/servers/ObjectServer.h"
 #include "../engine/servers/TimeServer.h"
@@ -17,6 +18,14 @@ ShipController::ShipController(NSE::Scene* scene, float screenAspect)
     auto renderingShader = NSE::CreateObject<NSE::Shader>(L"Assets/Shaders/Base.hlsl");
     renderingShader->Compile();
     renderingMaterial = NSE::CreateObject<NSE::Material>(renderingShader);
+
+    auto tex = NSE::AssetsServer::Get()->LoadTextureAsset(L"Assets/Models/test.dds");
+    renderingMaterial->SetTexture(NSE::ShaderUtils::PropertyToID("_MainTex"), tex);
+
+    auto testQuad = scene->Create<NSE::QuadVisual>();
+    testQuad->renderingMaterial = renderingMaterial;
+    testQuad->position = {0, 0, 10};
+
     _camera = scene->Create<NSE::Camera>();
     _camera->targetScene = scene;
     _camera->SetParams(screenAspect, 60.0f, 0.1f, 1000.0f, false, 0.0f);

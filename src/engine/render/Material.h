@@ -8,6 +8,7 @@
 #include "../obj_ptr.h"
 #include "Shader.h"
 #include "ShaderInputsData.h"
+#include "Texture.h"
 #include "../entity/Object.h"
 
 #define NSE_Material obj_ptr<NSE::Material>
@@ -54,6 +55,7 @@ namespace NSE
         void SetMatrix(size_t nameID, DirectX::XMMATRIX value) const;
         void SetConstantBuffer(size_t nameID, const NSE_ConstantBuffer& buffer) const;
         void SetConstantBuffer(const NSE_ConstantBuffer& buffer) const;
+        void SetTexture(size_t nameID, const NSE_Texture& texture) const;
 
         void SetBlendState(const NSE_BlendState& state);
         void SetDepthWrite(bool state) { _depthWriteEnabled = state; }

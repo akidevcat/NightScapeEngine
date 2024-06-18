@@ -1,10 +1,5 @@
 #include "Include/NSECommon.hlsl"
 
-cbuffer MaterialProperties
-{
-
-};
-
 struct PixelInput
 {
     float4 position : SV_POSITION;

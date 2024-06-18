@@ -323,147 +323,16 @@ namespace NSE
     void SHADER_PROGRAM_TEMPLATE_CLASS_NAME::CreateMaterialPropertiesBuffer()
     {
         D3D11_SHADER_INPUT_BIND_DESC desc;
-        size_t nameID = ShaderUtils::PropertyToID("MaterialProperties");
+        size_t nameID = ShaderUtils::PropertyToID("$Globals");
 
         if (_inputsDescription->GetDescription(nameID, desc))
         {
-            // _materialPropertiesBuffer = new ConstantBuffer{nameID};
             _materialPropertiesBuffer = CreateObject<ConstantBuffer>(nameID);
             _materialPropertiesBuffer->Reflect(_reflection, desc.BindPoint, true);
             _hasMaterialProps = true;
         }
     }
-
-    // bool SHADER_PROGRAM_TEMPLATE_CLASS_NAME::CreateConstBufferLookup(ID3D11Device* device, ConstBufferData* buffer)
-    // {
-    //     HRESULT result;
-    //     ID3D11ShaderReflectionConstantBuffer* cBuffer = nullptr;
-    //     D3D11_SHADER_BUFFER_DESC cBufferDesc;
-    //     D3D11_SHADER_VARIABLE_DESC varDesc;
-    //
-    //     ID3D11ShaderReflectionVariable* var;
-    //
-    //     // Get buffer
-    //     cBuffer = _reflection->GetConstantBufferByIndex(buffer->id);
-    //
-    //     // Get buffer description
-    //     result = cBuffer->GetDesc(&cBufferDesc);
-    //     if (FAILED(result))
-    //     {
-    //         return false;
-    //     }
-    //
-    //     // Iterate through all buffer variables
-    //     for (UINT i = 0; i < cBufferDesc.Variables; i++)
-    //     {
-    //         // Get variable
-    //         var = cBuffer->GetVariableByIndex(i);
-    //
-    //         // Get variable description
-    //         result = var->GetDesc(&varDesc);
-    //         if (FAILED(result))
-    //         {
-    //             return false;
-    //         }
-    //
-    //         buffer->vDesc.emplace(ShaderUtils::PropertyToID(varDesc.Name), varDesc);
-    //     }
-    //
-    //     // D3D11_BUFFER_DESC bufferDesc;
-    //     //
-    //     // // Setup the description of the dynamic matrix constant buffer that is in the vertex shader.
-    //     // bufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-    //     // bufferDesc.ByteWidth = buffer->description.Size;
-    //     // bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-    //     // bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-    //     // bufferDesc.MiscFlags = 0;
-    //     // bufferDesc.StructureByteStride = 0;
-    //
-    //     // result = device->CreateBuffer(&bufferDesc, nullptr, &buffer->bPtr); // ToDo initial data
-    //     // if(FAILED(result))
-    //     // {
-    //     //     return false;
-    //     // }
-    //
-    //     return true;
-    // }
-
-
 }
-
-//     bool SHADER_PROGRAM_TEMPLATE_CLASS_NAME::CreateConstBufferLookups(ID3D11Device* device)
-//     {
-//         if (FAILED(_reflection->GetDesc(&_description)))
-//         {
-//             return false;
-//         }
-//
-//         D3D11_SHADER_BUFFER_DESC bufferDesc;
-//
-//         for (UINT cBufferIndex = 0; cBufferIndex < _description.ConstantBuffers; cBufferIndex++)
-//         {
-//             auto cBuffer = _reflection->GetConstantBufferByIndex(cBufferIndex);
-//
-//             if (FAILED(cBuffer->GetDesc(&bufferDesc)))
-//             {
-//                 return false;
-//             }
-//
-//             size_t bufferUid = ShaderUtils::PropertyToID(bufferDesc.Name);
-//             ConstBufferData* buffer = nullptr;
-//
-//             if (bufferUid == ShaderUtils::PropertyToID("GlobalProperties"))
-//             {
-//                 _hasGlobalProps = true;
-//             }
-//             else if (bufferUid == ShaderUtils::PropertyToID("DrawProperties"))
-//             {
-//                 _hasDrawProps = true;
-//             }
-//             else if (bufferUid == ShaderUtils::PropertyToID("MaterialProperties"))
-//             {
-//                 _materialPropsLookup = new ConstBufferData{device, cBufferIndex, bufferUid, bufferDesc, 0};
-//                 buffer = _materialPropsLookup;
-//             }
-//
-//             if (buffer == nullptr)
-//             {
-//                 continue;
-//             }
-//
-//             if (!CreateConstBufferLookup(device, buffer))
-//             {
-//                 return false;
-//             }
-//         }
-//
-//         D3D11_SHADER_INPUT_BIND_DESC bResDesc;
-//
-//
-//
-//         _resourcesLookup = new std::unordered_map<unsigned long long, _D3D11_SHADER_INPUT_BIND_DESC>{};
-//
-//         // Create bound resources lookup
-//         for (UINT bResIndex = 0; bResIndex < _description.BoundResources; bResIndex++)
-//         {
-//             if (FAILED(_reflection->GetResourceBindingDesc(bResIndex, &bResDesc)))
-//             {
-//                 std::cerr << "Failed to get resource binding description" << std::endl;
-//                 return false;
-//             }
-//
-//             // ToDo
-//             if (bResDesc.Type != D3D_SIT_TEXTURE && bResDesc.Type != D3D_SIT_SAMPLER)
-//             {
-//                 continue;
-//             }
-//
-//             _resourcesLookup->emplace(ShaderUtils::PropertyToID(bResDesc.Name), bResDesc);
-//         }
-//
-//         return true;
-//     }
-// }
 
 #endif
 
