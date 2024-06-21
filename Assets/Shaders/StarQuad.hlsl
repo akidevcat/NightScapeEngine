@@ -1,5 +1,5 @@
-#include "Include/NSECommon.hlsl"
-#include "Include/NSEHash.hlsl"
+#include "ShaderLibrary/Core.hlsl"
+#include "ShaderLibrary/Hash.hlsl"
 
 uint _PixelSizeX;
 uint _PixelSizeY;
@@ -39,7 +39,7 @@ float4 PixelMain(PixelInput input) : SV_TARGET
     float2 uv = TransformUV_PixelPerfect(input.uv, uint2(_PixelSizeX, _PixelSizeY));
 
     float2 p = abs(uv - 0.5) * 2.0;
-    float i = 1.0 / pow(p.x + p.y, 0.7) * 0.1;
+    float i = 1.0 / pow(p.x + p.y, 0.4) * 0.1;
     i -= 0.01;
     i = smoothstep(0, 1, i);
     i *= (sin(_Time * (0.8 * input.params.y + 0.2) * 2.0 + input.params.x * 100.0) * 0.5 + 0.5) * 0.5 + 0.5;

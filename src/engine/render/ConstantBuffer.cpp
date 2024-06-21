@@ -32,7 +32,8 @@ void NSE::ConstantBuffer::Resize(size_t size)
 
     Release();
     InitBuffer();
-    InitBufferData();
+    if (_isBufferDataEnabled) // ToDo not sure if that's correct
+        InitBufferData();
 }
 
 void NSE::ConstantBuffer::Reflect(ID3D11ShaderReflection *reflection, size_t bufferID, bool autoResize)

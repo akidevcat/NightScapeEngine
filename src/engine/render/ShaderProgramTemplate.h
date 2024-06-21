@@ -38,29 +38,17 @@ namespace NSE
         void Release();
         bool Compile(ID3D11Device* device);
 
-        // bool UploadBuffer(ID3D11DeviceContext* deviceContext, ConstBufferData* buffer);
-
-        // bool UploadDrawBuffer(ID3D11DeviceContext* deviceContext);
-        // bool UploadGlobalBuffer(ID3D11DeviceContext* deviceContext);
-
-        // bool SetGlobalVar(size_t pUid, void* value, size_t valueSize);
-        // bool SetDrawVar(size_t pUid, void* value, size_t valueSize);
-
-        // [[nodiscard]] ConstBufferData* GetGlobalProps() const { return _globalProps; }
-
-        void UploadMaterialProperties(ConstantBufferData* data);
+        // void UploadMaterialProperties(ConstantBufferData* data);
 
         [[nodiscard]] D3D11_SHADER_DESC        GetDescription() const { return _description; }
         [[nodiscard]] ShaderInputsDescription* GetInputsDescription() const { return _inputsDescription; }
-        [[nodiscard]] NSE_ConstantBuffer       GetMaterialPropertiesBuffer() const { return _materialPropertiesBuffer; }
-        [[nodiscard]] UINT                     GetMaterialPropertiesBufferSize() const { return _materialPropertiesBuffer->GetDescription()->GetDescription().Size; }
+        // [[nodiscard]] NSE_ConstantBuffer       GetMaterialPropertiesBuffer() const { return _materialPropertiesBuffer; }
+        // [[nodiscard]] UINT                     GetMaterialPropertiesBufferSize() const { return _materialPropertiesBuffer->GetDescription()->GetDescription().Size; }
+        [[nodiscard]] ID3D11ShaderReflection*  GetReflection() const { return _reflection; }
         [[nodiscard]] bool                     HasMaterialProps() const { return _hasMaterialProps; }
         [[nodiscard]] bool                     HasGlobalProps() const { return _hasGlobalProps; }
         [[nodiscard]] bool                     HasDrawProps() const { return _hasDrawProps; }
 
-        // [[nodiscard]] ConstBufferData* GetDrawProps() const { return _drawProps; }
-        // [[nodiscard]] ConstBufferData* GetMaterialPropsLookup() const { return _materialPropsLookup; }
-        // [[nodiscard]] std::unordered_map<size_t, D3D11_SHADER_INPUT_BIND_DESC>* GetResourcesLookup() const { return _resourcesLookup; }
 #ifdef SHADER_PROGRAM_TEMPLATE_TYPE_VERTEX
         [[nodiscard]] ID3D11InputLayout* GetInputLayout() const { return _inputLayout; }
         [[nodiscard]] ID3D11VertexShader* AsID3D11() const { return _vs; }
@@ -69,10 +57,9 @@ namespace NSE
 #endif
 
     private:
-        // bool CreateConstBufferLookups(ID3D11Device* device);
-        // bool CreateConstBufferLookup(ID3D11Device* device, ConstBufferData* buffer);
         void Reflect();
-        void CreateMaterialPropertiesBuffer();
+        // void CreateMaterialPropertiesBuffer();
+        // void LookupMaterialPropertiesBuffer();
 
     private:
         wchar_t* _path = nullptr;
@@ -88,19 +75,12 @@ namespace NSE
         ID3D11InputLayout*      _inputLayout = nullptr;
 #endif
 
-        // ConstBufferData*        _globalProps = nullptr;
-
-        NSE_ConstantBuffer         _materialPropertiesBuffer = nullptr;
+        // NSE_ConstantBuffer         _materialPropertiesBuffer = nullptr;
         D3D11_SHADER_DESC          _description;
         ShaderInputsDescription*   _inputsDescription;
         bool                       _hasMaterialProps = false;
         bool                       _hasGlobalProps = false;
         bool                       _hasDrawProps = false;
-
-        // ConstBufferData*        _drawProps = nullptr;
-        // ConstBufferData*        _materialPropsLookup = nullptr;
-        // std::unordered_map<size_t, D3D11_SHADER_INPUT_BIND_DESC>* _resourcesLookup = nullptr;
-
     };
 }
 
@@ -119,6 +99,7 @@ namespace NSE
 #include <d3d10shader.h>
 #include <d3dcompiler.h>
 #include <iostream>
+#include "../nsepch.h"
 
 namespace NSE
 {
@@ -135,13 +116,7 @@ namespace NSE
         Release();
 
         delete _path;
-        // delete _materialPropertiesBuffer;
         delete _inputsDescription;
-
-        // delete _globalProps;
-        // delete _drawProps;
-        // delete _materialPropsLookup;
-        // delete _resourcesLookup;
     }
 
     void SHADER_PROGRAM_TEMPLATE_CLASS_NAME::Release()
@@ -176,7 +151,7 @@ namespace NSE
         }
 #endif
 
-        DestroyObject(_materialPropertiesBuffer);
+        // DestroyObject(_materialPropertiesBuffer);
     }
 
     bool SHADER_PROGRAM_TEMPLATE_CLASS_NAME::Compile(ID3D11Device* device)
@@ -290,7 +265,8 @@ namespace NSE
 #endif
 
         Reflect();
-        CreateMaterialPropertiesBuffer();
+        // CreateMaterialPropertiesBuffer();
+        // LookupMaterialPropertiesBuffer();
 
         sBuffer->Release(); // ToDo ?
         sBuffer = nullptr;
@@ -298,40 +274,55 @@ namespace NSE
         return true;
     }
 
-    void SHADER_PROGRAM_TEMPLATE_CLASS_NAME::UploadMaterialProperties(ConstantBufferData* data)
-    {
-        if (!_materialPropertiesBuffer)
-        {
-            return;
-        }
-
-        _materialPropertiesBuffer->UploadData(data);
-    }
+    // void SHADER_PROGRAM_TEMPLATE_CLASS_NAME::UploadMaterialProperties(ConstantBufferData* data)
+    // {
+    //     if (!_materialPropertiesBuffer)
+    //     {
+    //         return;
+    //     }
+    //
+    //     _materialPropertiesBuffer->UploadData(data);
+    // }
 
     void SHADER_PROGRAM_TEMPLATE_CLASS_NAME::Reflect()
     {
-        assert(("Failed to reflect shader description", SUCCEEDED(_reflection->GetDesc(&_description))));
+        S_PID($Globals);
+        S_PID(GlobalProperties);
+        S_PID(DrawProperties);
+
+        auto flResult = _reflection->GetDesc(&_description);
+
+        assert(("Failed to reflect shader description", SUCCEEDED(flResult)));
 
         _inputsDescription = new ShaderInputsDescription{_reflection};
 
         D3D11_SHADER_INPUT_BIND_DESC bindDesc;
 
-        _hasGlobalProps = _inputsDescription->GetDescription(ShaderUtils::PropertyToID("GlobalProperties"), bindDesc);
-        _hasDrawProps = _inputsDescription->GetDescription(ShaderUtils::PropertyToID("DrawProperties"), bindDesc);
+        _hasGlobalProps = _inputsDescription->GetDescription(PID_GlobalProperties, bindDesc);
+        _hasDrawProps = _inputsDescription->GetDescription(PID_DrawProperties, bindDesc);
+        _hasMaterialProps = _inputsDescription->GetDescription(PID_$Globals, bindDesc);
     }
 
-    void SHADER_PROGRAM_TEMPLATE_CLASS_NAME::CreateMaterialPropertiesBuffer()
-    {
-        D3D11_SHADER_INPUT_BIND_DESC desc;
-        size_t nameID = ShaderUtils::PropertyToID("$Globals");
+    // void SHADER_PROGRAM_TEMPLATE_CLASS_NAME::LookupMaterialPropertiesBuffer()
+    // {
+    //     D3D11_SHADER_INPUT_BIND_DESC desc;
+    //     size_t nameID = ShaderUtils::PropertyToID("$Globals");
+    //
+    //     _hasMaterialProps = _inputsDescription->GetDescription(nameID, desc);
+    // }
 
-        if (_inputsDescription->GetDescription(nameID, desc))
-        {
-            _materialPropertiesBuffer = CreateObject<ConstantBuffer>(nameID);
-            _materialPropertiesBuffer->Reflect(_reflection, desc.BindPoint, true);
-            _hasMaterialProps = true;
-        }
-    }
+    // void SHADER_PROGRAM_TEMPLATE_CLASS_NAME::CreateMaterialPropertiesBuffer()
+    // {
+    //     D3D11_SHADER_INPUT_BIND_DESC desc;
+    //     size_t nameID = ShaderUtils::PropertyToID("$Globals");
+    //
+    //     if (_inputsDescription->GetDescription(nameID, desc))
+    //     {
+    //         _materialPropertiesBuffer = CreateObject<ConstantBuffer>(nameID);
+    //         _materialPropertiesBuffer->Reflect(_reflection, desc.BindPoint, true);
+    //         _hasMaterialProps = true;
+    //     }
+    // }
 }
 
 #endif

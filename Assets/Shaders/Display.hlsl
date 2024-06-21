@@ -1,4 +1,4 @@
-#include "Include/NSECommon.hlsl"
+#include "ShaderLibrary/Core.hlsl"
 
 Texture2D _MainTex;
 

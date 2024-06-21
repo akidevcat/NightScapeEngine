@@ -2,6 +2,12 @@
 
 #include <directxmath.h>
 
+typedef DirectX::XMVECTOR xmvector;
+typedef DirectX::XMMATRIX xmmatrix;
+typedef DirectX::XMFLOAT2 float2;
+typedef DirectX::XMFLOAT3 float3;
+typedef DirectX::XMFLOAT4 float4;
+
 namespace NSE
 {
     struct Vector3d
@@ -18,9 +24,9 @@ namespace NSE
         Vector3d(Vector3d&&) = default;
         Vector3d& operator=(Vector3d&&) = default;
 
-        Vector3d(const DirectX::XMVECTOR& v);
-        explicit operator DirectX::XMVECTOR() const;
-        explicit operator DirectX::XMFLOAT3() const;
+        Vector3d(const xmvector& v);
+        explicit operator xmvector() const;
+        explicit operator float3() const;
 
         constexpr Vector3d(double _x, double _y, double _z) : x(_x), y(_y), z(_z) {}
         explicit Vector3d(const double *pArray) : x(pArray[0]), y(pArray[1]), z(pArray[2]) {}
@@ -84,3 +90,5 @@ namespace NSE
         static float Random();
     };
 }
+
+typedef NSE::Vector3d double3;

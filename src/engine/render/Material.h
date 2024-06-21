@@ -10,6 +10,7 @@
 #include "ShaderInputsData.h"
 #include "Texture.h"
 #include "../entity/Object.h"
+#include "../math/Math.h"
 
 #define NSE_Material obj_ptr<NSE::Material>
 
@@ -50,9 +51,9 @@ namespace NSE
         void SetFloat(size_t nameID, float value) const;
         void SetInt(size_t nameID, int value) const;
         void SetUnsignedInt(size_t nameID, uint32_t value) const;
-        void SetVector(size_t nameID, DirectX::XMVECTOR value) const;
-        void SetColor(size_t nameID, DirectX::XMVECTOR value) const;
-        void SetMatrix(size_t nameID, DirectX::XMMATRIX value) const;
+        void SetVector(size_t nameID, xmvector value) const;
+        void SetColor(size_t nameID, xmvector value) const;
+        void SetMatrix(size_t nameID, xmmatrix value) const;
         void SetConstantBuffer(size_t nameID, const NSE_ConstantBuffer& buffer) const;
         void SetConstantBuffer(const NSE_ConstantBuffer& buffer) const;
         void SetTexture(size_t nameID, const NSE_Texture& texture) const;
@@ -70,8 +71,9 @@ namespace NSE
         NSE_BlendState   _blendState = nullptr;
         bool             _depthWriteEnabled = true;
 
-        ConstantBufferData* _vsMaterialPropertiesBuffer = nullptr;
-        ConstantBufferData* _psMaterialPropertiesBuffer = nullptr;
+        NSE_ConstantBuffer _materialPropertiesBuffer = nullptr;
+        // ConstantBufferData* _vsMaterialPropertiesBuffer = nullptr;
+        // ConstantBufferData* _psMaterialPropertiesBuffer = nullptr;
         ShaderInputsData*   _vsInputs = nullptr;
         ShaderInputsData*   _psInputs = nullptr;
     };

@@ -1,4 +1,4 @@
-#include "Include/NSECommon.hlsl"
+#include "ShaderLibrary/Core.hlsl"
 
 DefaultPixelInput VertexMain(DefaultVertexInput input)
 {

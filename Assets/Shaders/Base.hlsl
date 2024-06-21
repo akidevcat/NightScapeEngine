@@ -1,7 +1,9 @@
-#include "Include/NSECommon.hlsl"
-#include "Include/NSELight.hlsl"
+#include "ShaderLibrary/Core.hlsl"
+#include "ShaderLibrary/Lighting.hlsl"
 
-float _Test;
+float _TestA;
+float _TestB;
+float _TestC;
 
 Texture2D _MainTex;
 
@@ -14,6 +16,7 @@ DefaultPixelInput VertexMain(DefaultVertexInput input)
     output.normal = TransformObjectToClipDirection(input.normal);
     output.normalRS = TransformObjectToWorldDirection(input.normal);
     output.uv = input.uv;
+    output.uv.y = 1.0 - output.uv.y + _TestC;
 
     return output;
 }
@@ -27,7 +30,7 @@ float4 PixelMain(DefaultPixelInput input) : SV_TARGET
     result *= _MainTex.Sample(_PointSampler, uv);
 
 //     result *= saturate(dot(input.normal.xyz, float3(0, 0, -1)) * 0.5 + 0.5);
-//     result *= GetBasicLighting(input.positionRS.xyz, input.normalRS.xyz);
+    result *= GetBasicLighting(input.positionRS.xyz, input.normalRS.xyz);
 
-    return float4(result.rgb, 1.0 + _Test);
+    return float4(result.rgb, 1.0 + _TestA + _TestB);
 }

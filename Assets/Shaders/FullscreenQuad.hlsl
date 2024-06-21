@@ -1,4 +1,4 @@
-#include "Include/NSECommon.hlsl"
+#include "ShaderLibrary/Core.hlsl"
 
 //Texture2D shaderTexture : register(t0);
 //SamplerState SampleType : register(s0);

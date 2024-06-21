@@ -108,9 +108,11 @@ add_executable(${PROJECT_NAME} WIN32
         src/engine/data/Light.h
         src/engine/addon/DDSTextureLoader11.cpp
         src/engine/addon/DDSTextureLoader11.h
-        src/engine/NSECommon.h
+        src/engine/nsepch.h
         src/engine/data/LightsProperties.cpp
         src/engine/data/LightsProperties.h
+        src/engine/entity/ParticleSystem.cpp
+        src/engine/entity/ParticleSystem.h
 )
 
 target_link_libraries(${PROJECT_NAME} d3d9 d3d11 d3dcompiler dinput8 dxguid)

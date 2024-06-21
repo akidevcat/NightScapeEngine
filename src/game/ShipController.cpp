@@ -19,7 +19,7 @@ ShipController::ShipController(NSE::Scene* scene, float screenAspect)
     renderingShader->Compile();
     renderingMaterial = NSE::CreateObject<NSE::Material>(renderingShader);
 
-    auto tex = NSE::AssetsServer::Get()->LoadTextureAsset(L"Assets/Models/test.dds");
+    auto tex = NSE::AssetsServer::Get()->LoadTextureAsset(L"Assets/Models/T_Cockpit_Diffuse.dds");
     renderingMaterial->SetTexture(NSE::ShaderUtils::PropertyToID("_MainTex"), tex);
 
     auto testQuad = scene->Create<NSE::QuadVisual>();
@@ -34,7 +34,7 @@ ShipController::ShipController(NSE::Scene* scene, float screenAspect)
 
     _cockpitLight = scene->Create<NSE::Light>();
     _cockpitLight->lightColor = {0.22f, 0.13f, 0.02f, 1.0f};
-    _cockpitLight->lightIntensity = 6.0f;
+    _cockpitLight->lightIntensity = 20.0f;
 
     _shipRadar = scene->Create<ShipRadarController>();
     _shipRadar->scale = {0.45f, 0.45f, 0.45f};
