@@ -484,17 +484,19 @@ bool NSE::RenderServer::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 
 	// ToDo
 	_primitiveQuadMesh = CreateObject<Mesh>(4, 2 * 3);
-	_primitiveQuadMesh->vertices[0] = VertexData{{-1, -1, 0}, {0, 0, 1}, {0, 0}};
-	_primitiveQuadMesh->vertices[1] = VertexData{{-1, 1, 0}, {0, 0, 1}, {0, 1}};
-	_primitiveQuadMesh->vertices[2] = VertexData{{1, 1, 0}, {0, 0, 1}, {1, 1}};
-	_primitiveQuadMesh->vertices[3] = VertexData{{1, -1, 0}, {0, 0, 1}, {1, 0}};
+	auto pqmVertices = _primitiveQuadMesh->GetVertices();
+	auto pqmIndices = _primitiveQuadMesh->GetIndices();
+	pqmVertices[0] = VertexData{{-1, -1, 0}, {0, 0, 1}, {0, 0}};
+	pqmVertices[1] = VertexData{{-1, 1, 0}, {0, 0, 1}, {0, 1}};
+	pqmVertices[2] = VertexData{{1, 1, 0}, {0, 0, 1}, {1, 1}};
+	pqmVertices[3] = VertexData{{1, -1, 0}, {0, 0, 1}, {1, 0}};
 
-	_primitiveQuadMesh->indices[0] = 0;
-	_primitiveQuadMesh->indices[1] = 1;
-	_primitiveQuadMesh->indices[2] = 2;
-	_primitiveQuadMesh->indices[3] = 2;
-	_primitiveQuadMesh->indices[4] = 3;
-	_primitiveQuadMesh->indices[5] = 0;
+	pqmIndices[0] = 0;
+	pqmIndices[1] = 1;
+	pqmIndices[2] = 2;
+	pqmIndices[3] = 2;
+	pqmIndices[4] = 3;
+	pqmIndices[5] = 0;
 
 	_primitiveQuadMesh->Upload();
 
@@ -614,8 +616,10 @@ void NSE::RenderServer::PipelineSetMesh(const NSE_Mesh& mesh)
 	// ToDo invalidate mesh on upload
 	if (!_currentStateMesh || _currentStateMesh.get() != mesh.get())
 	{
-		_deviceContext->IASetVertexBuffers(0, 1, &mesh->vertexBuffer, &stride, &offset);
-		_deviceContext->IASetIndexBuffer(mesh->indexBuffer, DXGI_FORMAT_R32_UINT, 0);
+		auto vertexBuffers = mesh->GetVertexBuffer()->GetD3DBuffer();
+
+		_deviceContext->IASetVertexBuffers(0, 1, &vertexBuffers, &stride, &offset);
+		_deviceContext->IASetIndexBuffer(mesh->GetIndexBuffer()->GetD3DBuffer(), DXGI_FORMAT_R32_UINT, 0);
 		_currentStateMesh = mesh;
 	}
 
@@ -828,7 +832,7 @@ void NSE::RenderServer::PipelineSetMaterial(const NSE_Material& material)
 
 void NSE::RenderServer::PipelineDrawIndexed(const NSE_Mesh& mesh)
 {
-	_deviceContext->DrawIndexed(mesh->indexCount, 0, 0);
+	_deviceContext->DrawIndexed(mesh->GetIndexCount(), 0, 0);
 }
 
 void NSE::RenderServer::PipelineSetRenderTargets(ID3D11RenderTargetView *colorTarget,

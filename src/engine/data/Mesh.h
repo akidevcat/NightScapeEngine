@@ -6,6 +6,7 @@
 
 #include "../entity/Object.h"
 #include"../obj_ptr.h"
+#include "../render/GraphicsBuffer.h"
 
 #define NSE_Mesh obj_ptr<NSE::Mesh>
 #define NSE_VertexData obj_ptr<NSE::VertexData>
@@ -23,27 +24,30 @@ namespace NSE
     class Mesh : public Object
     {
     public:
-        Mesh();
+        Mesh() = delete;
         Mesh(int vertexCount, int indexCount);
-        ~Mesh();
+        ~Mesh() override;
 
-        int GetVertexCount() const;
+        [[nodiscard]] int GetVertexCount() const { return _vertexCount; }
+        [[nodiscard]] int GetIndexCount() const { return _indexCount; }
+        [[nodiscard]] VertexData* GetVertices() const { return _vertexBuffer->As<VertexData>(); }
+        [[nodiscard]] uint32_t* GetIndices() const { return _indexBuffer->As<uint32_t>(); }
+        [[nodiscard]] NSE_GraphicsBuffer GetVertexBuffer() const { return _vertexBuffer; }
+        [[nodiscard]] NSE_GraphicsBuffer GetIndexBuffer() const { return _indexBuffer; }
 
-        bool Upload();
+        void Upload() const;
         void Release();
 
     public:
-        int vertexCount = 0;
-        int indexCount = 0;
-        VertexData* vertices = nullptr;
-        uint32_t* indices = nullptr;
-
-        ID3D11Buffer* vertexBuffer = nullptr;
-        ID3D11Buffer* indexBuffer = nullptr;
         // ToDo Bounds, RecalculateBounds
 
     private:
         bool _isModified = false; // ToDo
+
+        int _vertexCount = 0;
+        int _indexCount = 0;
+        NSE_GraphicsBuffer _vertexBuffer = nullptr;
+        NSE_GraphicsBuffer _indexBuffer = nullptr;
     };
 }
 

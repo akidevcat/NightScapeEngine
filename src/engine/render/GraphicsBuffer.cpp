@@ -64,16 +64,18 @@ void NSE::GraphicsBuffer::Upload()
 {
     assert(_keepDataOnCPU);
 
-    Upload(_data, _size, 0);
-}
-
-void NSE::GraphicsBuffer::Upload(void const *value, size_t valueSize, size_t offset)
-{
     if (!_isDirty)
     {
         return;
     }
 
+    Upload(_data, _size, 0);
+
+    _isDirty = false;
+}
+
+void NSE::GraphicsBuffer::Upload(void const *value, size_t valueSize, size_t offset) const
+{
     const auto deviceContext = RenderServer::Get()->GetDeviceContext();
 
     D3D11_MAPPED_SUBRESOURCE mappedResource = {};
@@ -85,8 +87,6 @@ void NSE::GraphicsBuffer::Upload(void const *value, size_t valueSize, size_t off
     memcpy(static_cast<char*>(mappedResource.pData) + offset, value, valueSize);
 
     deviceContext->Unmap(_d3dBuffer, 0);
-
-    _isDirty = false;
 }
 
 void NSE::GraphicsBuffer::Release()

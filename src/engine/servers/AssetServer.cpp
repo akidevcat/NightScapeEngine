@@ -165,11 +165,14 @@ NSE_Mesh NSE::AssetsServer::LoadMeshAsset(const std::string &path)
 
     auto mesh = CreateObject<Mesh>((int)vertexCount, (int)resultIndicies.size());
 
+    auto mVertices = mesh->GetVertices();
+    auto mIndices = mesh->GetIndices();
+
     for (const auto& v : mappedVertices)
     {
-        mesh->vertices[v.second.first] = v.second.second;
+        mVertices[v.second.first] = v.second.second;
     }
-    memcpy(mesh->indices, resultIndicies.data(), resultIndicies.size() * sizeof(uint32_t));
+    memcpy(mIndices, resultIndicies.data(), resultIndicies.size() * sizeof(uint32_t));
     // result->vertices; //.. copy
     // result->Upload();
     mesh->Upload();

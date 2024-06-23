@@ -27,7 +27,7 @@ namespace NSE
 
         void Set(void const* value, size_t valueSize, size_t offset);
         void Upload();
-        void Upload(void const* value, size_t valueSize, size_t offset);
+        void Upload(void const* value, size_t valueSize, size_t offset) const;
         void Release();
 
         void ReflectAsConstantBuffer(ID3D11ShaderReflection* shaderReflection, size_t nameID);
