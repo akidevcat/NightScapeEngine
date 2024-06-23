@@ -63,15 +63,15 @@ bool ShaderInputsData::GetSampler(size_t nameID, ID3D11SamplerState *&sampler)
     return false;
 }
 
-void ShaderInputsData::SetConstantBuffer(const obj_ptr<NSE::ConstantBuffer> &buffer)
-{
-    if (!buffer)
-    {
-        return;
-    }
-
-    SetConstantBuffer(buffer->GetNameID(), buffer);
-}
+// void ShaderInputsData::SetConstantBuffer(const NSE_GraphicsBuffer& buffer)
+// {
+//     if (!buffer)
+//     {
+//         return;
+//     }
+//
+//     SetConstantBuffer(buffer->GetNameID(), buffer);
+// }
 
 // bool ShaderInputsData::GetBuffer(size_t nameID, ID3D11Buffer *&buffer)
 // {
@@ -85,7 +85,7 @@ void ShaderInputsData::SetConstantBuffer(const obj_ptr<NSE::ConstantBuffer> &buf
 //     return false;
 // }
 
-void ShaderInputsData::SetConstantBuffer(size_t nameID, const obj_ptr<NSE::ConstantBuffer>& buffer)
+void ShaderInputsData::SetConstantBuffer(size_t nameID, const NSE_GraphicsBuffer& buffer)
 {
     auto result = _cbuffers.find(nameID);
     if (result != _cbuffers.end())
@@ -98,7 +98,7 @@ void ShaderInputsData::SetConstantBuffer(size_t nameID, const obj_ptr<NSE::Const
     }
 }
 
-bool ShaderInputsData::GetConstantBuffer(size_t nameID, obj_ptr<NSE::ConstantBuffer> &buffer)
+bool ShaderInputsData::GetConstantBuffer(size_t nameID, NSE_GraphicsBuffer& buffer)
 {
     auto result = _cbuffers.find(nameID);
     if (result != _cbuffers.end())

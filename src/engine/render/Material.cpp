@@ -8,8 +8,9 @@
 NSE::Material::Material(const NSE_Shader& shader)
 {
     S_PID($Globals);
+    S_PID(GlobalProperties);
     S_PID(DrawProperties);
-    S_PID(MaterialProperties);
+    S_PID(LightsProperties);
 
     _shader = shader;
 
@@ -22,17 +23,17 @@ NSE::Material::Material(const NSE_Shader& shader)
     {
         flResult = shader->GetVertexShader()->GetInputsDescription()->GetDescription(PID_$Globals, inputDescription);
         assert(flResult);
-        _materialPropertiesBuffer = CreateObject<ConstantBuffer>(PID_$Globals);
-        _materialPropertiesBuffer->Reflect(shader->GetVertexShader()->GetReflection(), inputDescription.BindPoint, true);
-        _materialPropertiesBuffer->EnableBufferData(); // ToDo?
+        _materialPropertiesBuffer = CreateObject<GraphicsBuffer>(GraphicsBuffer::Target::Constant, 0, true);
+        _materialPropertiesBuffer->ReflectAsConstantBuffer(shader->GetVertexShader()->GetReflection(), inputDescription.BindPoint, true);
+        // _materialPropertiesBuffer->EnableBufferData(); // ToDo?
     }
     else if (shader->GetPixelShader()->HasMaterialProps())
     {
         flResult = shader->GetPixelShader()->GetInputsDescription()->GetDescription(PID_$Globals, inputDescription);
         assert(flResult);
-        _materialPropertiesBuffer = CreateObject<ConstantBuffer>(PID_$Globals);
-        _materialPropertiesBuffer->Reflect(shader->GetPixelShader()->GetReflection(), inputDescription.BindPoint, true);
-        _materialPropertiesBuffer->EnableBufferData(); // ToDo?
+        _materialPropertiesBuffer = CreateObject<GraphicsBuffer>(GraphicsBuffer::Target::Constant, 0, true);
+        _materialPropertiesBuffer->ReflectAsConstantBuffer(shader->GetPixelShader()->GetReflection(), inputDescription.BindPoint, true);
+        // _materialPropertiesBuffer->EnableBufferData(); // ToDo?
     }
 
     // if (shader->GetVertexShader()->HasMaterialProps())
@@ -47,13 +48,10 @@ NSE::Material::Material(const NSE_Shader& shader)
     _vsInputs = new ShaderInputsData{};
     _psInputs = new ShaderInputsData{};
 
-    SetConstantBuffer(RenderServer::Get()->GetGlobalPropertiesBuffer());
-    SetConstantBuffer(RenderServer::Get()->GetDrawPropertiesBuffer());
-    SetConstantBuffer(RenderServer::Get()->GetLightsPropertiesBuffer());
-    // _vsInputs->SetConstantBuffer(shader->GetVertexShader()->GetMaterialPropertiesBuffer());
-    // _psInputs->SetConstantBuffer(shader->GetPixelShader()->GetMaterialPropertiesBuffer());
-    _vsInputs->SetConstantBuffer(_materialPropertiesBuffer);
-    _psInputs->SetConstantBuffer(_materialPropertiesBuffer);
+    SetConstantBuffer(PID_GlobalProperties, RenderServer::Get()->GetGlobalPropertiesBuffer());
+    SetConstantBuffer(PID_DrawProperties, RenderServer::Get()->GetDrawPropertiesBuffer());
+    SetConstantBuffer(PID_LightsProperties, RenderServer::Get()->GetLightsPropertiesBuffer());
+    SetConstantBuffer(PID_$Globals, _materialPropertiesBuffer);
 
     SetBlendState(RenderServer::Get()->GetBlendStateOpaque());
 }
@@ -78,16 +76,8 @@ void NSE::Material::Upload()
 {
     if (_materialPropertiesBuffer)
     {
-        _materialPropertiesBuffer->UploadData();
+        _materialPropertiesBuffer->Upload();
     }
-    // if (_vsMaterialPropertiesBuffer)
-    // {
-    //     _shader->GetVertexShader()->UploadMaterialProperties(_vsMaterialPropertiesBuffer);
-    // }
-    // if (_psMaterialPropertiesBuffer)
-    // {
-    //     _shader->GetPixelShader()->UploadMaterialProperties(_psMaterialPropertiesBuffer);
-    // }
 }
 
 void NSE::Material::EnumerateVertexConstantBuffers(ID3D11Buffer* vsBuffers[D3D11_COMMONSHADER_CONSTANT_BUFFER_HW_SLOT_COUNT], int &vsBuffersLength) const
@@ -96,7 +86,7 @@ void NSE::Material::EnumerateVertexConstantBuffers(ID3D11Buffer* vsBuffers[D3D11
 
     memset(vsBuffers, 0, sizeof(vsBuffers));
 
-    NSE_ConstantBuffer buffer;
+    NSE_GraphicsBuffer buffer;
 
     for (const auto& desc : *_shader->GetVertexShader()->GetInputsDescription())
     {
@@ -104,7 +94,7 @@ void NSE::Material::EnumerateVertexConstantBuffers(ID3D11Buffer* vsBuffers[D3D11
 
         if (_vsInputs->GetConstantBuffer(desc.first, buffer))
         {
-            vsBuffers[desc.second.BindPoint] = buffer->GetGPUBuffer();
+            vsBuffers[desc.second.BindPoint] = buffer->GetD3DBuffer();
         }
         else
         {
@@ -121,7 +111,7 @@ void NSE::Material::EnumeratePixelConstantBuffers(ID3D11Buffer* psBuffers[D3D11_
 
     memset(psBuffers, 0, sizeof(psBuffers));
 
-    NSE_ConstantBuffer buffer;
+    NSE_GraphicsBuffer buffer;
 
     for (const auto& desc : *_shader->GetPixelShader()->GetInputsDescription())
     {
@@ -129,7 +119,7 @@ void NSE::Material::EnumeratePixelConstantBuffers(ID3D11Buffer* psBuffers[D3D11_
 
         if (_psInputs->GetConstantBuffer(desc.first, buffer))
         {
-            psBuffers[desc.second.BindPoint] = buffer->GetGPUBuffer();
+            psBuffers[desc.second.BindPoint] = buffer->GetD3DBuffer();
         }
         else
         {
@@ -147,32 +137,13 @@ void NSE::Material::SetVar(const size_t nameID, void *valuePtr, const size_t val
 
     if (_materialPropertiesBuffer)
     {
-        result = _materialPropertiesBuffer->GetDescription()->GetVDescription(nameID, desc);
+        result = _materialPropertiesBuffer->GetD3DVariableDescription(nameID, desc);
         if (result)
         {
             assert((UINT)valueSize == desc.Size);
-            _materialPropertiesBuffer->GetBufferData()->Set(desc.StartOffset, valuePtr, valueSize);
+            _materialPropertiesBuffer->Set(valuePtr, valueSize, desc.StartOffset);
         }
     }
-
-    // if (_vsMaterialPropertiesBuffer)
-    // {
-    //     result = _shader->GetVertexShader()->GetMaterialPropertiesBuffer()->GetDescription()->GetVDescription(nameID, desc);
-    //     if (result)
-    //     {
-    //         assert((UINT)valueSize == desc.Size);
-    //         _vsMaterialPropertiesBuffer->Set(desc.StartOffset, valuePtr, valueSize);
-    //     }
-    // }
-    // if (_psMaterialPropertiesBuffer)
-    // {
-    //     result = _shader->GetPixelShader()->GetMaterialPropertiesBuffer()->GetDescription()->GetVDescription(nameID, desc);
-    //     if (result)
-    //     {
-    //         assert((UINT)valueSize == desc.Size);
-    //         _psMaterialPropertiesBuffer->Set(desc.StartOffset, valuePtr, valueSize);
-    //     }
-    // }
 }
 
 void NSE::Material::SetFloat(const size_t nameID, float value) const
@@ -206,17 +177,17 @@ void NSE::Material::SetMatrix(const size_t nameID, DirectX::XMMATRIX value) cons
     SetVar(nameID, &value, sizeof(DirectX::XMMATRIX));
 }
 
-void NSE::Material::SetConstantBuffer(size_t nameID, const obj_ptr<NSE::ConstantBuffer>& buffer) const
+void NSE::Material::SetConstantBuffer(size_t nameID, const NSE_GraphicsBuffer& buffer) const
 {
     _vsInputs->SetConstantBuffer(nameID, buffer);
     _psInputs->SetConstantBuffer(nameID, buffer);
 }
 
-void NSE::Material::SetConstantBuffer(const NSE_ConstantBuffer& buffer) const
-{
-    _vsInputs->SetConstantBuffer(buffer->GetNameID(), buffer);
-    _psInputs->SetConstantBuffer(buffer->GetNameID(), buffer);
-}
+// void NSE::Material::SetConstantBuffer(const NSE_ConstantBuffer& buffer) const
+// {
+//     _vsInputs->SetConstantBuffer(buffer->GetNameID(), buffer);
+//     _psInputs->SetConstantBuffer(buffer->GetNameID(), buffer);
+// }
 
 void NSE::Material::SetTexture(size_t nameID, const NSE_Texture& texture) const
 {

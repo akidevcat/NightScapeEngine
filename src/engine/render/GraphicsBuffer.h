@@ -26,11 +26,12 @@ namespace NSE
         ~GraphicsBuffer() override;
 
         void Set(void const* value, size_t valueSize, size_t offset);
+        void Resize(size_t newSize);
         void Upload();
         void Upload(void const* value, size_t valueSize, size_t offset) const;
         void Release();
 
-        void ReflectAsConstantBuffer(ID3D11ShaderReflection* shaderReflection, size_t nameID);
+        void ReflectAsConstantBuffer(ID3D11ShaderReflection* shaderReflection, size_t bufferID, bool autoResize = true);
 
         [[nodiscard]] ID3D11Buffer* GetD3DBuffer() const { return _d3dBuffer; }
         [[nodiscard]] Target GetTarget() const { return _target; }

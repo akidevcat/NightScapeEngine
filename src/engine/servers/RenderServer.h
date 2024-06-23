@@ -49,11 +49,11 @@ namespace NSE
         void DrawMesh(const NSE_Mesh& mesh, const NSE_Material& material, const DirectX::XMMATRIX& matrix, const NSE_Camera& camera, size_t objectID = 0);
 
         // Property Accessors
-        [[nodiscard]] LightsProperties*           GetLightsProperties() const { return GetLightsPropertiesBuffer()->GetBufferData()->As<LightsProperties>(); }
-        [[nodiscard]] NSE_ConstantBuffer          GetGlobalPropertiesBuffer() const { return _globalPropertiesBuffer; }
-        [[nodiscard]] NSE_ConstantBuffer          GetDrawPropertiesBuffer() const { return _drawPropertiesBuffer; }
-        [[nodiscard]] NSE_ConstantBuffer          GetLightsPropertiesBuffer() const { return _lightsPropertiesBuffer; }
-        [[nodiscard]] GlobalProperties*           GetGlobalProperties() const { return _globalPropertiesBuffer->GetBufferData()->As<GlobalProperties>(); }
+        [[nodiscard]] LightsProperties*           GetLightsProperties() const { return GetLightsPropertiesBuffer()->As<LightsProperties>(); }
+        [[nodiscard]] NSE_GraphicsBuffer          GetGlobalPropertiesBuffer() const { return _globalPropertiesBuffer; }
+        [[nodiscard]] NSE_GraphicsBuffer          GetDrawPropertiesBuffer() const { return _drawPropertiesBuffer; }
+        [[nodiscard]] NSE_GraphicsBuffer          GetLightsPropertiesBuffer() const { return _lightsPropertiesBuffer; }
+        [[nodiscard]] GlobalProperties*           GetGlobalProperties() const { return _globalPropertiesBuffer->As<GlobalProperties>(); }
         [[nodiscard]] bool                        GetFullscreenState() const { return _isFullscreen; }
         void                                      SetFullscreenState(bool state) { _isFullscreen = state; }
         [[nodiscard]] ID3D11Device*               GetDevice() const { return _device; }
@@ -110,9 +110,9 @@ namespace NSE
         NSE_Shader                  _errorShader = nullptr;
         NSE_Material                _errorMaterial = nullptr;
 
-        NSE_ConstantBuffer          _globalPropertiesBuffer = nullptr;
-        NSE_ConstantBuffer          _drawPropertiesBuffer = nullptr;
-        NSE_ConstantBuffer          _lightsPropertiesBuffer = nullptr;
+        NSE_GraphicsBuffer          _globalPropertiesBuffer = nullptr;
+        NSE_GraphicsBuffer          _drawPropertiesBuffer = nullptr;
+        NSE_GraphicsBuffer          _lightsPropertiesBuffer = nullptr;
 
         ShaderInputsData*           _globalShaderInputs = nullptr;
     };

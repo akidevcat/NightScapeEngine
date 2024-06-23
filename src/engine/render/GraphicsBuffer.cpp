@@ -1,6 +1,7 @@
 #include "GraphicsBuffer.h"
 
 #include "../servers/RenderServer.h"
+#include "../servers/TimeServer.h"
 
 NSE::GraphicsBuffer::GraphicsBuffer(const Target target, const size_t size, const bool keepDataOnCPU)
     : _target(target), _keepDataOnCPU(keepDataOnCPU), _size(size)
@@ -60,6 +61,29 @@ void NSE::GraphicsBuffer::Set(void const *value, size_t valueSize, size_t offset
     }
 }
 
+void NSE::GraphicsBuffer::Resize(size_t newSize)
+{
+    if (_size == newSize || newSize <= 0)
+    {
+        return;
+    }
+
+    Release();
+
+    _size = newSize;
+
+    if (newSize % 16 != 0)
+    {
+        _size += 16 - newSize % 16;
+    }
+
+    InitializeBuffer();
+    if (_keepDataOnCPU)
+    {
+        InitializeData();
+    }
+}
+
 void NSE::GraphicsBuffer::Upload()
 {
     assert(_keepDataOnCPU);
@@ -74,7 +98,7 @@ void NSE::GraphicsBuffer::Upload()
     _isDirty = false;
 }
 
-void NSE::GraphicsBuffer::Upload(void const *value, size_t valueSize, size_t offset) const
+void NSE::GraphicsBuffer::Upload(void const* value, size_t valueSize, size_t offset) const
 {
     const auto deviceContext = RenderServer::Get()->GetDeviceContext();
 
@@ -85,6 +109,20 @@ void NSE::GraphicsBuffer::Upload(void const *value, size_t valueSize, size_t off
     assert(("Failed to map constant buffer", SUCCEEDED(result)));
 
     memcpy(static_cast<char*>(mappedResource.pData) + offset, value, valueSize);
+    // void* test = malloc(valueSize);
+    // memset(test, 0, valueSize);
+    //
+    // if (valueSize == 16)
+    // {
+    //     memcpy(static_cast<char*>(mappedResource.pData) + offset, test, valueSize);
+    // }
+    // else
+    // {
+    //     memcpy(static_cast<char*>(mappedResource.pData) + offset, value, valueSize);
+    // }
+
+
+    // memset(static_cast<char*>(mappedResource.pData) + offset, 0, valueSize);
 
     deviceContext->Unmap(_d3dBuffer, 0);
 }
@@ -101,7 +139,7 @@ void NSE::GraphicsBuffer::Release()
     _data = nullptr;
 }
 
-void NSE::GraphicsBuffer::ReflectAsConstantBuffer(ID3D11ShaderReflection *shaderReflection, size_t bufferID)
+void NSE::GraphicsBuffer::ReflectAsConstantBuffer(ID3D11ShaderReflection *shaderReflection, size_t bufferID, bool autoResize)
 {
     assert(_target == Target::Constant);
 
@@ -126,6 +164,11 @@ void NSE::GraphicsBuffer::ReflectAsConstantBuffer(ID3D11ShaderReflection *shader
     }
 
     _isReflected = true;
+
+    if (autoResize)
+    {
+        Resize(_d3dDescription.Size);
+    }
 }
 
 bool NSE::GraphicsBuffer::GetD3DVariableDescription(size_t nameID, D3D11_SHADER_VARIABLE_DESC &desc) const

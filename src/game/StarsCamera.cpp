@@ -19,8 +19,6 @@ StarsCamera::StarsCamera(const NSE_Camera& parentCamera)
 
 
     this->clearMode = NSE::CAMERA_CLEAR_MODE_COLOR;
-    // this->clearColor = {0, 0, 0, 1};
-    // this->clearColor = {0.35 / 9.0, 0.26 / 9.0, 0.38 / 9.0, 1};
     this->clearColor = {0, 0, 0, 1};
 
     this->CopyParams(parentCamera);

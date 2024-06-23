@@ -5,6 +5,7 @@
 
 #include "BlendState.h"
 #include "ConstantBufferData.h"
+#include "GraphicsBuffer.h"
 #include "../obj_ptr.h"
 #include "Shader.h"
 #include "ShaderInputsData.h"
@@ -54,8 +55,7 @@ namespace NSE
         void SetVector(size_t nameID, xmvector value) const;
         void SetColor(size_t nameID, xmvector value) const;
         void SetMatrix(size_t nameID, xmmatrix value) const;
-        void SetConstantBuffer(size_t nameID, const NSE_ConstantBuffer& buffer) const;
-        void SetConstantBuffer(const NSE_ConstantBuffer& buffer) const;
+        void SetConstantBuffer(size_t nameID, const NSE_GraphicsBuffer& buffer) const;
         void SetTexture(size_t nameID, const NSE_Texture& texture) const;
 
         void SetBlendState(const NSE_BlendState& state);
@@ -71,9 +71,7 @@ namespace NSE
         NSE_BlendState   _blendState = nullptr;
         bool             _depthWriteEnabled = true;
 
-        NSE_ConstantBuffer _materialPropertiesBuffer = nullptr;
-        // ConstantBufferData* _vsMaterialPropertiesBuffer = nullptr;
-        // ConstantBufferData* _psMaterialPropertiesBuffer = nullptr;
+        NSE_GraphicsBuffer _materialPropertiesBuffer = nullptr;
         ShaderInputsData*   _vsInputs = nullptr;
         ShaderInputsData*   _psInputs = nullptr;
     };

@@ -385,15 +385,18 @@ bool NSE::RenderServer::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	}
 
 	// ToDo
-	_globalPropertiesBuffer = CreateObject<ConstantBuffer>(ShaderUtils::PropertyToID("GlobalProperties"), sizeof(GlobalProperties));
-	_globalPropertiesBuffer->EnableBufferData();
+	_globalPropertiesBuffer = CreateObject<GraphicsBuffer>(GraphicsBuffer::Target::Constant, sizeof(GlobalProperties), true);
+	// _globalPropertiesBuffer = CreateObject<ConstantBuffer>(ShaderUtils::PropertyToID("GlobalProperties"), sizeof(GlobalProperties));
+	// _globalPropertiesBuffer->EnableBufferData();
 	_globalShaderInputs = new ShaderInputsData{};
 
-	_drawPropertiesBuffer = CreateObject<ConstantBuffer>(ShaderUtils::PropertyToID("DrawProperties"), sizeof(DrawProperties));
-	_drawPropertiesBuffer->EnableBufferData();
-
-	_lightsPropertiesBuffer = CreateObject<ConstantBuffer>(ShaderUtils::PropertyToID("LightsProperties"), sizeof(LightsProperties));
-	_lightsPropertiesBuffer->EnableBufferData();
+	_drawPropertiesBuffer = CreateObject<GraphicsBuffer>(GraphicsBuffer::Target::Constant, sizeof(DrawProperties), true);
+	_lightsPropertiesBuffer = CreateObject<GraphicsBuffer>(GraphicsBuffer::Target::Constant, sizeof(LightsProperties), true);
+	// _drawPropertiesBuffer = CreateObject<ConstantBuffer>(ShaderUtils::PropertyToID("DrawProperties"), sizeof(DrawProperties));
+	// _drawPropertiesBuffer->EnableBufferData();
+	//
+	// _lightsPropertiesBuffer = CreateObject<ConstantBuffer>(ShaderUtils::PropertyToID("LightsProperties"), sizeof(LightsProperties));
+	// _lightsPropertiesBuffer->EnableBufferData();
 
 	D3D11_SAMPLER_DESC samplerDesc;
 
@@ -595,7 +598,7 @@ void NSE::RenderServer::Shutdown()
 
 void NSE::RenderServer::PipelineSetCamera(const NSE_Camera& camera)
 {
-	auto drawProperties = _drawPropertiesBuffer->GetBufferData()->As<DrawProperties>();
+	auto drawProperties = _drawPropertiesBuffer->As<DrawProperties>();
 
 	drawProperties->ProjectionMatrix = camera->GetProjectionMatrix();
 	drawProperties->ViewMatrix = camera->GetViewMatrix();
@@ -603,7 +606,7 @@ void NSE::RenderServer::PipelineSetCamera(const NSE_Camera& camera)
 
 void NSE::RenderServer::PipelineSetModelMatrix(const DirectX::XMMATRIX& matrix)
 {
-	auto drawProperties = _drawPropertiesBuffer->GetBufferData()->As<DrawProperties>();
+	auto drawProperties = _drawPropertiesBuffer->As<DrawProperties>();
 
 	drawProperties->ModelMatrix = matrix;
 }
@@ -841,7 +844,7 @@ void NSE::RenderServer::PipelineSetRenderTargets(ID3D11RenderTargetView *colorTa
 	_deviceContext->OMSetRenderTargets(1, &colorTarget, depthTarget);
 	_deviceContext->RSSetViewports(1, &viewport);
 
-	auto drawProperties = _drawPropertiesBuffer->GetBufferData()->As<DrawProperties>();
+	auto drawProperties = _drawPropertiesBuffer->As<DrawProperties>();
 
 	drawProperties->TargetResolutionX = (uint32_t)viewport.Width;
 	drawProperties->TargetResolutionY = (uint32_t)viewport.Height;
@@ -863,7 +866,7 @@ void NSE::RenderServer::PipelineSetRenderTargets(const NSE_RenderTexture& colorT
 		_currentDepthStencilView = dsv;
 	}
 
-	auto drawProperties = _drawPropertiesBuffer->GetBufferData()->As<DrawProperties>();
+	auto drawProperties = _drawPropertiesBuffer->As<DrawProperties>();
 
 	drawProperties->TargetResolutionX = (uint32_t)viewport.Width;
 	drawProperties->TargetResolutionY = (uint32_t)viewport.Height;
@@ -915,12 +918,12 @@ void NSE::RenderServer::DrawMesh(const NSE_Mesh& mesh, const NSE_Material& mater
 	PipelineSetMesh(mesh);
 	PipelineSetMaterial(material ? material : _errorMaterial);
 
-	auto drawProperties = _drawPropertiesBuffer->GetBufferData()->As<DrawProperties>();
+	auto drawProperties = _drawPropertiesBuffer->As<DrawProperties>();
 	drawProperties->ObjectID = objectID;
 
-	_globalPropertiesBuffer->UploadData();
-	_drawPropertiesBuffer->UploadData();
-	_lightsPropertiesBuffer->UploadData();
+	_globalPropertiesBuffer->Upload();
+	_drawPropertiesBuffer->Upload();
+	_lightsPropertiesBuffer->Upload();
 
 	PipelineDrawIndexed(mesh);
 }
