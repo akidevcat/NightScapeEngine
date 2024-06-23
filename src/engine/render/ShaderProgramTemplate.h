@@ -15,8 +15,6 @@
 #endif
 
 #include <cassert>
-#include "ConstantBuffer.h"
-#include "ConstantBufferData.h"
 #include "ShaderInputsDescription.h"
 #include "../servers/ObjectServer.h"
 

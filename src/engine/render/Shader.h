@@ -1,7 +1,6 @@
 #ifndef SHADER_H
 #define SHADER_H
 
-#include "ConstantBufferData.h"
 #include "../obj_ptr.h"
 #include "VertexShader.h"
 #include "PixelShader.h"

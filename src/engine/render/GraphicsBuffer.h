@@ -1,9 +1,12 @@
 #ifndef GRAPHICSBUFFER_H
 #define GRAPHICSBUFFER_H
 
-#include "ConstantBuffer.h"
 #include "../obj_ptr.h"
 #include "../entity/Object.h"
+
+#include <unordered_map>
+#include <d3d11.h>
+#include <d3d11shader.h>
 
 namespace NSE
 {

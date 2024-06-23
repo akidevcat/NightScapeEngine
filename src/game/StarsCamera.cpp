@@ -17,7 +17,6 @@ StarsCamera::StarsCamera(const NSE_Camera& parentCamera)
     this->colorTarget = parentCamera->colorTarget;
     this->depthTarget = parentCamera->depthTarget;
 
-
     this->clearMode = NSE::CAMERA_CLEAR_MODE_COLOR;
     this->clearColor = {0, 0, 0, 1};
 
@@ -30,7 +29,6 @@ StarsCamera::StarsCamera(const NSE_Camera& parentCamera)
     _quadMaterial->SetDepthWrite(false);
     _quadMaterial->SetUnsignedInt(sid_PixelSizeX, 5*3);
     _quadMaterial->SetUnsignedInt(sid_PixelSizeY, 9*3);
-
 
     for (int i = 0; i < 100; i++)
     {

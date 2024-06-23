@@ -75,12 +75,6 @@ add_executable(${PROJECT_NAME} WIN32
         src/engine/servers/ApplicationServer.h
         src/engine/render/ShaderInputs.cpp
         src/engine/render/ShaderInputs.h
-        src/engine/render/ConstantBuffer.cpp
-        src/engine/render/ConstantBuffer.h
-        src/engine/render/ConstantBufferData.cpp
-        src/engine/render/ConstantBufferData.h
-        src/engine/render/ConstantBufferDescription.cpp
-        src/engine/render/ConstantBufferDescription.h
         src/engine/render/ShaderInputsData.cpp
         src/engine/render/ShaderInputsData.h
         src/engine/render/ShaderInputsDescription.cpp

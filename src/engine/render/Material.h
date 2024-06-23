@@ -4,7 +4,6 @@
 #include <directxmath.h>
 
 #include "BlendState.h"
-#include "ConstantBufferData.h"
 #include "GraphicsBuffer.h"
 #include "../obj_ptr.h"
 #include "Shader.h"
