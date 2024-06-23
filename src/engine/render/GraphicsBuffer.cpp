@@ -222,7 +222,9 @@ void NSE::GraphicsBuffer::InitializeBuffer()
 
     }
 
-    assert(("Failed to create a d3d buffer", SUCCEEDED(render->GetDevice()->CreateBuffer(&bufferDesc, nullptr, &_d3dBuffer)))); // ToDo initial data
+    auto result = render->GetDevice()->CreateBuffer(&bufferDesc, nullptr, &_d3dBuffer);
+
+    assert(("Failed to create a d3d buffer", SUCCEEDED(result))); // ToDo initial data
 }
 
 void NSE::GraphicsBuffer::InitializeData()

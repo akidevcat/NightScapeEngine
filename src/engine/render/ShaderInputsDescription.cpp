@@ -9,15 +9,15 @@ ShaderInputsDescription::ShaderInputsDescription(ID3D11ShaderReflection *reflect
     D3D11_SHADER_DESC shaderDescription{};
     D3D11_SHADER_INPUT_BIND_DESC bindDescription{};
 
-    assert(("Failed to reflect shader description", SUCCEEDED(reflection->GetDesc(&shaderDescription))));
+    auto result = reflection->GetDesc(&shaderDescription);
 
-    // shaderDescription.ConstantBuffers;
-    // shaderDescription.BoundResources;
+    assert(("Failed to reflect shader description", SUCCEEDED(result)));
 
-    // _bindDescriptions
     for (UINT bResIndex = 0; bResIndex < shaderDescription.BoundResources; bResIndex++)
     {
-        assert(("Failed to reflect resource binding description", SUCCEEDED(reflection->GetResourceBindingDesc(bResIndex, &bindDescription))));
+        result = reflection->GetResourceBindingDesc(bResIndex, &bindDescription);
+
+        assert(("Failed to reflect resource binding description", SUCCEEDED(result)));
 
         // ToDo
         // if (bindDescription.Type != D3D_SIT_TEXTURE && bindDescription.Type != D3D_SIT_SAMPLER && bindDescription.Type != D3D_SIT_CBUFFER)

@@ -21,9 +21,6 @@ namespace NSE
         void Release();
         bool Compile();
 
-        // void UploadDrawProperties(ConstBufferData* drawProps);
-        // void UploadGlobalProperties(ConstBufferData* globalProps);
-
         [[nodiscard]] VertexShader* GetVertexShader() const { return _vShader; }
         [[nodiscard]] PixelShader* GetPixelShader() const { return _pShader; }
         [[nodiscard]] bool IsCompiled() const { return _isCompiled; }

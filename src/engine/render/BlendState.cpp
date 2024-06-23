@@ -16,14 +16,18 @@ NSE::BlendState::BlendState()
     description.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
     description.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 
+    auto result = NSE::RenderServer::Get()->GetDevice()->CreateBlendState(&description, &_d3dObject);
+
     assert(("Unable to create blend state",
-        SUCCEEDED(NSE::RenderServer::Get()->GetDevice()->CreateBlendState(&description, &_d3dObject))));
+        SUCCEEDED(result)));
 }
 
 NSE::BlendState::BlendState(const D3D11_BLEND_DESC &description)
 {
+    auto result = NSE::RenderServer::Get()->GetDevice()->CreateBlendState(&description, &_d3dObject);
+
     assert(("Unable to create blend state",
-        SUCCEEDED(NSE::RenderServer::Get()->GetDevice()->CreateBlendState(&description, &_d3dObject))));
+        SUCCEEDED(result)));
 }
 
 NSE::BlendState::~BlendState()
