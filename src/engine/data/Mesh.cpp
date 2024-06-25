@@ -25,6 +25,15 @@ void NSE::Mesh::Upload() const
     _indexBuffer->Upload();
 }
 
+void NSE::Mesh::Resize(int vertexCount, int indexCount)
+{
+    _vertexCount = vertexCount;
+    _indexCount = indexCount;
+
+    _vertexBuffer->Resize(vertexCount);
+    _indexBuffer->Resize(indexCount);
+}
+
 void NSE::Mesh::Release()
 {
     if (_vertexBuffer)

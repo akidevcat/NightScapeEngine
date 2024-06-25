@@ -18,14 +18,7 @@ Game::Game()
 
 Game::~Game()
 {
-    // delete _testShader;
-    // delete _testMaterial;
-    // delete _triangle;
-    // delete _scene;
-    // delete _cameraRT;
-    // delete _presentCamera;
-    // delete _presentShader;
-    // delete _presentMaterial;
+
 }
 
 bool Game::Initialize(Engine* engine)

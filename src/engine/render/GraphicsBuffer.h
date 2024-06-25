@@ -32,6 +32,7 @@ namespace NSE
         void Resize(size_t newSize);
         void Upload();
         void Upload(void const* value, size_t valueSize, size_t offset) const;
+        void UploadForce();
         void Release();
 
         void ReflectAsConstantBuffer(ID3D11ShaderReflection* shaderReflection, size_t bufferID, bool autoResize = true);
@@ -42,6 +43,7 @@ namespace NSE
         [[nodiscard]] bool IsReflected() const { return _isReflected; }
         [[nodiscard]] D3D11_SHADER_BUFFER_DESC GetD3DDescription() const { assert(_isReflected); return _d3dDescription; }
         [[nodiscard]] bool GetD3DVariableDescription(size_t nameID, D3D11_SHADER_VARIABLE_DESC& desc) const;
+        [[nodiscard]] void* GetDataPointer() const { assert(_keepDataOnCPU); return _data; }
 
         template <typename T>
         T* As()

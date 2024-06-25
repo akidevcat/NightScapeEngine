@@ -127,6 +127,12 @@ void NSE::GraphicsBuffer::Upload(void const* value, size_t valueSize, size_t off
     deviceContext->Unmap(_d3dBuffer, 0);
 }
 
+void NSE::GraphicsBuffer::UploadForce()
+{
+    _isDirty = true;
+    Upload();
+}
+
 void NSE::GraphicsBuffer::Release()
 {
     if (_d3dBuffer)
@@ -218,6 +224,8 @@ void NSE::GraphicsBuffer::InitializeBuffer()
         case Target::Structured:
             assert(_stride > 0);
             bufferDesc.StructureByteStride = _stride;
+            bufferDesc.MiscFlags |= D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
+            bufferDesc.BindFlags |= D3D11_BIND_SHADER_RESOURCE;
         break;
 
     }

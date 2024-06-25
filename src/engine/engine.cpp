@@ -4,6 +4,7 @@
 #include <chrono>
 
 #include "entity/Camera.h"
+#include "entity/ParticleSystem.h"
 #include "entity/SceneEntity.h"
 #include "entity/VisualEntity.h"
 #include "scene/Scene.h"
@@ -139,6 +140,19 @@ void NSE::Engine::OnFrameUpdate()
     for (const auto& entity : entities)
     {
         entity->OnUpdate();
+    }
+
+    // Update particle systems
+    vector<NSE_ParticleSystem> particleSystems;
+
+    for (auto scene : scenes)
+    {
+        scene->FindAllEntitiesFromBaseType(particleSystems);
+    }
+
+    for (const auto& ps : particleSystems)
+    {
+        ps->OnParticlesUpdate();
     }
 }
 

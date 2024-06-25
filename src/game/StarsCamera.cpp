@@ -45,6 +45,9 @@ StarsCamera::StarsCamera(const NSE_Camera& parentCamera)
         quad->renderingMaterial = _quadMaterial;
         _largeStars.emplace_back(quad);
     }
+
+    _particles = _starsScene->Create<StarDustParticles>();
+    _particles->position += {0, 0, 1};
 }
 
 StarsCamera::~StarsCamera()

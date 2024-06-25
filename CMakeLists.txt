@@ -109,6 +109,8 @@ add_executable(${PROJECT_NAME} WIN32
         src/engine/entity/ParticleSystem.h
         src/engine/render/GraphicsBuffer.cpp
         src/engine/render/GraphicsBuffer.h
+        src/game/StarDustParticles.cpp
+        src/game/StarDustParticles.h
 )
 
 target_link_libraries(${PROJECT_NAME} d3d9 d3d11 d3dcompiler dinput8 dxguid)

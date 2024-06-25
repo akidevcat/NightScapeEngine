@@ -1,6 +1,7 @@
 #ifndef STARSCAMERA_H
 #define STARSCAMERA_H
 
+#include "StarDustParticles.h"
 #include "../engine/entity/Camera.h"
 #include "../engine/entity/QuadVisual.h"
 
@@ -17,6 +18,7 @@ private:
     std::vector<NSE_QuadVisual> _largeStars = {};
     NSE_Material _quadMaterial;
     NSE_Shader _quadShader;
+    obj_ptr<StarDustParticles> _particles = nullptr;
 };
 
 #endif //STARSCAMERA_H

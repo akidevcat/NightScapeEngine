@@ -36,6 +36,7 @@ namespace NSE
         [[nodiscard]] NSE_GraphicsBuffer GetIndexBuffer() const { return _indexBuffer; }
 
         void Upload() const;
+        void Resize(int vertexCount, int indexCount);
         void Release();
 
     public:
