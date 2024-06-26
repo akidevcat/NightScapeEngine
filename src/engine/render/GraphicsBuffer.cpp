@@ -248,11 +248,9 @@ void NSE::GraphicsBuffer::InitializeBuffer()
         D3D11_SHADER_RESOURCE_VIEW_DESC desc;
 
         desc.Format = DXGI_FORMAT_UNKNOWN;
-        desc.Buffer.FirstElement = 0;
-        desc.Buffer.NumElements = _size;
-        desc.Buffer.ElementOffset = 0;
-        desc.Buffer.ElementWidth = _stride;
         desc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
+        desc.Buffer.FirstElement = 0;
+        desc.Buffer.NumElements = _size / _stride;
 
         result = render->GetDevice()->CreateShaderResourceView(_d3dBuffer, &desc, &_resourceView);
 

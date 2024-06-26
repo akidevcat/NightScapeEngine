@@ -132,6 +132,7 @@ void NSE::ParticleSystem::Initialize()
             }
 
             break;
+
         case RenderType::Line:
 
             if (_pariclesMesh->GetIndexCount() != (int)_capacity * 2)
@@ -147,6 +148,7 @@ void NSE::ParticleSystem::Initialize()
             }
 
             break;
+
         case RenderType::Point:
 
             if (_pariclesMesh->GetIndexCount() != (int)_capacity)
