@@ -30,8 +30,8 @@ void NSE::Mesh::Resize(int vertexCount, int indexCount)
     _vertexCount = vertexCount;
     _indexCount = indexCount;
 
-    _vertexBuffer->Resize(vertexCount);
-    _indexBuffer->Resize(indexCount);
+    _vertexBuffer->Resize(vertexCount, sizeof(VertexData));
+    _indexBuffer->Resize(indexCount, sizeof(uint32_t));
 }
 
 void NSE::Mesh::Release()

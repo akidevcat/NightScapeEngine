@@ -8,7 +8,7 @@ NSE::ParticleSystem::ParticleSystem(size_t capacity, size_t stride, size_t count
 {
     _capacity = capacity;
     _count = count;
-    _pariclesMesh = CreateObject<Mesh>(0, (int)capacity * 6);
+    _pariclesMesh = CreateObject<Mesh>(0, 1);
     _particlesDataBuffer = CreateObject<GraphicsBuffer>(GraphicsBuffer::Target::Structured, stride, capacity, true);
 
     Initialize();
@@ -97,31 +97,71 @@ void NSE::ParticleSystem::SetSimulationFramerate(int framerate)
 
 }
 
-void NSE::ParticleSystem::SetParticleMesh(const NSE_Mesh& mesh)
+void NSE::ParticleSystem::SetRenderType(RenderType type)
 {
+    _renderType = type;
 
+    Initialize();
 }
 
 void NSE::ParticleSystem::Initialize()
 {
-    assert(_pariclesMesh->GetVertexCount() == 0);
-    assert(_pariclesMesh->GetIndexCount() == (int)_capacity * 6);
-
     // Initialize particles mesh
-
-    auto indices = _pariclesMesh->GetIndices();
-
     auto quadIndices = RenderServer::Get()->GetPrimitiveQuadMesh()->GetIndices();
+    uint32_t* indices = nullptr;
 
-    int j;
-
-    for (int i = 0; i < _capacity; i++)
+    switch (_renderType)
     {
-        memcpy(indices + i * 6, quadIndices, sizeof(uint32_t) * 6);
-        for (j = i * 6; j < (i + 1) * 6; j++)
-        {
-            indices[j] += i * 4;
-        }
+        case RenderType::Billboard:
+
+            if (_pariclesMesh->GetIndexCount() != (int)_capacity * 6)
+            {
+                _pariclesMesh->Resize(0, (int)_capacity * 6);
+            }
+
+            indices = _pariclesMesh->GetIndices();
+            int j;
+
+            for (int i = 0; i < _capacity; i++)
+            {
+                memcpy(indices + i * 6, quadIndices, sizeof(uint32_t) * 6);
+                for (j = i * 6; j < (i + 1) * 6; j++)
+                {
+                    indices[j] += i * 4;
+                }
+            }
+
+            break;
+        case RenderType::Line:
+
+            if (_pariclesMesh->GetIndexCount() != (int)_capacity * 2)
+            {
+                _pariclesMesh->Resize(0, (int)_capacity * 2);
+            }
+
+            indices = _pariclesMesh->GetIndices();
+
+            for (int i = 0; i < _capacity * 2; i++)
+            {
+                indices[i] = i;
+            }
+
+            break;
+        case RenderType::Point:
+
+            if (_pariclesMesh->GetIndexCount() != (int)_capacity)
+            {
+                _pariclesMesh->Resize(0, (int)_capacity);
+            }
+
+            indices = _pariclesMesh->GetIndices();
+
+            for (int i = 0; i < _capacity; i++)
+            {
+                indices[i] = i;
+            }
+
+            break;
     }
 
     _pariclesMesh->Upload();

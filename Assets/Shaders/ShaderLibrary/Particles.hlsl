@@ -28,4 +28,9 @@ inline uint GetParticleID_Point(uint vertexID)
     return vertexID;
 }
 
+inline void InitializeParticlePixelInput(ParticleVertexInput input, out ParticlePixelInput output)
+{
+
+}
+
 #endif

@@ -84,6 +84,13 @@ void NSE::GraphicsBuffer::Resize(size_t newSize)
     }
 }
 
+void NSE::GraphicsBuffer::Resize(size_t newCount, size_t newStride)
+{
+    _stride = newStride;
+
+    Resize(newCount * newStride);
+}
+
 void NSE::GraphicsBuffer::Upload()
 {
     assert(_keepDataOnCPU);

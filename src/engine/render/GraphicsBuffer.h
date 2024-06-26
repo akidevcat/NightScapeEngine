@@ -30,6 +30,7 @@ namespace NSE
 
         void Set(void const* value, size_t valueSize, size_t offset);
         void Resize(size_t newSize);
+        void Resize(size_t newCount, size_t newStride);
         void Upload();
         void Upload(void const* value, size_t valueSize, size_t offset) const;
         void UploadForce();

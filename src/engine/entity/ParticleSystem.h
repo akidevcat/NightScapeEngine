@@ -10,6 +10,14 @@ namespace NSE
     class ParticleSystem : public VisualEntity
     {
     public:
+        enum class RenderType : std::uint8_t
+        {
+            Billboard       = 0b00000001,
+            Line            = 0b00000010,
+            Point           = 0b00000100
+        };
+
+    public:
         ParticleSystem() = delete;
         ParticleSystem(size_t capacity, size_t stride, size_t count);
         ~ParticleSystem() override;
@@ -31,7 +39,8 @@ namespace NSE
         void SetSimulationFramerate(int framerate);
         [[nodiscard]] int GetSimulationFramerate() const { return _simulationFramerate; }
 
-        void SetParticleMesh(const NSE_Mesh& mesh);
+        void SetRenderType(RenderType type);
+        [[nodiscard]] RenderType GetRenderType() const { return _renderType; }
 
     public:
 
@@ -53,6 +62,7 @@ namespace NSE
         NSE_GraphicsBuffer  _particlesDataBuffer;
         NSE_Mesh            _pariclesMesh = nullptr;
         int                 _simulationFramerate = 0;
+        RenderType          _renderType = RenderType::Billboard;
 
         static constexpr int   MAX_SIMULATION_FRAMES_PER_UPDATE = 3;
     };
