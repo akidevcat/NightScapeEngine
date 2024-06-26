@@ -83,7 +83,7 @@ void Game::Start()
     controller->GetCamera()->colorTarget = _renderColorRT;
     controller->GetCamera()->depthTarget = _renderDepthRT;
 
-    auto starsCamera = _scene->Create<StarsCamera>(controller->GetCamera());
+    auto starsCamera = _scene->Create<StarsCamera>(controller->GetCamera(), controller);
 
     // auto test = _scene->Create<VisualMeshEntity>();
     // auto baseShader = CreateObject<Shader>(L"Assets/Shaders/Base.hlsl");

@@ -10,6 +10,25 @@ typedef DirectX::XMFLOAT4 float4;
 
 namespace NSE
 {
+    float3 __vectorcall operator+ (float3 v);
+    float3 __vectorcall operator- (float3 v);
+
+    float3& __vectorcall operator+= (float3& a, float3 b);
+    float3& __vectorcall operator-= (float3& a, float3 b);
+    float3& __vectorcall operator*= (float3& a, float3 b);
+    float3& __vectorcall operator/= (float3& a, float3 b);
+
+    float3& operator*= (float3& v, float s);
+    float3& operator/= (float3& v, float s);
+
+    float3 __vectorcall operator+ (float3 a, float3 b);
+    float3 __vectorcall operator- (float3 a, float3 b);
+    float3 __vectorcall operator* (float3 a, float3 b);
+    float3 __vectorcall operator/ (float3 a, float3 b);
+    float3 __vectorcall operator* (float3 v, float s);
+    float3 __vectorcall operator* (float s, float3 v);
+    float3 __vectorcall operator/ (float3 v, float s);
+
     struct Vector3d
     {
         double x;
@@ -89,6 +108,11 @@ namespace NSE
     public:
         static float Random();
     };
+
+    float length(float3 v);
+    double length(Vector3d v);
+    float3 normalize(float3 v);
+    Vector3d normalize(Vector3d v);
 }
 
 typedef NSE::Vector3d double3;

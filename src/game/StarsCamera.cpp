@@ -3,7 +3,7 @@
 #include "../engine/servers/RenderServer.h"
 #include "../engine/servers/SceneServer.h"
 
-StarsCamera::StarsCamera(const NSE_Camera& parentCamera)
+StarsCamera::StarsCamera(const NSE_Camera& parentCamera, const obj_ptr<ShipController>& controller)
 {
     static size_t sid_PixelSizeX = NSE::ShaderUtils::PropertyToID("_PixelSizeX");
     static size_t sid_PixelSizeY = NSE::ShaderUtils::PropertyToID("_PixelSizeY");
@@ -47,6 +47,8 @@ StarsCamera::StarsCamera(const NSE_Camera& parentCamera)
     }
 
     _particles = _starsScene->Create<StarDustParticles>();
+
+    _shipController = controller;
     // _particles->position += {0, 0, 1};
 }
 
@@ -75,4 +77,6 @@ void StarsCamera::OnUpdate()
     SetParams(aspect, fov, n, f, false, 0);
 
     rotation = _parentCamera->rotation;
+
+    _particles->velocity = (float3)_shipController->GetShipVelocity();
 }

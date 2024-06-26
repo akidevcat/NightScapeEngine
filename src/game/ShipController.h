@@ -14,6 +14,8 @@ public:
 
     NSE_Camera GetCamera() { return _camera; }
 
+    [[nodiscard]] NSE::Vector3d GetShipVelocity() const { return _shipVelocity; }
+
 public:
     float shipSpeed = 3.0f;
     float shipRotationSpeed = 1.0f;
