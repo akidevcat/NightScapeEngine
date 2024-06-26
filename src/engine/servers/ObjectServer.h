@@ -26,7 +26,9 @@ namespace NSE
             obj_ptr<T> Create(ArgTypes&&... args)
         {
             std::shared_ptr<T> ent = std::make_shared<T>(std::forward<ArgTypes>(args)...);
-            _objects.emplace(static_cast<std::shared_ptr<Object>>(ent)->GetUID(), ent);
+            auto obj = static_cast<std::shared_ptr<Object>>(ent);
+            _objects.emplace(obj->GetUID(), ent);
+            obj->OnCreated();
             return ent;
         }
 

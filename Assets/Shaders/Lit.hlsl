@@ -4,8 +4,6 @@
 Texture2D   _MainTex;
 float4      _MainTint;
 
-
-
 DefaultPixelInput VertexMain(DefaultVertexInput input)
 {
     DefaultPixelInput output;

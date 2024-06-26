@@ -183,6 +183,24 @@ void NSE::Material::SetConstantBuffer(size_t nameID, const NSE_GraphicsBuffer& b
     _psInputs->SetConstantBuffer(nameID, buffer);
 }
 
+void NSE::Material::SetBuffer(size_t nameID, const NSE_GraphicsBuffer &buffer) const
+{
+    switch (buffer->GetTarget())
+    {
+        case GraphicsBuffer::Target::Constant:
+            _vsInputs->SetConstantBuffer(nameID, buffer);
+            _psInputs->SetConstantBuffer(nameID, buffer);
+            break;
+        case GraphicsBuffer::Target::Structured:
+            _vsInputs->SetResource(nameID, buffer->GetD3DResourceView());
+            _psInputs->SetResource(nameID, buffer->GetD3DResourceView());
+            break;
+        default:
+            assert(false);
+            break;
+    }
+}
+
 // void NSE::Material::SetConstantBuffer(const NSE_ConstantBuffer& buffer) const
 // {
 //     _vsInputs->SetConstantBuffer(buffer->GetNameID(), buffer);

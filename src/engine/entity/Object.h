@@ -13,11 +13,17 @@ namespace NSE
 
         [[nodiscard]] size_t GetUID() const { return _uid; }
 
+    protected:
+        virtual void OnCreated() {}
+        virtual void OnDestroy() {}
+
     private:
         static size_t _uidCount;
 
         size_t _uid;
         bool _isDisposed = false;
+
+        friend class ObjectServer;
     };
 }
 

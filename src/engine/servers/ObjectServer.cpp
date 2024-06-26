@@ -25,6 +25,7 @@ void NSE::ObjectServer::Destroy(const NSE_Object& obj)
     auto result = _objects.find(obj->GetUID());
     if (result != _objects.end())
     {
+        obj->OnDestroy();
         _objectsToDelete.try_emplace(obj->GetUID(), result->second);
         _objects.erase(obj->GetUID());
     }
@@ -38,7 +39,10 @@ void NSE::ObjectServer::DestroyNow(const NSE_Object& obj)
 
         // This should erase the only shared_ptr causing the object to be destructed
         if (_objects.find(obj->GetUID()) != _objects.end())
+        {
+            obj->OnDestroy();
             _objects.erase(obj->GetUID());
+        }
     }
 
     assert(!obj);
@@ -59,6 +63,7 @@ void NSE::ObjectServer::DestroyAny(const NSE_Object& obj)
     auto result = _objects.find(obj->GetUID());
     if (result != _objects.end())
     {
+        obj->OnDestroy();
         _objectsToDelete.try_emplace(obj->GetUID(), result->second);
         _objects.erase(obj->GetUID());
     }
@@ -70,7 +75,10 @@ void NSE::ObjectServer::DestroyAnyNow(const NSE_Object& obj)
     {
         // This should erase the only shared_ptr causing the object to be destructed
         if (_objects.find(obj->GetUID()) != _objects.end())
+        {
+            obj->OnDestroy();
             _objects.erase(obj->GetUID());
+        }
     }
 
     assert(!obj);

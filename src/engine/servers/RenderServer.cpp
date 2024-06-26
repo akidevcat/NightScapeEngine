@@ -719,6 +719,7 @@ void NSE::RenderServer::PipelineSetMaterial(const NSE_Material& material)
 		{
 			// Resources ToDo
 			case D3D_SIT_TEXTURE:
+			case D3D_SIT_STRUCTURED:
 
 				ID3D11ShaderResourceView* resource;
 

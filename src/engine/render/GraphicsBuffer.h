@@ -43,6 +43,7 @@ namespace NSE
         [[nodiscard]] bool IsReflected() const { return _isReflected; }
         [[nodiscard]] D3D11_SHADER_BUFFER_DESC GetD3DDescription() const { assert(_isReflected); return _d3dDescription; }
         [[nodiscard]] bool GetD3DVariableDescription(size_t nameID, D3D11_SHADER_VARIABLE_DESC& desc) const;
+        [[nodiscard]] ID3D11ShaderResourceView* GetD3DResourceView() const { assert(_resourceView); return _resourceView; }
         [[nodiscard]] void* GetDataPointer() const { assert(_keepDataOnCPU); return _data; }
 
         template <typename T>
@@ -67,6 +68,8 @@ namespace NSE
         bool            _isDirty = false;
         bool            _isReflected = false;
         // size_t          _nameID = 0;
+
+        ID3D11ShaderResourceView* _resourceView = nullptr;
 
         D3D11_SHADER_BUFFER_DESC                               _d3dDescription = {};
         std::unordered_map<size_t, D3D11_SHADER_VARIABLE_DESC> _d3dVariableDescriptions = {};

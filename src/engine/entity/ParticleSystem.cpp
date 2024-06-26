@@ -1,13 +1,15 @@
 #include "ParticleSystem.h"
 
+#include "../nsepch.h"
 #include "../servers/RenderServer.h"
 #include "../servers/TimeServer.h"
 
-NSE::ParticleSystem::ParticleSystem(size_t capacity, size_t stride) :
-    _particlesDataBuffer(GraphicsBuffer::Target::Structured, stride, capacity, true)
+NSE::ParticleSystem::ParticleSystem(size_t capacity, size_t stride, size_t count)
 {
     _capacity = capacity;
-    _pariclesMesh = CreateObject<Mesh>(4, (int)capacity * 6);
+    _count = count;
+    _pariclesMesh = CreateObject<Mesh>(0, (int)capacity * 6);
+    _particlesDataBuffer = CreateObject<GraphicsBuffer>(GraphicsBuffer::Target::Structured, stride, capacity, true);
 
     Initialize();
 }
@@ -17,8 +19,21 @@ NSE::ParticleSystem::~ParticleSystem()
     Release();
 }
 
+void NSE::ParticleSystem::OnCreated()
+{
+    OnSetupParticles(_particlesDataBuffer->GetDataPointer(), _count);
+    _particlesDataBuffer->UploadForce();
+}
+
 void NSE::ParticleSystem::RenderEntity(const NSE_Camera& camera)
 {
+    S_PID(_ParticlesData);
+
+    if (this->renderingMaterial)
+    {
+        this->renderingMaterial->SetBuffer(PID__ParticlesData, _particlesDataBuffer);
+    }
+
     RenderServer::Get()->DrawMesh(_pariclesMesh, this->renderingMaterial, this->GetModelMatrix(camera->position), camera);
 }
 
@@ -43,15 +58,18 @@ void NSE::ParticleSystem::OnParticlesUpdate()
 
     for (int i = 0; i < deltaFrameCount; i++)
     {
-        OnProcessParticles(_particlesDataBuffer.GetDataPointer(), _count);
+        OnProcessParticles(_particlesDataBuffer->GetDataPointer(), _count);
     }
 
-    _particlesDataBuffer.UploadForce();
+    _particlesDataBuffer->UploadForce();
 }
 
 void NSE::ParticleSystem::Release()
 {
-    _particlesDataBuffer.Release();
+    if (_particlesDataBuffer)
+    {
+        _particlesDataBuffer->Release();
+    }
 
     if (_pariclesMesh)
     {
@@ -68,8 +86,8 @@ void NSE::ParticleSystem::SetCapacity(size_t capacity)
 {
     _capacity = capacity;
 
-    _pariclesMesh->Resize(4, (int)capacity * 6);
-    _particlesDataBuffer.Resize(capacity);
+    _pariclesMesh->Resize(0, (int)capacity * 6);
+    _particlesDataBuffer->Resize(capacity);
 
     Initialize();
 }
@@ -86,31 +104,31 @@ void NSE::ParticleSystem::SetParticleMesh(const NSE_Mesh& mesh)
 
 void NSE::ParticleSystem::Initialize()
 {
-    assert(_pariclesMesh->GetVertexCount() == 4);
+    assert(_pariclesMesh->GetVertexCount() == 0);
     assert(_pariclesMesh->GetIndexCount() == (int)_capacity * 6);
 
     // Initialize particles mesh
 
-    auto vertices = _pariclesMesh->GetVertices();
     auto indices = _pariclesMesh->GetIndices();
 
-    auto quadVertices = RenderServer::Get()->GetPrimitiveQuadMesh()->GetVertices();
     auto quadIndices = RenderServer::Get()->GetPrimitiveQuadMesh()->GetIndices();
-    memcpy(vertices, quadVertices, sizeof(VertexData) * 4);
+
+    int j;
 
     for (int i = 0; i < _capacity; i++)
     {
         memcpy(indices + i * 6, quadIndices, sizeof(uint32_t) * 6);
+        for (j = i * 6; j < (i + 1) * 6; j++)
+        {
+            indices[j] += i * 4;
+        }
     }
 
     _pariclesMesh->Upload();
-
-    // Initialize data buffer
-
-    _particlesDataBuffer.Upload();
 }
 
 void NSE::ParticleSystem::SetCount(size_t count)
 {
+    assert(count <= _capacity);
     _count = count;
 }

@@ -9,13 +9,14 @@ public:
     struct Particle
     {
         float3 position = {};
-        float size = 0;
+        float size = 0.1;
     };
 
 public:
     StarDustParticles();
 
 protected:
+    void OnSetupParticles(void *particlesData, size_t particleCount) override;
     void OnProcessParticles(void *particlesData, size_t particleCount) override;
 
 };

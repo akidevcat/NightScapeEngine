@@ -197,6 +197,7 @@ void NSE::GraphicsBuffer::InitializeBuffer()
     assert(_size > 0);
 
     const auto render = RenderServer::Get();
+    auto flCreateResourceView = false;
 
     D3D11_BUFFER_DESC bufferDesc;
 
@@ -226,6 +227,7 @@ void NSE::GraphicsBuffer::InitializeBuffer()
             bufferDesc.StructureByteStride = _stride;
             bufferDesc.MiscFlags |= D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
             bufferDesc.BindFlags |= D3D11_BIND_SHADER_RESOURCE;
+            flCreateResourceView = true;
         break;
 
     }
@@ -233,6 +235,22 @@ void NSE::GraphicsBuffer::InitializeBuffer()
     auto result = render->GetDevice()->CreateBuffer(&bufferDesc, nullptr, &_d3dBuffer);
 
     assert(("Failed to create a d3d buffer", SUCCEEDED(result))); // ToDo initial data
+
+    if (flCreateResourceView)
+    {
+        D3D11_SHADER_RESOURCE_VIEW_DESC desc;
+
+        desc.Format = DXGI_FORMAT_UNKNOWN;
+        desc.Buffer.FirstElement = 0;
+        desc.Buffer.NumElements = _size;
+        desc.Buffer.ElementOffset = 0;
+        desc.Buffer.ElementWidth = _stride;
+        desc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
+
+        result = render->GetDevice()->CreateShaderResourceView(_d3dBuffer, &desc, &_resourceView);
+
+        assert(SUCCEEDED(result));
+    }
 }
 
 void NSE::GraphicsBuffer::InitializeData()
