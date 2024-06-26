@@ -19,6 +19,11 @@ NSE::Mesh::~Mesh()
     DestroyObject(_indexBuffer);
 }
 
+void NSE::Mesh::SetTopology(D3D_PRIMITIVE_TOPOLOGY topology)
+{
+    _topology = topology;
+}
+
 void NSE::Mesh::Upload() const
 {
     _vertexBuffer->Upload();

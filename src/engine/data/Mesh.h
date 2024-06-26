@@ -35,6 +35,9 @@ namespace NSE
         [[nodiscard]] NSE_GraphicsBuffer GetVertexBuffer() const { return _vertexBuffer; }
         [[nodiscard]] NSE_GraphicsBuffer GetIndexBuffer() const { return _indexBuffer; }
 
+        [[nodiscard]] D3D_PRIMITIVE_TOPOLOGY GetTopology() const { return _topology; }
+        void SetTopology(D3D_PRIMITIVE_TOPOLOGY topology);
+
         void Upload() const;
         void Resize(int vertexCount, int indexCount);
         void Release();
@@ -49,6 +52,8 @@ namespace NSE
         int _indexCount = 0;
         NSE_GraphicsBuffer _vertexBuffer = nullptr;
         NSE_GraphicsBuffer _indexBuffer = nullptr;
+
+        D3D_PRIMITIVE_TOPOLOGY _topology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
     };
 }
 

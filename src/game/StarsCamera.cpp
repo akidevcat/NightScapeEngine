@@ -47,7 +47,7 @@ StarsCamera::StarsCamera(const NSE_Camera& parentCamera)
     }
 
     _particles = _starsScene->Create<StarDustParticles>();
-    _particles->position += {0, 0, 1};
+    // _particles->position += {0, 0, 1};
 }
 
 StarsCamera::~StarsCamera()

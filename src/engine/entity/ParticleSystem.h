@@ -19,7 +19,7 @@ namespace NSE
 
     public:
         ParticleSystem() = delete;
-        ParticleSystem(size_t capacity, size_t stride, size_t count);
+        ParticleSystem(size_t capacity, size_t stride, size_t count, RenderType type = RenderType::Billboard);
         ~ParticleSystem() override;
 
         void OnCreated() override;

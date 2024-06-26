@@ -9,7 +9,9 @@ public:
     struct Particle
     {
         float3 position = {};
+        float3 direction = {};
         float size = 0.1;
+        float alpha = 1;
     };
 
 public:

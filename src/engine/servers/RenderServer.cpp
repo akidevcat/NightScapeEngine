@@ -633,10 +633,10 @@ void NSE::RenderServer::PipelineSetMesh(const NSE_Mesh& mesh)
 		_currentStateMesh = mesh;
 	}
 
-	if (_currentStatePrimitiveTopology != D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST)
+	if (_currentStatePrimitiveTopology != mesh->GetTopology())
 	{
-		_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		_currentStatePrimitiveTopology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+		_deviceContext->IASetPrimitiveTopology(mesh->GetTopology());
+		_currentStatePrimitiveTopology = mesh->GetTopology();
 	}
 }
 

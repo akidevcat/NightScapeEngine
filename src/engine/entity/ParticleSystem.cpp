@@ -4,10 +4,11 @@
 #include "../servers/RenderServer.h"
 #include "../servers/TimeServer.h"
 
-NSE::ParticleSystem::ParticleSystem(size_t capacity, size_t stride, size_t count)
+NSE::ParticleSystem::ParticleSystem(size_t capacity, size_t stride, size_t count, RenderType type)
 {
     _capacity = capacity;
     _count = count;
+    _renderType = type;
     _pariclesMesh = CreateObject<Mesh>(0, 1);
     _particlesDataBuffer = CreateObject<GraphicsBuffer>(GraphicsBuffer::Target::Structured, stride, capacity, true);
 
@@ -118,6 +119,7 @@ void NSE::ParticleSystem::Initialize()
             {
                 _pariclesMesh->Resize(0, (int)_capacity * 6);
             }
+            _pariclesMesh->SetTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
             indices = _pariclesMesh->GetIndices();
             int j;
@@ -139,6 +141,7 @@ void NSE::ParticleSystem::Initialize()
             {
                 _pariclesMesh->Resize(0, (int)_capacity * 2);
             }
+            _pariclesMesh->SetTopology(D3D_PRIMITIVE_TOPOLOGY_LINELIST);
 
             indices = _pariclesMesh->GetIndices();
 
@@ -155,6 +158,7 @@ void NSE::ParticleSystem::Initialize()
             {
                 _pariclesMesh->Resize(0, (int)_capacity);
             }
+            _pariclesMesh->SetTopology(D3D_PRIMITIVE_TOPOLOGY_POINTLIST);
 
             indices = _pariclesMesh->GetIndices();
 

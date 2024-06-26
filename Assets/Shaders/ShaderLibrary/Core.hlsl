@@ -59,6 +59,11 @@ float4 TransformObjectToWorld(float3 position)
     return mul(_ModelMatrix, float4(position, 1));
 }
 
+float4 TransformViewToClip(float3 position)
+{
+    return mul(_ProjectionMatrix, float4(position, 1));
+}
+
 float4 TransformObjectToWorldDirection(float3 position)
 {
     return mul(_ModelMatrix, float4(position, 0));
