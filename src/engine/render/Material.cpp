@@ -161,6 +161,16 @@ void NSE::Material::SetUnsignedInt(const size_t nameID, uint32_t value) const
     SetVar(nameID, &value, sizeof(uint32_t));
 }
 
+void NSE::Material::SetFloat2(const size_t nameID, float2 value) const
+{
+    SetVar(nameID, &value, sizeof(float2));
+}
+
+void NSE::Material::SetFloat3(const size_t nameID, float3 value) const
+{
+    SetVar(nameID, &value, sizeof(float3));
+}
+
 void NSE::Material::SetVector(const size_t nameID, DirectX::XMVECTOR value) const
 {
     SetVar(nameID, &value, sizeof(DirectX::XMVECTOR));
@@ -216,4 +226,22 @@ void NSE::Material::SetTexture(size_t nameID, const NSE_Texture& texture) const
 void NSE::Material::SetBlendState(const NSE_BlendState& state)
 {
     _blendState = state;
+}
+
+void NSE::Material::MakeOpaque()
+{
+    SetBlendState(RenderServer::Get()->GetBlendStateOpaque());
+    SetDepthWrite(ShaderDepthState::ReadWrite);
+}
+
+void NSE::Material::MakeTransparent()
+{
+    SetBlendState(RenderServer::Get()->GetBlendStateTransparent());
+    SetDepthWrite(ShaderDepthState::OnlyRead);
+}
+
+void NSE::Material::MakeAdditive()
+{
+    SetBlendState(RenderServer::Get()->GetBlendStateAdditive());
+    SetDepthWrite(ShaderDepthState::OnlyRead);
 }

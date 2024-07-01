@@ -57,17 +57,17 @@ using namespace DirectX;
 
 constexpr uint32_t DDS_MAGIC = 0x20534444; // "DDS "
 
-struct DDS_PIXELFORMAT
-{
-    uint32_t    size;
-    uint32_t    flags;
-    uint32_t    fourCC;
-    uint32_t    RGBBitCount;
-    uint32_t    RBitMask;
-    uint32_t    GBitMask;
-    uint32_t    BBitMask;
-    uint32_t    ABitMask;
-};
+// struct DDS_PIXELFORMAT
+// {
+//     uint32_t    size;
+//     uint32_t    flags;
+//     uint32_t    fourCC;
+//     uint32_t    RGBBitCount;
+//     uint32_t    RBitMask;
+//     uint32_t    GBitMask;
+//     uint32_t    BBitMask;
+//     uint32_t    ABitMask;
+// };
 
 #define DDS_FOURCC      0x00000004  // DDPF_FOURCC
 #define DDS_RGB         0x00000040  // DDPF_RGB
@@ -97,23 +97,23 @@ enum DDS_MISC_FLAGS2
     DDS_MISC_FLAGS2_ALPHA_MODE_MASK = 0x7L,
 };
 
-struct DDS_HEADER
-{
-    uint32_t        size;
-    uint32_t        flags;
-    uint32_t        height;
-    uint32_t        width;
-    uint32_t        pitchOrLinearSize;
-    uint32_t        depth; // only if DDS_HEADER_FLAGS_VOLUME is set in flags
-    uint32_t        mipMapCount;
-    uint32_t        reserved1[11];
-    DDS_PIXELFORMAT ddspf;
-    uint32_t        caps;
-    uint32_t        caps2;
-    uint32_t        caps3;
-    uint32_t        caps4;
-    uint32_t        reserved2;
-};
+// struct DDS_HEADER
+// {
+//     uint32_t        size;
+//     uint32_t        flags;
+//     uint32_t        height;
+//     uint32_t        width;
+//     uint32_t        pitchOrLinearSize;
+//     uint32_t        depth; // only if DDS_HEADER_FLAGS_VOLUME is set in flags
+//     uint32_t        mipMapCount;
+//     uint32_t        reserved1[11];
+//     DDS_PIXELFORMAT ddspf;
+//     uint32_t        caps;
+//     uint32_t        caps2;
+//     uint32_t        caps3;
+//     uint32_t        caps4;
+//     uint32_t        reserved2;
+// };
 
 struct DDS_HEADER_DXT10
 {
@@ -1820,14 +1820,15 @@ HRESULT DirectX::CreateDDSTextureFromMemory(
     ID3D11Resource** texture,
     ID3D11ShaderResourceView** textureView,
     size_t maxsize,
-    DDS_ALPHA_MODE* alphaMode) noexcept
+    DDS_ALPHA_MODE* alphaMode,
+    DDS_HEADER* textureHeader) noexcept
 {
     return CreateDDSTextureFromMemoryEx(d3dDevice, nullptr,
         ddsData, ddsDataSize,
         maxsize,
         D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE, 0, 0,
         DDS_LOADER_DEFAULT,
-        texture, textureView, alphaMode);
+        texture, textureView, alphaMode, textureHeader);
 }
 
 _Use_decl_annotations_
@@ -1839,14 +1840,15 @@ HRESULT DirectX::CreateDDSTextureFromMemory(
     ID3D11Resource** texture,
     ID3D11ShaderResourceView** textureView,
     size_t maxsize,
-    DDS_ALPHA_MODE* alphaMode) noexcept
+    DDS_ALPHA_MODE* alphaMode,
+    DDS_HEADER* textureHeader) noexcept
 {
     return CreateDDSTextureFromMemoryEx(d3dDevice, d3dContext,
         ddsData, ddsDataSize,
         maxsize,
         D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE, 0, 0,
         DDS_LOADER_DEFAULT,
-        texture, textureView, alphaMode);
+        texture, textureView, alphaMode, textureHeader);
 }
 
 _Use_decl_annotations_
@@ -1862,14 +1864,15 @@ HRESULT DirectX::CreateDDSTextureFromMemoryEx(
     DDS_LOADER_FLAGS loadFlags,
     ID3D11Resource** texture,
     ID3D11ShaderResourceView** textureView,
-    DDS_ALPHA_MODE* alphaMode) noexcept
+    DDS_ALPHA_MODE* alphaMode,
+    DDS_HEADER* textureHeader) noexcept
 {
     return CreateDDSTextureFromMemoryEx(d3dDevice, nullptr,
         ddsData, ddsDataSize,
         maxsize,
         usage, bindFlags, cpuAccessFlags, miscFlags,
         loadFlags,
-        texture, textureView, alphaMode);
+        texture, textureView, alphaMode, textureHeader);
 }
 
 _Use_decl_annotations_
@@ -1886,7 +1889,8 @@ HRESULT DirectX::CreateDDSTextureFromMemoryEx(
     DDS_LOADER_FLAGS loadFlags,
     ID3D11Resource** texture,
     ID3D11ShaderResourceView** textureView,
-    DDS_ALPHA_MODE* alphaMode) noexcept
+    DDS_ALPHA_MODE* alphaMode,
+    DDS_HEADER* textureHeader) noexcept
 {
     if (texture)
     {
@@ -1946,6 +1950,9 @@ HRESULT DirectX::CreateDDSTextureFromMemoryEx(
 
         if (alphaMode)
             *alphaMode = GetAlphaMode(header);
+
+        if (header)
+            *textureHeader = *header;
     }
 
     return hr;
@@ -1959,13 +1966,14 @@ HRESULT DirectX::CreateDDSTextureFromFile(
     ID3D11Resource** texture,
     ID3D11ShaderResourceView** textureView,
     size_t maxsize,
-    DDS_ALPHA_MODE* alphaMode) noexcept
+    DDS_ALPHA_MODE* alphaMode,
+    DDS_HEADER* textureHeader) noexcept
 {
     return CreateDDSTextureFromFileEx(d3dDevice, nullptr,
         fileName, maxsize,
         D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE, 0, 0,
         DDS_LOADER_DEFAULT,
-        texture, textureView, alphaMode);
+        texture, textureView, alphaMode, textureHeader);
 }
 
 _Use_decl_annotations_
@@ -1976,14 +1984,15 @@ HRESULT DirectX::CreateDDSTextureFromFile(
     ID3D11Resource** texture,
     ID3D11ShaderResourceView** textureView,
     size_t maxsize,
-    DDS_ALPHA_MODE* alphaMode) noexcept
+    DDS_ALPHA_MODE* alphaMode,
+    DDS_HEADER* textureHeader) noexcept
 {
     return CreateDDSTextureFromFileEx(d3dDevice, d3dContext,
         fileName,
         maxsize,
         D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE, 0, 0,
         DDS_LOADER_DEFAULT,
-        texture, textureView, alphaMode);
+        texture, textureView, alphaMode, textureHeader);
 }
 
 _Use_decl_annotations_
@@ -1998,14 +2007,15 @@ HRESULT DirectX::CreateDDSTextureFromFileEx(
     DDS_LOADER_FLAGS loadFlags,
     ID3D11Resource** texture,
     ID3D11ShaderResourceView** textureView,
-    DDS_ALPHA_MODE* alphaMode) noexcept
+    DDS_ALPHA_MODE* alphaMode,
+    DDS_HEADER* textureHeader) noexcept
 {
     return CreateDDSTextureFromFileEx(d3dDevice, nullptr,
         fileName,
         maxsize,
         usage, bindFlags, cpuAccessFlags, miscFlags,
         loadFlags,
-        texture, textureView, alphaMode);
+        texture, textureView, alphaMode, textureHeader);
 }
 
 _Use_decl_annotations_
@@ -2021,7 +2031,8 @@ HRESULT DirectX::CreateDDSTextureFromFileEx(
     DDS_LOADER_FLAGS loadFlags,
     ID3D11Resource** texture,
     ID3D11ShaderResourceView** textureView,
-    DDS_ALPHA_MODE* alphaMode) noexcept
+    DDS_ALPHA_MODE* alphaMode,
+    DDS_HEADER* textureHeader) noexcept
 {
     if (texture)
     {
@@ -2075,6 +2086,11 @@ HRESULT DirectX::CreateDDSTextureFromFileEx(
 
         if (alphaMode)
             *alphaMode = GetAlphaMode(header);
+
+        if (header)
+        {
+            *textureHeader = *header;
+        }
     }
 
     return hr;

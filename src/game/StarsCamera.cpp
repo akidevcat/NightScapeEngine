@@ -1,5 +1,6 @@
 #include "StarsCamera.h"
 
+#include "Planet.h"
 #include "../engine/servers/RenderServer.h"
 #include "../engine/servers/SceneServer.h"
 
@@ -25,8 +26,7 @@ StarsCamera::StarsCamera(const NSE_Camera& parentCamera, const obj_ptr<ShipContr
     _quadShader = NSE::CreateObject<NSE::Shader>(L"Assets/Shaders/StarQuad.hlsl");
     _quadShader->Compile();
     _quadMaterial = NSE::CreateObject<NSE::Material>(_quadShader);
-    _quadMaterial->SetBlendState(NSE::RenderServer::Get()->GetBlendStateAdditive());
-    _quadMaterial->SetDepthWrite(false);
+    _quadMaterial->MakeAdditive();
     _quadMaterial->SetUnsignedInt(sid_PixelSizeX, 5*3);
     _quadMaterial->SetUnsignedInt(sid_PixelSizeY, 9*3);
 
@@ -38,7 +38,7 @@ StarsCamera::StarsCamera(const NSE_Camera& parentCamera, const obj_ptr<ShipContr
         quad->position = DirectX::XMMatrixRotationQuaternion(rot).r[2];
         quad->rotation = rot;
         // quad->position = DirectX::XMVector3Rotate({-1, 0, 0}, rot);
-        quad->position *= 5.0f + 20.0f * NSE::Math::Random();
+        quad->position *= 1000.0f;
         quad->scale = {1, 1, 1};
 
         // quad->position = {0, 0, 0.5};
@@ -50,6 +50,8 @@ StarsCamera::StarsCamera(const NSE_Camera& parentCamera, const obj_ptr<ShipContr
 
     _shipController = controller;
     // _particles->position += {0, 0, 1};
+
+    _starsScene->Create<Planet>();
 }
 
 StarsCamera::~StarsCamera()

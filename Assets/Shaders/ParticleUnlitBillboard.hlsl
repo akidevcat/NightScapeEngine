@@ -25,8 +25,5 @@ ParticlePixelInput VertexMain(ParticleVertexInput input)
 float4 PixelMain(ParticlePixelInput input) : SV_TARGET
 {
     float2 uv = input.uv;
-
     return float4(uv.x, uv.y, 0, 1);
-
-//     return 1;
 }

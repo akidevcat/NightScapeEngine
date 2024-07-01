@@ -25,13 +25,15 @@ float4 GetBasicLighting(float3 positionCS, float3 normalRS)
         float3 deltaPosition = _GlobalLights[i].PositionCS - positionCS;
 
         float ndotl = dot(normalRS, normalize(deltaPosition));
-        ndotl = ndotl * 0.5 + 0.5;
+//         ndotl = ndotl * 0.5 + 0.5;
+
+//         ndotl = 1;
 
         result += (_GlobalLights[i].Intensity / (dot(deltaPosition, deltaPosition) + _GlobalLights[i].Color.w)) * float4(_GlobalLights[i].Color.xyz, 1.0) * ndotl;
     }
 
 // ToDo
-    result = round(result * 16.0) / 16.0;
+//     result = round(result * 16.0) / 16.0;
 
     return result;
 }

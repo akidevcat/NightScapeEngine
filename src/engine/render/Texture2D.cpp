@@ -11,7 +11,7 @@ NSE::Texture2D::Texture2D(int width, int height, DXGI_FORMAT format) : Texture(w
 
 }
 
-NSE::Texture2D::Texture2D(ID3D11Resource *resource, ID3D11ShaderResourceView *view) : Texture(1, 1)
+NSE::Texture2D::Texture2D(int width, int height, ID3D11Resource *resource, ID3D11ShaderResourceView *view) : Texture(width, height)
 {
     _d3dResource = resource;
     _d3dTextureView = view;

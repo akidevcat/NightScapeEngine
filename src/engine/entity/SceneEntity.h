@@ -15,7 +15,6 @@ namespace NSE
     public:
         SceneEntity() = default;
         ~SceneEntity() override = 0;
-        // ~SceneEntity() override;
 
         [[nodiscard]] DirectX::XMMATRIX GetModelMatrix(Vector3d relativeTo) const;
         [[nodiscard]] DirectX::XMVECTOR Forward() const;
@@ -28,11 +27,16 @@ namespace NSE
 
         virtual void OnUpdate() {}
 
+        [[nodiscard]] bool IsEnabled() const { return _enabled; }
+        void SetEnabled(bool state);
+
+    public:
         Vector3d          position = Vector3d{};
         DirectX::XMVECTOR rotation = DirectX::XMQuaternionIdentity();
         DirectX::XMFLOAT3 scale    = DirectX::XMFLOAT3(1, 1, 1);
 
     private:
+        bool              _enabled = true;
         size_t            _sceneUID = 0;
     };
 }

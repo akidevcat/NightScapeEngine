@@ -54,8 +54,5 @@ void StarDustParticles::OnProcessParticles(void *particlesData, size_t particleC
 
         pos -= velocity * dt;
         particles[i].position = pos;
-
-        // particles[i].position = float3(NSE::Math::Random(), NSE::Math::Random(), NSE::Math::Random());
-        // particles[i].size = 0.1;
     }
 }

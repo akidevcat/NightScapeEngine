@@ -71,7 +71,7 @@ namespace NSE
 
     private:
 
-        bool                        _currentStateDepthWrite = true;
+        ShaderDepthState            _currentStateDepthWrite = ShaderDepthState::Disabled;
         NSE_BlendState              _currentStateBlend = nullptr;
         NSE_Mesh                    _currentStateMesh = nullptr;
         D3D11_PRIMITIVE_TOPOLOGY    _currentStatePrimitiveTopology = D3D_PRIMITIVE_TOPOLOGY_UNDEFINED;
@@ -94,7 +94,8 @@ namespace NSE
         ID3D11DeviceContext*        _deviceContext = nullptr;
         ID3D11RenderTargetView*     _renderTargetView = nullptr;
         ID3D11Texture2D*            _depthStencilBuffer = nullptr;
-        ID3D11DepthStencilState*    _depthStencilState = nullptr;
+        ID3D11DepthStencilState*    _depthReadWriteStencilState = nullptr;
+        ID3D11DepthStencilState*    _depthReadStencilState = nullptr;
         ID3D11DepthStencilState*    _depthDisabledStencilState = nullptr;
         ID3D11DepthStencilView*     _depthStencilView = nullptr;
         ID3D11RasterizerState*      _rasterState = nullptr;

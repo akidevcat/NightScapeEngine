@@ -111,6 +111,18 @@ add_executable(${PROJECT_NAME} WIN32
         src/engine/render/GraphicsBuffer.h
         src/game/StarDustParticles.cpp
         src/game/StarDustParticles.h
+        src/game/Planet.cpp
+        src/game/Planet.h
+        src/engine/physics/RigidEntity.cpp
+        src/engine/physics/RigidEntity.h
+        src/engine/physics/CollisionEntity.cpp
+        src/engine/physics/CollisionEntity.h
+        src/engine/render/DepthStencilState.cpp
+        src/engine/render/DepthStencilState.h
+        src/engine/entity/SpriteVisual.cpp
+        src/engine/entity/SpriteVisual.h
+        src/engine/data/SpriteTexture.h
+        src/engine/data/ShaderDepthState.h
 )
 
 target_link_libraries(${PROJECT_NAME} d3d9 d3d11 d3dcompiler dinput8 dxguid)

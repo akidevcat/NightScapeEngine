@@ -28,7 +28,7 @@ float4 PixelMain(ParticlePixelInput input) : SV_TARGET
 {
     float2 uv = input.uv;
 
-return uv.x;
+    return uv.x;
     return float4(uv.x, uv.y, 0, 1);
 
 //     return 1;

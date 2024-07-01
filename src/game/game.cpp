@@ -6,6 +6,7 @@
 #include "StarsCamera.h"
 #include "../engine/entity/Camera.h"
 #include "../engine/entity/FreeCamera.h"
+#include "../engine/entity/SpriteVisual.h"
 #include "../engine/entity/TriangleVisual.h"
 #include "../engine/servers/AssetServer.h"
 
@@ -95,6 +96,13 @@ void Game::Start()
     // test->position = {0, 0, 100};
     // test->rotation = DirectX::XMQuaternionRotationAxis({0, 1, 0}, 180);
 
+    auto marker = _scene->Create<SpriteVisual>();
+    marker->sprite.atlasTexture = AssetsServer::Get()->LoadTextureAsset(L"Assets/Textures/UI_Atlas.dds");
+    marker->sprite.SetRectRectPixel(0, 0, 16, 16);
+    marker->isPixelPerfect = true;
+    marker->isScreenSpace = false;
+    marker->color = {1, 0.4, 0, 1};
+    marker->position = _triangle->position;
 }
 
 bool Game::UpdateFrame()

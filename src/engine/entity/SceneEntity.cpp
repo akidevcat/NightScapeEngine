@@ -47,3 +47,8 @@ void NSE::SceneEntity::SetSceneUID(size_t uid)
 {
     _sceneUID = uid + 1;
 }
+
+void NSE::SceneEntity::SetEnabled(bool state)
+{
+    _enabled = state;
+}

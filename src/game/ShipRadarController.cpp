@@ -6,8 +6,7 @@ ShipRadarController::ShipRadarController()
     auto shader = NSE::ObjectServer::Get()->Create<NSE::Shader>(L"Assets/Shaders/Radar.hlsl");
     shader->Compile();
     renderingMaterial = NSE::ObjectServer::Get()->Create<NSE::Material>(shader);
-    renderingMaterial->SetDepthWrite(false);
-    renderingMaterial->SetBlendState(NSE::RenderServer::Get()->GetBlendStateAdditive());
+    renderingMaterial->MakeAdditive();
 }
 
 ShipRadarController::~ShipRadarController()

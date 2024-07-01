@@ -139,7 +139,8 @@ void NSE::Engine::OnFrameUpdate()
 
     for (const auto& entity : entities)
     {
-        entity->OnUpdate();
+        if (entity->IsEnabled())
+            entity->OnUpdate();
     }
 
     // Update particle systems
@@ -152,7 +153,8 @@ void NSE::Engine::OnFrameUpdate()
 
     for (const auto& ps : particleSystems)
     {
-        ps->OnParticlesUpdate();
+        if (ps->IsEnabled())
+            ps->OnParticlesUpdate();
     }
 }
 

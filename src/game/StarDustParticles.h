@@ -18,7 +18,7 @@ public:
     StarDustParticles();
 
 public:
-    float3 velocity;
+    float3 velocity = {};
 
 protected:
     void OnSetupParticles(void *particlesData, size_t particleCount) override;

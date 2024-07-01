@@ -23,7 +23,7 @@ PixelInput VertexMain(VertexInput input)
 {
     PixelInput output;
 
-    output.position = TransformObjectToNDC_PixelPerfect(input.position, uint2(_PixelSizeX, _PixelSizeY));
+    output.position = TransformObjectToClip_PixelPerfect(input.position, uint2(_PixelSizeX, _PixelSizeY));
 
     output.uv = input.uv;
     output.params.x = hash11(_ObjectID);

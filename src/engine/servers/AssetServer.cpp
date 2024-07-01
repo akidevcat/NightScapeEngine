@@ -186,11 +186,13 @@ NSE_Texture2D NSE::AssetsServer::LoadTextureAsset(const wchar_t* path)
 
     ID3D11Resource* resource;
     ID3D11ShaderResourceView* view;
+    DDS_HEADER header{};
 
-    auto status = DirectX::CreateDDSTextureFromFile(device, path, &resource, &view);
+    auto status = DirectX::CreateDDSTextureFromFile(device, path, &resource, &view, 0, nullptr, &header);
     assert(SUCCEEDED(status));
 
-    auto result = CreateObject<Texture2D>(resource, view);
+    auto result = CreateObject<Texture2D>(header.width, header.height, resource, view);
+
 
     return result;
 }

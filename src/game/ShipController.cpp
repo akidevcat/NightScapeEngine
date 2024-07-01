@@ -125,5 +125,5 @@ void ShipController::OnUpdate()
 
     float velDot = (float)NSE::Vector3d::Dot(_shipVelocity.Normalized(), Forward());
 
-    _camera->SetFov(60.0 + velDot * 5.0 * (1.0 - 1.0 / (1 + _shipVelocity.Magnitude() * 0.2)));
+    _camera->SetFov(60.0f + velDot * 2.0f * (1.0f - 1.0f / (1 + (float)_shipVelocity.Magnitude() * 0.2f)));
 }

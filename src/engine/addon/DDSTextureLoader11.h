@@ -23,6 +23,35 @@
 #include <cstddef>
 #include <cstdint>
 
+struct DDS_PIXELFORMAT
+{
+    uint32_t    size;
+    uint32_t    flags;
+    uint32_t    fourCC;
+    uint32_t    RGBBitCount;
+    uint32_t    RBitMask;
+    uint32_t    GBitMask;
+    uint32_t    BBitMask;
+    uint32_t    ABitMask;
+};
+
+struct DDS_HEADER
+{
+    uint32_t        size;
+    uint32_t        flags;
+    uint32_t        height;
+    uint32_t        width;
+    uint32_t        pitchOrLinearSize;
+    uint32_t        depth; // only if DDS_HEADER_FLAGS_VOLUME is set in flags
+    uint32_t        mipMapCount;
+    uint32_t        reserved1[11];
+    DDS_PIXELFORMAT ddspf;
+    uint32_t        caps;
+    uint32_t        caps2;
+    uint32_t        caps3;
+    uint32_t        caps4;
+    uint32_t        reserved2;
+};
 
 namespace DirectX
 {
@@ -68,7 +97,8 @@ namespace DirectX
         _Outptr_opt_ ID3D11Resource** texture,
         _Outptr_opt_ ID3D11ShaderResourceView** textureView,
         _In_ size_t maxsize = 0,
-        _Out_opt_ DDS_ALPHA_MODE* alphaMode = nullptr) noexcept;
+        _Out_opt_ DDS_ALPHA_MODE* alphaMode = nullptr,
+        _Outptr_opt_ DDS_HEADER* textureHeader = nullptr) noexcept;
 
     HRESULT CreateDDSTextureFromFile(
         _In_ ID3D11Device* d3dDevice,
@@ -76,7 +106,8 @@ namespace DirectX
         _Outptr_opt_ ID3D11Resource** texture,
         _Outptr_opt_ ID3D11ShaderResourceView** textureView,
         _In_ size_t maxsize = 0,
-        _Out_opt_ DDS_ALPHA_MODE* alphaMode = nullptr) noexcept;
+        _Out_opt_ DDS_ALPHA_MODE* alphaMode = nullptr,
+        _Outptr_opt_ DDS_HEADER* textureHeader = nullptr) noexcept;
 
     // Standard version with optional auto-gen mipmap support
     HRESULT CreateDDSTextureFromMemory(
@@ -87,7 +118,8 @@ namespace DirectX
         _Outptr_opt_ ID3D11Resource** texture,
         _Outptr_opt_ ID3D11ShaderResourceView** textureView,
         _In_ size_t maxsize = 0,
-        _Out_opt_ DDS_ALPHA_MODE* alphaMode = nullptr) noexcept;
+        _Out_opt_ DDS_ALPHA_MODE* alphaMode = nullptr,
+        _Outptr_opt_ DDS_HEADER* textureHeader = nullptr) noexcept;
 
     HRESULT CreateDDSTextureFromFile(
         _In_ ID3D11Device* d3dDevice,
@@ -96,7 +128,8 @@ namespace DirectX
         _Outptr_opt_ ID3D11Resource** texture,
         _Outptr_opt_ ID3D11ShaderResourceView** textureView,
         _In_ size_t maxsize = 0,
-        _Out_opt_ DDS_ALPHA_MODE* alphaMode = nullptr) noexcept;
+        _Out_opt_ DDS_ALPHA_MODE* alphaMode = nullptr,
+        _Outptr_opt_ DDS_HEADER* textureHeader = nullptr) noexcept;
 
     // Extended version
     HRESULT CreateDDSTextureFromMemoryEx(
@@ -111,7 +144,8 @@ namespace DirectX
         _In_ DDS_LOADER_FLAGS loadFlags,
         _Outptr_opt_ ID3D11Resource** texture,
         _Outptr_opt_ ID3D11ShaderResourceView** textureView,
-        _Out_opt_ DDS_ALPHA_MODE* alphaMode = nullptr) noexcept;
+        _Out_opt_ DDS_ALPHA_MODE* alphaMode = nullptr,
+        _Outptr_opt_ DDS_HEADER* textureHeader = nullptr) noexcept;
 
     HRESULT CreateDDSTextureFromFileEx(
         _In_ ID3D11Device* d3dDevice,
@@ -124,7 +158,8 @@ namespace DirectX
         _In_ DDS_LOADER_FLAGS loadFlags,
         _Outptr_opt_ ID3D11Resource** texture,
         _Outptr_opt_ ID3D11ShaderResourceView** textureView,
-        _Out_opt_ DDS_ALPHA_MODE* alphaMode = nullptr) noexcept;
+        _Out_opt_ DDS_ALPHA_MODE* alphaMode = nullptr,
+        _Outptr_opt_ DDS_HEADER* textureHeader = nullptr) noexcept;
 
     // Extended version with optional auto-gen mipmap support
     HRESULT CreateDDSTextureFromMemoryEx(
@@ -140,7 +175,8 @@ namespace DirectX
         _In_ DDS_LOADER_FLAGS loadFlags,
         _Outptr_opt_ ID3D11Resource** texture,
         _Outptr_opt_ ID3D11ShaderResourceView** textureView,
-        _Out_opt_ DDS_ALPHA_MODE* alphaMode = nullptr) noexcept;
+        _Out_opt_ DDS_ALPHA_MODE* alphaMode = nullptr,
+        _Outptr_opt_ DDS_HEADER* textureHeader = nullptr) noexcept;
 
     HRESULT CreateDDSTextureFromFileEx(
         _In_ ID3D11Device* d3dDevice,
@@ -154,5 +190,6 @@ namespace DirectX
         _In_ DDS_LOADER_FLAGS loadFlags,
         _Outptr_opt_ ID3D11Resource** texture,
         _Outptr_opt_ ID3D11ShaderResourceView** textureView,
-        _Out_opt_ DDS_ALPHA_MODE* alphaMode = nullptr) noexcept;
+        _Out_opt_ DDS_ALPHA_MODE* alphaMode = nullptr,
+        _Outptr_opt_ DDS_HEADER* textureHeader = nullptr) noexcept;
 }

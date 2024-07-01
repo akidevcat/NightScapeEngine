@@ -13,7 +13,7 @@ namespace NSE
     public:
         Texture2D() = delete;
         Texture2D(int width, int height, DXGI_FORMAT format);
-        Texture2D(ID3D11Resource* resource, ID3D11ShaderResourceView* view);
+        Texture2D(int width, int height, ID3D11Resource* resource, ID3D11ShaderResourceView* view);
         ~Texture2D() override;
 
         void Upload();

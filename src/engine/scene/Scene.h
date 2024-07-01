@@ -23,7 +23,7 @@ namespace NSE
 
         void GetAllEntities(std::vector<NSE_SceneEntity>& vec);
         template <typename T, std::enable_if_t<std::is_base_of_v<SceneEntity, T>, int> = 0>
-            void FindAllEntitiesFromBaseType(std::vector<obj_ptr<T>>& vec);
+            void FindAllEntitiesFromBaseType(std::vector<obj_ptr<T>>& vec, bool skipDisabled = true);
 
         template <class T, class... ArgTypes, std::enable_if_t<std::is_base_of_v<SceneEntity, T>, int> = 0>
             obj_ptr<T> Create(ArgTypes&&... args);
@@ -43,7 +43,7 @@ namespace NSE
     };
 
     template <typename T, std::enable_if_t<std::is_base_of_v<SceneEntity, T>, int>>
-        void Scene::FindAllEntitiesFromBaseType(std::vector<obj_ptr<T>>& vec)
+        void Scene::FindAllEntitiesFromBaseType(std::vector<obj_ptr<T>>& vec, bool skipDisabled)
     {
         for (auto it : _entities)
         {
@@ -61,23 +61,10 @@ namespace NSE
 
             for (const auto& eit : *it.second)
             {
-                // vec.emplace_back(dynamic_cast<obj_ptr<T>&>(eit.second));
-                // obj_ptr<SceneEntity> a;
-                // obj_ptr<Object> b = obj_ptr<Object>(a);
-                // vec.emplace_back(dynamic_pointer_cast<T>(eit.second));
-
-
-
-                // obj_ptr(reinterpret_cast<T>(eit.second.get()))
-                // *reinterpret_cast<obj_ptr<T>*>(&eit.second);
+                if (skipDisabled && !eit.second->IsEnabled())
+                    continue;
 
                 vec.emplace_back(*reinterpret_cast<obj_ptr<T>*>(const_cast<obj_ptr<SceneEntity>*>(&eit.second))); // This is evil AF
-
-                // vec.emplace_back(obj_ptr<T>(eit.second.get()));
-                // vec.emplace_back(obj_ptr<T>(dynamic_cast<T*>(eit.second.get())));
-
-                // std::dynamic_pointer_cast<obj_ptr<T>>(eit.second)
-                // vec.emplace_back(eit.second);
             }
         }
     }

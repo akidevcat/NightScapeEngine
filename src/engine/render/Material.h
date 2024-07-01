@@ -9,6 +9,8 @@
 #include "Shader.h"
 #include "ShaderInputsData.h"
 #include "Texture.h"
+#include "../data/ShaderDepthState.h"
+#include "../data/SpriteTexture.h"
 #include "../entity/Object.h"
 #include "../math/Math.h"
 
@@ -51,17 +53,24 @@ namespace NSE
         void SetFloat(size_t nameID, float value) const;
         void SetInt(size_t nameID, int value) const;
         void SetUnsignedInt(size_t nameID, uint32_t value) const;
+        void SetFloat2(size_t nameID, float2 value) const;
+        void SetFloat3(size_t nameID, float3 value) const;
         void SetVector(size_t nameID, xmvector value) const;
         void SetColor(size_t nameID, xmvector value) const;
         void SetMatrix(size_t nameID, xmmatrix value) const;
         void SetConstantBuffer(size_t nameID, const NSE_GraphicsBuffer& buffer) const;
         void SetBuffer(size_t nameID, const NSE_GraphicsBuffer& buffer) const;
         void SetTexture(size_t nameID, const NSE_Texture& texture) const;
+        // void SetSpriteTexture(size_t nameID, const SpriteTexture& texture) const;
 
         void SetBlendState(const NSE_BlendState& state);
-        void SetDepthWrite(bool state) { _depthWriteEnabled = state; }
+        void SetDepthWrite(ShaderDepthState state) { _depthReadWriteState = state; }
         [[nodiscard]] NSE_BlendState GetBlendState() const { return _blendState; }
-        [[nodiscard]] bool GetDepthWrite() const { return _depthWriteEnabled; }
+        [[nodiscard]] ShaderDepthState GetDepthWrite() const { return _depthReadWriteState; }
+
+        void MakeOpaque();
+        void MakeTransparent();
+        void MakeAdditive();
 
     public:
         int               renderQueue = MATERIAL_RENDER_QUEUE_OPAQUE;
@@ -69,7 +78,7 @@ namespace NSE
     private:
         NSE_Shader       _shader = nullptr;
         NSE_BlendState   _blendState = nullptr;
-        bool             _depthWriteEnabled = true;
+        ShaderDepthState _depthReadWriteState = ShaderDepthState::ReadWrite;
 
         NSE_GraphicsBuffer _materialPropertiesBuffer = nullptr;
         ShaderInputsData*   _vsInputs = nullptr;

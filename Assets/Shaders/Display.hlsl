@@ -30,6 +30,11 @@ PixelInput VertexMain(VertexInput input)
 
 float4 PixelMain(PixelInput input) : SV_TARGET
 {
-//     return float4(input.uv.x, input.uv.y, 1.0 - input.uv.x, 1.0) + _MainTex.Sample(_PointSampler, input.uv);
-    return _MainTex.Sample(_PointSampler, input.uv);
+    float4 result = _MainTex.Sample(_PointSampler, input.uv);
+
+    result.rgb = pow(result.rgb, 1.0 / 2.2);
+    result.rgb = round(result.rgb * 32.0) / 32.0;
+    result.rgb = pow(result.rgb, 2.2);
+
+    return float4(result.rgb, 1.0);
 }

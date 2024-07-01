@@ -270,14 +270,14 @@ bool NSE::RenderServer::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 
 	// Create the depth stencil state.
 
-	result = _device->CreateDepthStencilState(&depthStencilDesc, &_depthStencilState);
+	result = _device->CreateDepthStencilState(&depthStencilDesc, &_depthReadWriteStencilState);
 	if(FAILED(result))
 	{
 		return false;
 	}
 
 	// Set the depth stencil state.
-	_deviceContext->OMSetDepthStencilState(_depthStencilState, 1);
+	_deviceContext->OMSetDepthStencilState(_depthReadWriteStencilState, 1);
 
 	// Initialize the depth stencil view.
 	D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc;
@@ -333,17 +333,40 @@ bool NSE::RenderServer::Initialize(int screenWidth, int screenHeight, HWND hwnd)
     _deviceContext->RSSetViewports(1, &_viewport);
 
 	// Clear the second depth stencil state before setting the parameters.
+	D3D11_DEPTH_STENCIL_DESC depthReadOnlyStencilDesc;
+	ZeroMemory(&depthReadOnlyStencilDesc, sizeof(depthReadOnlyStencilDesc));
+
+	depthReadOnlyStencilDesc.DepthEnable = true;
+	depthReadOnlyStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
+	depthReadOnlyStencilDesc.DepthFunc = D3D11_COMPARISON_LESS;
+	depthReadOnlyStencilDesc.StencilEnable = true;
+	depthReadOnlyStencilDesc.StencilReadMask = 0xFF;
+	depthReadOnlyStencilDesc.StencilWriteMask = 0x00;
+	depthReadOnlyStencilDesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+	depthReadOnlyStencilDesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_INCR;
+	depthReadOnlyStencilDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+	depthReadOnlyStencilDesc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+	depthReadOnlyStencilDesc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+	depthReadOnlyStencilDesc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_DECR;
+	depthReadOnlyStencilDesc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+	depthReadOnlyStencilDesc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+
+	// Create the state using the device.
+	result = _device->CreateDepthStencilState(&depthReadOnlyStencilDesc, &_depthReadStencilState);
+	if(FAILED(result))
+	{
+		return false;
+	}
+
 	D3D11_DEPTH_STENCIL_DESC depthDisabledStencilDesc;
 	ZeroMemory(&depthDisabledStencilDesc, sizeof(depthDisabledStencilDesc));
 
-	// Now create a second depth stencil state which turns off the Z buffer for 2D rendering.  The only difference is
-	// that DepthEnable is set to false, all other parameters are the same as the other depth stencil state.
 	depthDisabledStencilDesc.DepthEnable = false;
-	depthDisabledStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	depthDisabledStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
 	depthDisabledStencilDesc.DepthFunc = D3D11_COMPARISON_LESS;
-	depthDisabledStencilDesc.StencilEnable = true;
-	depthDisabledStencilDesc.StencilReadMask = 0xFF;
-	depthDisabledStencilDesc.StencilWriteMask = 0xFF;
+	depthDisabledStencilDesc.StencilEnable = false;
+	depthDisabledStencilDesc.StencilReadMask = 0x00;
+	depthDisabledStencilDesc.StencilWriteMask = 0x00;
 	depthDisabledStencilDesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
 	depthDisabledStencilDesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_INCR;
 	depthDisabledStencilDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
@@ -391,19 +414,11 @@ bool NSE::RenderServer::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		return false;
 	}
 
-	// ToDo
-	_globalPropertiesBuffer = CreateObject<GraphicsBuffer>(GraphicsBuffer::Target::Constant, sizeof(GlobalProperties), true);
-	// _globalPropertiesBuffer = CreateObject<ConstantBuffer>(ShaderUtils::PropertyToID("GlobalProperties"), sizeof(GlobalProperties));
-	// _globalPropertiesBuffer->EnableBufferData();
 	_globalShaderInputs = new ShaderInputsData{};
 
+	_globalPropertiesBuffer = CreateObject<GraphicsBuffer>(GraphicsBuffer::Target::Constant, sizeof(GlobalProperties), true);
 	_drawPropertiesBuffer = CreateObject<GraphicsBuffer>(GraphicsBuffer::Target::Constant, sizeof(DrawProperties), true);
 	_lightsPropertiesBuffer = CreateObject<GraphicsBuffer>(GraphicsBuffer::Target::Constant, sizeof(LightsProperties), true);
-	// _drawPropertiesBuffer = CreateObject<ConstantBuffer>(ShaderUtils::PropertyToID("DrawProperties"), sizeof(DrawProperties));
-	// _drawPropertiesBuffer->EnableBufferData();
-	//
-	// _lightsPropertiesBuffer = CreateObject<ConstantBuffer>(ShaderUtils::PropertyToID("LightsProperties"), sizeof(LightsProperties));
-	// _lightsPropertiesBuffer->EnableBufferData();
 
 	D3D11_SAMPLER_DESC samplerDesc;
 
@@ -453,6 +468,8 @@ bool NSE::RenderServer::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 
 	D3D11_BLEND_DESC blendDescription;
 	ZeroMemory(&blendDescription, sizeof(D3D11_BLEND_DESC));
+
+
 
 	blendDescription.RenderTarget[0].BlendEnable = TRUE;
 	blendDescription.RenderTarget[0].SrcBlend = D3D11_BLEND_ONE;
@@ -533,10 +550,10 @@ void NSE::RenderServer::Shutdown()
 		_alphaDisableBlendingState = 0;
 	}
 
-	if(_depthDisabledStencilState)
+	if(_depthReadStencilState)
 	{
-		_depthDisabledStencilState->Release();
-		_depthDisabledStencilState = 0;
+		_depthReadStencilState->Release();
+		_depthReadStencilState = 0;
 	}
 
 	if(_rasterState)
@@ -551,10 +568,10 @@ void NSE::RenderServer::Shutdown()
 		_depthStencilView = 0;
 	}
 
-	if(_depthStencilState)
+	if(_depthReadWriteStencilState)
 	{
-		_depthStencilState->Release();
-		_depthStencilState = 0;
+		_depthReadWriteStencilState->Release();
+		_depthReadWriteStencilState = 0;
 	}
 
 	if(_depthStencilBuffer)
@@ -653,14 +670,27 @@ void NSE::RenderServer::PipelineSetMaterial(const NSE_Material& material)
 
 	if (_currentStateDepthWrite != material->GetDepthWrite())
 	{
-		if (_currentStateDepthWrite)
+		switch (material->GetDepthWrite())
 		{
-			_deviceContext->OMSetDepthStencilState(_depthDisabledStencilState, 1);
+			case ShaderDepthState::Disabled:
+				_deviceContext->OMSetDepthStencilState(_depthDisabledStencilState, 1);
+				break;
+			case ShaderDepthState::OnlyRead:
+				_deviceContext->OMSetDepthStencilState(_depthReadStencilState, 1);
+				break;
+			case ShaderDepthState::ReadWrite:
+				_deviceContext->OMSetDepthStencilState(_depthReadWriteStencilState, 1);
+				break;
 		}
-		else
-		{
-			_deviceContext->OMSetDepthStencilState(_depthStencilState, 1);
-		}
+
+		// if (_currentStateDepthWrite)
+		// {
+		// 	_deviceContext->OMSetDepthStencilState(_depthReadStencilState, 1);
+		// }
+		// else
+		// {
+		// 	_deviceContext->OMSetDepthStencilState(_depthReadWriteStencilState, 1);
+		// }
 		_currentStateDepthWrite = material->GetDepthWrite();
 	}
 
