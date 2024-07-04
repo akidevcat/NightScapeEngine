@@ -21,6 +21,7 @@ public:
     float shipRotationSpeed = 1.0f;
 
 private:
+    float _testTime = 0.0f;
     float _camMomentumX = 0;
     float _camMomentumY = 0;
     float _camMomentumR = 0;

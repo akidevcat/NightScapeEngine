@@ -171,6 +171,11 @@ void NSE::Material::SetFloat3(const size_t nameID, float3 value) const
     SetVar(nameID, &value, sizeof(float3));
 }
 
+void NSE::Material::SetFloat4(size_t nameID, float4 value) const
+{
+    SetVar(nameID, &value, sizeof(float4));
+}
+
 void NSE::Material::SetVector(const size_t nameID, DirectX::XMVECTOR value) const
 {
     SetVar(nameID, &value, sizeof(DirectX::XMVECTOR));
@@ -201,6 +206,7 @@ void NSE::Material::SetBuffer(size_t nameID, const NSE_GraphicsBuffer &buffer) c
             _vsInputs->SetConstantBuffer(nameID, buffer);
             _psInputs->SetConstantBuffer(nameID, buffer);
             break;
+        case GraphicsBuffer::Target::Default:
         case GraphicsBuffer::Target::Structured:
             _vsInputs->SetResource(nameID, buffer->GetD3DResourceView());
             _psInputs->SetResource(nameID, buffer->GetD3DResourceView());

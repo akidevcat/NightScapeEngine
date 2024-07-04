@@ -123,6 +123,8 @@ add_executable(${PROJECT_NAME} WIN32
         src/engine/entity/SpriteVisual.h
         src/engine/data/SpriteTexture.h
         src/engine/data/ShaderDepthState.h
+        src/engine/entity/TextVisual.cpp
+        src/engine/entity/TextVisual.h
 )
 
 target_link_libraries(${PROJECT_NAME} d3d9 d3d11 d3dcompiler dinput8 dxguid)

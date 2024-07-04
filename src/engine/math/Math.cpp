@@ -1,5 +1,6 @@
 #include "Math.h"
 
+#include <algorithm>
 #include <cstdlib>
 
 namespace NSE
@@ -170,6 +171,16 @@ namespace NSE
     float3 normalize(float3 v)
     {
         return v / length(v);
+    }
+
+    float saturate(float v)
+    {
+        return std::clamp(v, 0.0f, 1.0f);
+    }
+
+    double saturate(double v)
+    {
+        return std::clamp(v, 0.0, 1.0);
     }
 
     float3 __vectorcall operator+(float3 v)

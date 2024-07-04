@@ -55,6 +55,7 @@ namespace NSE
         void SetUnsignedInt(size_t nameID, uint32_t value) const;
         void SetFloat2(size_t nameID, float2 value) const;
         void SetFloat3(size_t nameID, float3 value) const;
+        void SetFloat4(size_t nameID, float4 value) const;
         void SetVector(size_t nameID, xmvector value) const;
         void SetColor(size_t nameID, xmvector value) const;
         void SetMatrix(size_t nameID, xmmatrix value) const;

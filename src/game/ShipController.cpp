@@ -11,6 +11,7 @@
 #include "../engine/servers/InputServer.h"
 
 using namespace DirectX;
+using namespace NSE;
 
 ShipController::ShipController(NSE::Scene* scene, float screenAspect)
 {
@@ -33,11 +34,11 @@ ShipController::ShipController(NSE::Scene* scene, float screenAspect)
     _camera->clearMode = NSE::CAMERA_CLEAR_MODE_DEPTH;
 
     _cockpitLight = scene->Create<NSE::Light>();
-    _cockpitLight->lightColor = {0.22f, 0.13f, 0.02f, 1.0f};
-    _cockpitLight->lightIntensity = 20.0f;
+    _cockpitLight->lightColor = {0.87f, 0.27f, 0.02f, 0.0f};
+    _cockpitLight->lightIntensity = 0.5f;
 
     _shipRadar = scene->Create<ShipRadarController>();
-    _shipRadar->scale = {0.45f, 0.45f, 0.45f};
+    _shipRadar->scale = {0.5f, 0.5f, 0.5f};
 }
 
 ShipController::~ShipController()
@@ -83,6 +84,15 @@ void ShipController::OnUpdate()
     {
         targetVelocity += Up() * -10.0f;
     }
+    if (input->GetKey(DIK_R))
+    {
+        // Make an artificial lag spike
+        float val = 45714298.94127f;
+        for (int i = 0; i < 10000000; i++)
+        {
+            val = sqrtf(val);
+        }
+    }
 
     _shipVelocity = NSE::Vector3d::Lerp(_shipVelocity, targetVelocity, time->Delta());
 
@@ -97,33 +107,34 @@ void ShipController::OnUpdate()
 
     _shipVelocity *= std::clamp(1.0 - time->Delta() * 0.5, 0.0, 1.0);
     _camMomentumR *= (float)std::clamp(1.0 - time->Delta() * 4.0, 0.0, 1.0);
-    // _speedMomentum *= 0.9995f;
+
     position += _shipVelocity * time->Delta();
 
     int dx, dy;
     input->GetMouseDelta(dy, dx);
 
-    _camMomentumX += (float)dx / 1000000.0f;
-    _camMomentumY += (float)dy / 1000000.0f;
+    _camMomentumX += (float)dx / 1000.0f;
+    _camMomentumY += (float)dy / 1000.0f;
 
     _camMomentumX *= powf(0.0001f, time->Delta());
     _camMomentumY *= powf(0.0001f, time->Delta());
 
-    auto rot = XMQuaternionRotationRollPitchYaw(_camMomentumX, _camMomentumY, _camMomentumR * time->Delta());
+    auto rot = XMQuaternionRotationRollPitchYaw(_camMomentumX * time->Delta(), _camMomentumY * time->Delta(), _camMomentumR * time->Delta());
     rotation = XMQuaternionMultiply(rot, rotation);
 
-    // _camera->position = position + Forward() * 1.0f + Up() * 0.1f;
-    _camera->position = NSE::Vector3d::Lerp(_camera->position, position + Forward() * 1.0f + Up() * 0.1f, time->Delta() * 100.0f);
+    // _camera->position = Vector3d::Lerp(_camera->position, position + Forward() * 1.0f + Up() * 0.1f, saturate(time->Delta() * 10.0f));
+    _camera->position = position + Forward() * 1.0f + Up() * 0.1f;
     // ToDo noise
-    // _camera->rotation = rotation;
 
-    _camera->rotation = XMQuaternionSlerp(_camera->rotation, rotation, 0.03f);
-    // _camera->
+    _testTime += time->Delta();
 
-    _shipRadar->position = position + Forward() * 2.4f - Up() * 0.35f;
-    _cockpitLight->position = position + Forward() * 2.4f - Up() * 0.35f;
+    _camera->rotation = XMQuaternionSlerp(_camera->rotation, rotation, saturate(30.0f * time->Delta()));
 
-    float velDot = (float)NSE::Vector3d::Dot(_shipVelocity.Normalized(), Forward());
+
+    _shipRadar->position = position + Forward() * 2.8f - Up() * 0.39f;
+    _cockpitLight->position = _shipRadar->position;
+
+    float velDot = (float)Vector3d::Dot(_shipVelocity.Normalized(), Forward());
 
     _camera->SetFov(60.0f + velDot * 2.0f * (1.0f - 1.0f / (1 + (float)_shipVelocity.Magnitude() * 0.2f)));
 }

@@ -16,6 +16,7 @@ namespace NSE
 
         enum class Target : std::uint8_t
         {
+            Default         = 0b00000000,
             Vertex          = 0b00000001,
             Index           = 0b00000010,
             Structured      = 0b00000100,
@@ -24,8 +25,8 @@ namespace NSE
 
     public:
         GraphicsBuffer() = delete;
-        GraphicsBuffer(Target target, size_t size, bool keepDataOnCPU = true);
-        GraphicsBuffer(Target target, size_t stride, size_t count, bool keepDataOnCPU = true);
+        GraphicsBuffer(Target target, size_t size, bool keepDataOnCPU = true, DXGI_FORMAT viewFormat = DXGI_FORMAT_UNKNOWN);
+        GraphicsBuffer(Target target, size_t stride, size_t count, bool keepDataOnCPU = true, DXGI_FORMAT viewFormat = DXGI_FORMAT_UNKNOWN);
         ~GraphicsBuffer() override;
 
         void Set(void const* value, size_t valueSize, size_t offset);
@@ -46,6 +47,9 @@ namespace NSE
         [[nodiscard]] bool GetD3DVariableDescription(size_t nameID, D3D11_SHADER_VARIABLE_DESC& desc) const;
         [[nodiscard]] ID3D11ShaderResourceView* GetD3DResourceView() const { assert(_resourceView); return _resourceView; }
         [[nodiscard]] void* GetDataPointer() const { assert(_keepDataOnCPU); return _data; }
+
+        [[nodiscard]] size_t size() const { return _size; }
+        [[nodiscard]] size_t stride() const { return _stride; }
 
         template <typename T>
         T* As()
@@ -68,6 +72,7 @@ namespace NSE
         size_t          _stride = 0;
         bool            _isDirty = false;
         bool            _isReflected = false;
+        DXGI_FORMAT     _format = DXGI_FORMAT_UNKNOWN;
         // size_t          _nameID = 0;
 
         ID3D11ShaderResourceView* _resourceView = nullptr;

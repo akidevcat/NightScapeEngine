@@ -48,12 +48,22 @@ struct DefaultPixelInput
     float4 normalRS : TEXCOORD2;
 };
 
+float2 GetScreenUv(float2 positionCS)
+{
+    return positionCS / _TargetResolution;
+}
+
+uint2 GetScreenPos(float2 positionCS)
+{
+    return (uint2)positionCS;
+}
+
 float4 TransformObjectToClip(float3 position)
 {
     float4 result = mul(_ModelMatrix, float4(position, 1));
     result = mul(_ViewMatrix, result);
 
-    result.rgb = round(result.rgb * 48.0) / 48.0;
+//     result.xyz = round(result.rgb * 48.0) / 48.0;
 
     result = mul(_ProjectionMatrix, result);
 
@@ -65,7 +75,7 @@ float4 TransformObjectToView(float3 position)
     float4 result = mul(_ModelMatrix, float4(position, 1));
     result = mul(_ViewMatrix, result);
 
-    result.rgb = round(result.rgb * 48.0) / 48.0;
+//     result.xyz = round(result.rgb * 48.0) / 48.0;
 
     return result;
 }
@@ -138,6 +148,19 @@ float2 TransformUV_PixelPerfect(float2 uv, uint2 sizeInPixels)
 float Luminance(float3 c)
 {
     return (0.2126*c.r + 0.7152*c.g + 0.0722*c.b);
+}
+
+float Dither(float value, uint2 screenPos)
+{
+    value = saturate(value);
+    float dValue = pow(value, 1.3);
+    float ditherMask = round(dValue * 2) / 2.0;
+    ditherMask = 1.0 - step(0.25, abs(dValue - 0.5));
+    ditherMask *= (screenPos.x % 2) ^ (screenPos.y % 2);
+
+    value = round(value);
+//     return screenPos.x % 2;
+    return saturate(value + ditherMask);
 }
 
 #endif

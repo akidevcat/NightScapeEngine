@@ -39,6 +39,7 @@ DefaultPixelInput VertexMain(DefaultVertexInput input)
 float4 PixelMain(DefaultPixelInput input) : SV_TARGET
 {
     float2 uv = input.uv;
+//     float2 uv = TransformUV_PixelPerfect(input.uv, uint2(_Size));
 
 //     return _Tint;
 

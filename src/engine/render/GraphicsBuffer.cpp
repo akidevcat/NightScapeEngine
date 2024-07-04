@@ -3,8 +3,8 @@
 #include "../servers/RenderServer.h"
 #include "../servers/TimeServer.h"
 
-NSE::GraphicsBuffer::GraphicsBuffer(const Target target, const size_t size, const bool keepDataOnCPU)
-    : _target(target), _keepDataOnCPU(keepDataOnCPU), _size(size)
+NSE::GraphicsBuffer::GraphicsBuffer(const Target target, const size_t size, const bool keepDataOnCPU, DXGI_FORMAT viewFormat)
+    : _target(target), _keepDataOnCPU(keepDataOnCPU), _size(size), _format(viewFormat)
 {
     if (size % 16 != 0)
     {
@@ -21,8 +21,8 @@ NSE::GraphicsBuffer::GraphicsBuffer(const Target target, const size_t size, cons
     }
 }
 
-NSE::GraphicsBuffer::GraphicsBuffer(Target target, size_t stride, size_t count, bool keepDataOnCPU)
-    : _target(target), _keepDataOnCPU(keepDataOnCPU), _stride(stride)
+NSE::GraphicsBuffer::GraphicsBuffer(Target target, size_t stride, size_t count, bool keepDataOnCPU, DXGI_FORMAT viewFormat)
+    : _target(target), _keepDataOnCPU(keepDataOnCPU), _stride(stride), _format(viewFormat)
 {
     _size = stride * count;
 
@@ -116,20 +116,6 @@ void NSE::GraphicsBuffer::Upload(void const* value, size_t valueSize, size_t off
     assert(("Failed to map constant buffer", SUCCEEDED(result)));
 
     memcpy(static_cast<char*>(mappedResource.pData) + offset, value, valueSize);
-    // void* test = malloc(valueSize);
-    // memset(test, 0, valueSize);
-    //
-    // if (valueSize == 16)
-    // {
-    //     memcpy(static_cast<char*>(mappedResource.pData) + offset, test, valueSize);
-    // }
-    // else
-    // {
-    //     memcpy(static_cast<char*>(mappedResource.pData) + offset, value, valueSize);
-    // }
-
-
-    // memset(static_cast<char*>(mappedResource.pData) + offset, 0, valueSize);
 
     deviceContext->Unmap(_d3dBuffer, 0);
 }
@@ -217,6 +203,12 @@ void NSE::GraphicsBuffer::InitializeBuffer()
 
     switch (_target)
     {
+        case Target::Default:
+            // bufferDesc.BindFlags |= D3D11_BIND_BUFFER
+            bufferDesc.BindFlags |= D3D11_BIND_SHADER_RESOURCE;
+            flCreateResourceView = true;
+        break;
+
         case Target::Constant:
             bufferDesc.BindFlags |= D3D11_BIND_CONSTANT_BUFFER;
         break;
@@ -247,7 +239,7 @@ void NSE::GraphicsBuffer::InitializeBuffer()
     {
         D3D11_SHADER_RESOURCE_VIEW_DESC desc;
 
-        desc.Format = DXGI_FORMAT_UNKNOWN;
+        desc.Format = _format;
         desc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
         desc.Buffer.FirstElement = 0;
         desc.Buffer.NumElements = _size / _stride;

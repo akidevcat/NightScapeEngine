@@ -113,6 +113,8 @@ namespace NSE
     double length(Vector3d v);
     float3 normalize(float3 v);
     Vector3d normalize(Vector3d v);
+    float saturate(float v);
+    double saturate(double v);
 }
 
 typedef NSE::Vector3d double3;

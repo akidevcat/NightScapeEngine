@@ -1,11 +1,13 @@
 #include "RenderServer.h"
 
+#include <iostream>
+
 #include "../data/LightsProperties.h"
 #include "../render/GlobalProperties.h"
 
 NSE::RenderServer::RenderServer()
 {
-
+	_isVSyncEnabled = true;
 }
 
 NSE::RenderServer::~RenderServer()
@@ -72,21 +74,27 @@ bool NSE::RenderServer::Initialize(int screenWidth, int screenHeight, HWND hwnd)
         return false;
     }
 
-    unsigned int refreshRateNum;
-    unsigned int refreshRateDenum;
+    unsigned int refreshRateNum = 0;
+    unsigned int refreshRateDenum = 0;
 
     // Now go through all the display modes and find the one that matches the screen width and height.
     // When a match is found store the numerator and denominator of the refresh rate for that monitor.
     for (unsigned i = 0; i < numModes; i++)
     {
-        if(displayModeList[i].Width == (unsigned int)screenWidth)
-        {
-            if(displayModeList[i].Height == (unsigned int)screenHeight)
-            {
-                refreshRateNum = displayModeList[i].RefreshRate.Numerator;
-                refreshRateDenum = displayModeList[i].RefreshRate.Denominator;
-            }
-        }
+        if(displayModeList[i].Width != (unsigned int)screenWidth || displayModeList[i].Height != (unsigned int)screenHeight)
+            continue;
+
+		auto num = displayModeList[i].RefreshRate.Numerator;
+		auto denom = displayModeList[i].RefreshRate.Denominator;
+
+    	// ToDo
+    	if (num > 1000)
+    	{
+    		continue;
+    	}
+
+    	refreshRateNum = num;
+    	refreshRateDenum = denom;
     }
 
     // Get the adapter (video card) description.
@@ -137,7 +145,6 @@ bool NSE::RenderServer::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 
 	// Set regular 32-bit surface for the back buffer.
     swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
-    // swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 
 	// Set the refresh rate of the back buffer.
 	if(_isVSyncEnabled)
@@ -513,10 +520,10 @@ bool NSE::RenderServer::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	_primitiveQuadMesh = CreateObject<Mesh>(4, 2 * 3);
 	auto pqmVertices = _primitiveQuadMesh->GetVertices();
 	auto pqmIndices = _primitiveQuadMesh->GetIndices();
-	pqmVertices[0] = VertexData{{-1, -1, 0}, {0, 0, 1}, {0, 0}};
-	pqmVertices[1] = VertexData{{-1, 1, 0}, {0, 0, 1}, {0, 1}};
-	pqmVertices[2] = VertexData{{1, 1, 0}, {0, 0, 1}, {1, 1}};
-	pqmVertices[3] = VertexData{{1, -1, 0}, {0, 0, 1}, {1, 0}};
+	pqmVertices[0] = VertexData{{-1, -1, 0}, {0, 0, -1}, {0, 0}};
+	pqmVertices[1] = VertexData{{-1, 1, 0}, {0, 0, -1}, {0, 1}};
+	pqmVertices[2] = VertexData{{1, 1, 0}, {0, 0, -1}, {1, 1}};
+	pqmVertices[3] = VertexData{{1, -1, 0}, {0, 0, -1}, {1, 0}};
 
 	pqmIndices[0] = 0;
 	pqmIndices[1] = 1;
