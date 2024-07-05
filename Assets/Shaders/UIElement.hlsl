@@ -16,7 +16,8 @@ DefaultPixelInput VertexMain(DefaultVertexInput input)
         output.position = TransformObjectToWorld(input.position);
 
         if (_IsPixelPerfect)
-            output.position = TransformObjectToClip_PixelPerfect(input.position, uint2(_Size));
+//             output.position = TransformObjectToClip_PixelPerfect(input.position, uint2(_Size));
+            output.position = TransformClip_PixelPerfect(input.position, uint2(_Size));
         else
             output.position = TransformObjectToClip(input.position);
     }

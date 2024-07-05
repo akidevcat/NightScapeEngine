@@ -16,6 +16,14 @@ XMMATRIX NSE::SceneEntity::GetModelMatrix(Vector3d relativeTo) const
     return XMMatrixAffineTransformation(s, g_XMZero, rotation, p);
 }
 
+XMMATRIX NSE::SceneEntity::GetModelMatrixUI() const
+{
+    auto positionUI = (XMFLOAT3)(position);
+    auto p = XMLoadFloat3(&positionUI);
+
+    return XMMatrixAffineTransformation(g_XMOne, g_XMZero, g_XMIdentityR3, p);
+}
+
 XMVECTOR NSE::SceneEntity::Forward() const
 {
     return XMVector4Transform({0, 0, 1, 0}, GetModelMatrix({}));

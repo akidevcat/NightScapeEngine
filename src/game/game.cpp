@@ -85,6 +85,8 @@ void Game::Start()
     controller->GetCamera()->colorTarget = _renderColorRT;
     controller->GetCamera()->depthTarget = _renderDepthRT;
 
+    controller->GetRadar()->AddTarget(_triangle, {1,1,1.0,1});
+
     auto starsCamera = _scene->Create<StarsCamera>(controller->GetCamera(), controller);
 
     // auto test = _scene->Create<VisualMeshEntity>();
@@ -97,16 +99,16 @@ void Game::Start()
     // test->position = {0, 0, 100};
     // test->rotation = DirectX::XMQuaternionRotationAxis({0, 1, 0}, 180);
 
-    // auto marker = _scene->Create<SpriteVisual>();
-    // marker->sprite.atlasTexture = AssetsServer::Get()->LoadTextureAsset(L"Assets/Textures/UI_Atlas.dds");
-    // marker->sprite.SetRectRectPixel(0, 0, 16, 16);
-    // marker->isPixelPerfect = true;
-    // marker->isScreenSpace = false;
-    // marker->color = {1, 0.4, 0, 1};
-    // marker->position = _triangle->position;
+    auto marker = _scene->Create<SpriteVisual>();
+    marker->sprite.atlasTexture = AssetsServer::Get()->LoadTextureAsset(L"Assets/Textures/UI_Atlas.dds");
+    marker->sprite.SetRectRectPixel(0, 0, 8, 8);
+    marker->isPixelPerfect = true;
+    marker->isScreenSpace = false;
+    marker->color = {1, 0.4, 0, 1};
+    marker->position = _triangle->position;
 
-    auto text = _scene->Create<TextVisual>();
-    text->SetText("Fuel: 37u");
+    // auto text = _scene->Create<TextVisual>();
+    // text->SetText("Fuel: 37u");
     // text->SetText("12345");
 }
 

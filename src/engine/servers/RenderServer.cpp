@@ -12,16 +12,7 @@ NSE::RenderServer::RenderServer()
 
 NSE::RenderServer::~RenderServer()
 {
-	// delete _errorShader;
-	// delete _errorMaterial;
-	DestroyObject(_errorShader);
-	DestroyObject(_errorMaterial);
-	DestroyObject(_lightsPropertiesBuffer);
 
-	// delete _globalProperties;
-	// delete _globalPropertiesBuffer;
-	// delete _drawProperties;
-	// delete _drawPropertiesBuffer;
 }
 
 bool NSE::RenderServer::Initialize(int screenWidth, int screenHeight, HWND hwnd)
@@ -701,6 +692,8 @@ void NSE::RenderServer::PipelineSetMaterial(const NSE_Material& material)
 		_currentStateDepthWrite = material->GetDepthWrite();
 	}
 
+	// Map Shaders
+
 	if (_currentStateVertexShader != material->GetShader()->GetVertexShader()->AsID3D11())
 	{
 		_deviceContext->IASetInputLayout(
@@ -708,6 +701,21 @@ void NSE::RenderServer::PipelineSetMaterial(const NSE_Material& material)
 		_deviceContext->VSSetShader(
 			material->GetShader()->GetVertexShader()->AsID3D11(), nullptr, 0);
 
+		_currentStateVertexShader = material->GetShader()->GetVertexShader()->AsID3D11();
+	}
+
+	if (_currentStatePixelShader != material->GetShader()->GetPixelShader()->AsID3D11())
+	{
+		_deviceContext->PSSetShader(
+			material->GetShader()->GetPixelShader()->AsID3D11(), nullptr, 0);
+
+		_currentStatePixelShader = material->GetShader()->GetPixelShader()->AsID3D11();
+
+	}
+
+	// Map Constant Buffers
+
+	{
 		static ID3D11Buffer* vsBuffers[D3D11_COMMONSHADER_CONSTANT_BUFFER_HW_SLOT_COUNT];
 		int vsBuffersLength = 0;
 
@@ -716,15 +724,9 @@ void NSE::RenderServer::PipelineSetMaterial(const NSE_Material& material)
 		if (vsBuffersLength > 0)
 		{
 			_deviceContext->VSSetConstantBuffers(0, vsBuffersLength, vsBuffers);
-			_currentStateVertexShader = material->GetShader()->GetVertexShader()->AsID3D11();
 		}
 	}
-
-	if (_currentStatePixelShader != material->GetShader()->GetPixelShader()->AsID3D11())
 	{
-		_deviceContext->PSSetShader(
-			material->GetShader()->GetPixelShader()->AsID3D11(), nullptr, 0);
-
 		static ID3D11Buffer* psBuffers[D3D11_COMMONSHADER_CONSTANT_BUFFER_HW_SLOT_COUNT];
 		int psBuffersLength = 0;
 
@@ -733,9 +735,10 @@ void NSE::RenderServer::PipelineSetMaterial(const NSE_Material& material)
 		if (psBuffersLength > 0)
 		{
 			_deviceContext->PSSetConstantBuffers(0, psBuffersLength, psBuffers);
-			_currentStatePixelShader = material->GetShader()->GetPixelShader()->AsID3D11();
 		}
 	}
+
+	// Map Resources / Samplers
 
 	static ID3D11ShaderResourceView* resources[D3D11_COMMONSHADER_INPUT_RESOURCE_REGISTER_COUNT] = {};
 	static ID3D11SamplerState*		 samplers[D3D11_COMMONSHADER_SAMPLER_SLOT_COUNT] = {};

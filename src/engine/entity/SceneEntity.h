@@ -17,6 +17,7 @@ namespace NSE
         ~SceneEntity() override = 0;
 
         [[nodiscard]] DirectX::XMMATRIX GetModelMatrix(Vector3d relativeTo) const;
+        [[nodiscard]] DirectX::XMMATRIX GetModelMatrixUI() const;
         [[nodiscard]] DirectX::XMVECTOR Forward() const;
         [[nodiscard]] DirectX::XMVECTOR Right() const;
         [[nodiscard]] DirectX::XMVECTOR Up() const;

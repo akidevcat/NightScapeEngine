@@ -25,6 +25,11 @@ NSE::SpriteVisual::~SpriteVisual()
 
 void NSE::SpriteVisual::RenderEntity(const NSE_Camera& camera)
 {
+    if (sprite.atlasTexture == nullptr)
+    {
+        return;
+    }
+
     if (renderingMaterial)
     {
         float rSizeX = (sprite.xMax - sprite.xMin);
@@ -39,5 +44,8 @@ void NSE::SpriteVisual::RenderEntity(const NSE_Camera& camera)
         renderingMaterial->SetTexture(ShaderUtils::PropertyToID("_Image"), sprite.atlasTexture);
     }
 
-    RenderServer::Get()->DrawMesh(_mesh, renderingMaterial, GetModelMatrix(camera->position), camera, GetUID());
+    if (isScreenSpace)
+        RenderServer::Get()->DrawMesh(_mesh, renderingMaterial, GetModelMatrixUI(), camera, GetUID());
+    else
+        RenderServer::Get()->DrawMesh(_mesh, renderingMaterial, GetModelMatrix(camera->position), camera, GetUID());
 }

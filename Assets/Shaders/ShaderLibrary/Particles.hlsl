@@ -72,4 +72,12 @@ inline void InitializeVertexParticle_Line(uint vertexID, float3 positionOS, floa
     output.position = TransformObjectToClip(positionOS + vPosOS);
 }
 
+inline void InitializeVertexParticle_Point(float3 positionOS,
+    out ParticlePixelInput output)
+{
+    output.normal = 0;
+    output.uv = float2(0.5, 0.5);
+    output.position = TransformObjectToClip(positionOS);
+}
+
 #endif

@@ -35,10 +35,37 @@ ShipController::ShipController(NSE::Scene* scene, float screenAspect)
 
     _cockpitLight = scene->Create<NSE::Light>();
     _cockpitLight->lightColor = {0.87f, 0.27f, 0.02f, 0.0f};
-    _cockpitLight->lightIntensity = 0.5f;
+    _cockpitLight->lightIntensity = 0.2;
 
-    _shipRadar = scene->Create<ShipRadarController>();
-    _shipRadar->scale = {0.5f, 0.5f, 0.5f};
+    _shipRadar = scene->Create<ShipRadarController>(scene);
+    _shipRadar->scale = {0.6f, 0.6f, 0.6f};
+
+    auto* barVertices = new float3[3];
+    barVertices[0] = {-0.4, 0.2 - 0.03, 0};
+    barVertices[1] = {-0.4, 0 - 0.03, 0};
+    barVertices[2] = {-0.4, -0.2 - 0.03, 0};
+    _fuelBar = scene->Create<ProgressBarVisual>(barVertices, 3);
+    _fuelBar->foregroundColor = {0.04, 0.45, 1.0, 1.0f};
+    _fuelBar->backgroundColor = {0.04 / 4.0f, 0.45 / 4.0f, 1.0 / 4.0f, 0.1f};
+    _fuelBar->renderingMaterial->MakeTransparent();
+
+    barVertices[0] = {0.4, 0.2 - 0.03, 0};
+    barVertices[1] = {0.4, 0 - 0.03, 0};
+    barVertices[2] = {0.4, -0.2 - 0.03, 0};
+    _integrityBar = scene->Create<ProgressBarVisual>(barVertices, 3);
+    _integrityBar->foregroundColor = {0.04, 1.0, 0.45, 1.0f};
+    _integrityBar->backgroundColor = {0.04 / 4.0f, 1.0 / 4.0f, 0.45 / 4.0f, 0.1f};
+    _integrityBar->renderingMaterial->MakeTransparent();
+    _integrityBar->progress = 0.1;
+
+    _crosshair = scene->Create<SpriteVisual>();
+    _crosshair->sprite.atlasTexture = AssetsServer::Get()->LoadTextureAsset(L"Assets/Textures/UI_Atlas.dds");
+    _crosshair->sprite.SetRectRectPixel(8, 0, 4, 4);
+    _crosshair->isPixelPerfect = true;
+    _crosshair->isScreenSpace = false;
+    _crosshair->color = {0.9, 0.3, 0.0, 0.1};
+    _crosshair->position = {0.0, 0.0, 0.1};
+    _crosshair->renderingMaterial->MakeTransparent();
 }
 
 ShipController::~ShipController()
@@ -126,13 +153,20 @@ void ShipController::OnUpdate()
     _camera->position = position + Forward() * 1.0f + Up() * 0.1f;
     // ToDo noise
 
-    _testTime += time->Delta();
-
     _camera->rotation = XMQuaternionSlerp(_camera->rotation, rotation, saturate(30.0f * time->Delta()));
 
 
-    _shipRadar->position = position + Forward() * 2.8f - Up() * 0.39f;
+    _shipRadar->position = position + Forward() * 2.8f - Up() * 0.5f;
+    _shipRadar->rotation = rotation;
+    _shipRadar->GetParticleSystem()->position = _shipRadar->position;
+    _shipRadar->GetParticleSystem()->rotation = _shipRadar->rotation;
+    _fuelBar->position = _shipRadar->position;
+    _fuelBar->rotation = _shipRadar->rotation;
+    _integrityBar->position = _shipRadar->position;
+    _integrityBar->rotation = _shipRadar->rotation;
     _cockpitLight->position = _shipRadar->position;
+
+    _crosshair->position = position + Forward() * 3.0f;
 
     float velDot = (float)Vector3d::Dot(_shipVelocity.Normalized(), Forward());
 

@@ -70,6 +70,17 @@ float4 TransformObjectToClip(float3 position)
     return result;
 }
 
+float4 TransformWorldToClip(float3 position)
+{
+    float4 result = mul(_ViewMatrix, float4(position, 1));
+
+//     result.xyz = round(result.rgb * 48.0) / 48.0;
+
+    result = mul(_ProjectionMatrix, result);
+
+    return result;
+}
+
 float4 TransformObjectToView(float3 position)
 {
     float4 result = mul(_ModelMatrix, float4(position, 1));
@@ -109,6 +120,32 @@ float4 TransformObjectToViewDirection(float3 direction)
 {
     float4 result = mul(_ModelMatrix, float4(direction, 0));
     result = mul(_ViewMatrix, result);
+
+    return result;
+}
+
+float4 TransformClip_PixelPerfect(float3 position, uint2 sizeInPixels)
+{
+    float4 result = mul(_ModelMatrix, float4(0, 0, 0, 1));
+
+    float2 pixelSize = float2(2.0, 2.0) / (float2)_TargetResolution;
+
+    uint2 px = uint2(sizeInPixels.x / 2, sizeInPixels.y / 2);
+
+    if (sizeInPixels.x % 2 == 1 && position.x > 0)
+    {
+        px.x += 1;
+    }
+    if (sizeInPixels.y % 2 == 1 && position.y > 0)
+    {
+        px.y += 1;
+    }
+
+    pixelSize.x *= (float)px.x;
+    pixelSize.y *= (float)px.y;
+
+    result /= result.w;
+    result += float4(position.xy * pixelSize, 0, 0);
 
     return result;
 }
@@ -153,14 +190,24 @@ float Luminance(float3 c)
 float Dither(float value, uint2 screenPos)
 {
     value = saturate(value);
-    float dValue = pow(value, 1.3);
-    float ditherMask = round(dValue * 2) / 2.0;
-    ditherMask = 1.0 - step(0.25, abs(dValue - 0.5));
-    ditherMask *= (screenPos.x % 2) ^ (screenPos.y % 2);
 
-    value = round(value);
+    const uint shadeCount = 3;
+    const float shadeSize = 0.1;
+    float leftStep = floor(value * shadeCount);
+    float rightStep = leftStep + 1;
+    float timeStep = value * shadeCount - leftStep;
+
+
+
+
+    float dValue = pow(timeStep, 1.0);
+    float ditherMask = step(0.5 - shadeSize, dValue);
+    ditherMask *= (screenPos.x % 2) ^ (screenPos.y % 2);
+    ditherMask = saturate(ditherMask + step(0.5 + shadeSize, dValue));
+
+    value = (leftStep + ditherMask) / shadeCount;
 //     return screenPos.x % 2;
-    return saturate(value + ditherMask);
+    return saturate(value);
 }
 
 #endif

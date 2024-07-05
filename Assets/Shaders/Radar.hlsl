@@ -36,5 +36,7 @@ float4 PixelMain(PixelInput input) : SV_TARGET
 
     float intensity = ndotv * s0 * s1;
 
-    return intensity * float4(0.72, 0.2, 0.0, 0.0) * 1.6;
+    intensity = step(0.3, intensity) * 0.5 + 0.5;
+
+    return intensity * float4(0.72, 0.2, 0.0, 0.0) * 1.3;
 }

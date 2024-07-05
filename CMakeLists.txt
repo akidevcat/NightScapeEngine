@@ -125,6 +125,10 @@ add_executable(${PROJECT_NAME} WIN32
         src/engine/data/ShaderDepthState.h
         src/engine/entity/TextVisual.cpp
         src/engine/entity/TextVisual.h
+        src/game/RadarParticleSystem.cpp
+        src/game/RadarParticleSystem.h
+        src/engine/entity/ProgressBarVisual.cpp
+        src/engine/entity/ProgressBarVisual.h
 )
 
 target_link_libraries(${PROJECT_NAME} d3d9 d3d11 d3dcompiler dinput8 dxguid)
