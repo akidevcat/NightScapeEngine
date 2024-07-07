@@ -72,6 +72,7 @@ namespace NSE
         void MakeOpaque();
         void MakeTransparent();
         void MakeAdditive();
+        void MakeInvert();
 
     public:
         int               renderQueue = MATERIAL_RENDER_QUEUE_OPAQUE;

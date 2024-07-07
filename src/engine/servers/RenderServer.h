@@ -68,6 +68,7 @@ namespace NSE
         [[nodiscard]] NSE_BlendState              GetBlendStateOpaque() const { return _defaultOpaqueBlendState; }
         [[nodiscard]] NSE_BlendState              GetBlendStateAdditive() const { return _defaultAdditiveBlendState; }
         [[nodiscard]] NSE_BlendState              GetBlendStateTransparent() const { return _defaultTransparentBlendState; }
+        [[nodiscard]] NSE_BlendState              GetBlendStateInvert() const { return _defaultInvertBlendState; }
 
     private:
 
@@ -107,6 +108,7 @@ namespace NSE
         NSE_BlendState              _defaultOpaqueBlendState = nullptr;
         NSE_BlendState              _defaultAdditiveBlendState = nullptr;
         NSE_BlendState              _defaultTransparentBlendState = nullptr;
+        NSE_BlendState              _defaultInvertBlendState = nullptr;
 
         NSE_Shader                  _errorShader = nullptr;
         NSE_Material                _errorMaterial = nullptr;

@@ -1,4 +1,5 @@
 #include "ShaderLibrary/Core.hlsl"
+#include "ShaderLibrary/Hash.hlsl"
 
 Texture2D _MainTex;
 
@@ -42,6 +43,12 @@ float4 PixelMain(PixelInput input) : SV_TARGET
 //     uv = (uv - 0.5) / (float2)res;
 
     float4 result = _MainTex.Sample(_LinearSampler, uv);
+
+//     float noise = hash12(input.uv * res + _Time);
+//
+//     noise = pow(noise, 15.0);
+//     noise = saturate((noise - 0.94) * 10.0);
+//     result.rgb += noise;
 
 //     result.rgb = pow(result.rgb, 1.0 / 2.2);
 //     result.rgb = round(result.rgb * 32.0) / 32.0;

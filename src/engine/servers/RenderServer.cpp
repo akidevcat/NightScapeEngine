@@ -492,15 +492,26 @@ bool NSE::RenderServer::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	_defaultAdditiveBlendState = CreateObject<BlendState>(blendDescription);
 
 	blendDescription.RenderTarget[0].BlendEnable = TRUE;
-	blendDescription.RenderTarget[0].SrcBlend = D3D11_BLEND_ONE;
+	blendDescription.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
 	blendDescription.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
 	blendDescription.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
-	blendDescription.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+	blendDescription.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_SRC_ALPHA;
 	blendDescription.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_INV_SRC_ALPHA;
 	blendDescription.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
 	blendDescription.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 
 	_defaultTransparentBlendState = CreateObject<BlendState>(blendDescription);
+
+	blendDescription.RenderTarget[0].BlendEnable = TRUE;
+	blendDescription.RenderTarget[0].SrcBlend = D3D11_BLEND_INV_DEST_COLOR;
+	blendDescription.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_COLOR;
+	blendDescription.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+	blendDescription.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ZERO;
+	blendDescription.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ONE;
+	blendDescription.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	blendDescription.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+
+	_defaultInvertBlendState = CreateObject<BlendState>(blendDescription);
 
 	// ToDo
 	_errorShader = CreateObject<Shader>(L"Assets/Shaders/Error.hlsl");

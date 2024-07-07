@@ -63,9 +63,9 @@ ShipController::ShipController(NSE::Scene* scene, float screenAspect)
     _crosshair->sprite.SetRectRectPixel(8, 0, 4, 4);
     _crosshair->isPixelPerfect = true;
     _crosshair->isScreenSpace = false;
-    _crosshair->color = {0.9, 0.3, 0.0, 0.1};
+    _crosshair->color = {1,1,1,0};
     _crosshair->position = {0.0, 0.0, 0.1};
-    _crosshair->renderingMaterial->MakeTransparent();
+    _crosshair->renderingMaterial->MakeInvert();
 }
 
 ShipController::~ShipController()

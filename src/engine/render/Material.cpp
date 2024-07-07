@@ -251,3 +251,9 @@ void NSE::Material::MakeAdditive()
     SetBlendState(RenderServer::Get()->GetBlendStateAdditive());
     SetDepthWrite(ShaderDepthState::OnlyRead);
 }
+
+void NSE::Material::MakeInvert()
+{
+    SetBlendState(RenderServer::Get()->GetBlendStateInvert());
+    SetDepthWrite(ShaderDepthState::OnlyRead);
+}
