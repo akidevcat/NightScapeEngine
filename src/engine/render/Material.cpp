@@ -187,6 +187,12 @@ void NSE::Material::SetColor(const size_t nameID, DirectX::XMVECTOR value) const
     SetVar(nameID, &value, sizeof(DirectX::XMVECTOR));
 }
 
+void NSE::Material::SetColor(size_t nameID, float4 value) const
+{
+    // ToDo convert to linear space
+    SetVar(nameID, &value, sizeof(float4));
+}
+
 void NSE::Material::SetMatrix(const size_t nameID, DirectX::XMMATRIX value) const
 {
     SetVar(nameID, &value, sizeof(DirectX::XMMATRIX));

@@ -16,7 +16,7 @@ namespace NSE
         SceneEntity() = default;
         ~SceneEntity() override = 0;
 
-        [[nodiscard]] DirectX::XMMATRIX GetModelMatrix(Vector3d relativeTo) const;
+        [[nodiscard]] DirectX::XMMATRIX GetModelMatrix(Vector3d relativeTo, float scaling = 1.0f) const;
         [[nodiscard]] DirectX::XMMATRIX GetModelMatrixUI() const;
         [[nodiscard]] DirectX::XMVECTOR Forward() const;
         [[nodiscard]] DirectX::XMVECTOR Right() const;

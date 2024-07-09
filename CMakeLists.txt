@@ -111,8 +111,8 @@ add_executable(${PROJECT_NAME} WIN32
         src/engine/render/GraphicsBuffer.h
         src/game/StarDustParticles.cpp
         src/game/StarDustParticles.h
-        src/game/Planet.cpp
-        src/game/Planet.h
+        src/game/planetary/Planet.cpp
+        src/game/planetary/Planet.h
         src/engine/physics/RigidEntity.cpp
         src/engine/physics/RigidEntity.h
         src/engine/physics/CollisionEntity.cpp
@@ -129,6 +129,12 @@ add_executable(${PROJECT_NAME} WIN32
         src/game/RadarParticleSystem.h
         src/engine/entity/ProgressBarVisual.cpp
         src/engine/entity/ProgressBarVisual.h
+        src/engine/ecs/EntityRegistry.cpp
+        src/engine/ecs/EntityRegistry.h
+        src/engine/ecs/Entity.cpp
+        src/engine/ecs/Entity.h
+        src/game/planetary/PlanetMeshTools.cpp
+        src/game/planetary/PlanetMeshTools.h
 )
 
 target_link_libraries(${PROJECT_NAME} d3d9 d3d11 d3dcompiler dinput8 dxguid)

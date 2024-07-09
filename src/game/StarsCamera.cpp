@@ -1,6 +1,6 @@
 #include "StarsCamera.h"
 
-#include "Planet.h"
+#include "planetary/Planet.h"
 #include "../engine/servers/RenderServer.h"
 #include "../engine/servers/SceneServer.h"
 
@@ -51,7 +51,7 @@ StarsCamera::StarsCamera(const NSE_Camera& parentCamera, const obj_ptr<ShipContr
     _shipController = controller;
     // _particles->position += {0, 0, 1};
 
-    _starsScene->Create<Planet>();
+    // _starsScene->Create<Planet>();
 }
 
 StarsCamera::~StarsCamera()
@@ -79,6 +79,7 @@ void StarsCamera::OnUpdate()
     SetParams(aspect, fov, n, f, false, 0);
 
     rotation = _parentCamera->rotation;
+    position = _parentCamera->position;
 
     _particles->velocity = (float3)_shipController->GetShipVelocity();
 }

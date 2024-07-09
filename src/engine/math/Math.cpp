@@ -173,6 +173,11 @@ namespace NSE
         return v / length(v);
     }
 
+    Vector3d normalize(Vector3d v)
+    {
+        return v / length(v);
+    }
+
     float saturate(float v)
     {
         return std::clamp(v, 0.0f, 1.0f);

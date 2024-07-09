@@ -58,6 +58,7 @@ namespace NSE
         void SetFloat4(size_t nameID, float4 value) const;
         void SetVector(size_t nameID, xmvector value) const;
         void SetColor(size_t nameID, xmvector value) const;
+        void SetColor(size_t nameID, float4 value) const;
         void SetMatrix(size_t nameID, xmmatrix value) const;
         void SetConstantBuffer(size_t nameID, const NSE_GraphicsBuffer& buffer) const;
         void SetBuffer(size_t nameID, const NSE_GraphicsBuffer& buffer) const;

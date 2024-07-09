@@ -2,6 +2,7 @@
 
 #include <iostream>
 
+#include "planetary/Planet.h"
 #include "ShipController.h"
 #include "StarsCamera.h"
 #include "../engine/entity/Camera.h"
@@ -110,6 +111,8 @@ void Game::Start()
     // auto text = _scene->Create<TextVisual>();
     // text->SetText("Fuel: 37u");
     // text->SetText("12345");
+
+    Planet::Create(_scene, starsCamera->GetStarsScene(), controller);
 }
 
 bool Game::UpdateFrame()

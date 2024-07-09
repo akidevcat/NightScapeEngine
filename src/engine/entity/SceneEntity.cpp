@@ -6,11 +6,15 @@ NSE::SceneEntity::~SceneEntity()
 {
 }
 
-XMMATRIX NSE::SceneEntity::GetModelMatrix(Vector3d relativeTo) const
+XMMATRIX NSE::SceneEntity::GetModelMatrix(Vector3d relativeTo, float scaling) const
 {
-    auto positionCS = (XMFLOAT3)(position - relativeTo);
+    auto positionCS = (XMFLOAT3)((position - relativeTo) * scaling);
+    auto sc = scale;
 
-    auto s = XMLoadFloat3(&scale); // ToDo
+    // positionCS *= scaling;
+    sc *= scaling;
+
+    auto s = XMLoadFloat3(&sc);
     auto p = XMLoadFloat3(&positionCS);
 
     return XMMatrixAffineTransformation(s, g_XMZero, rotation, p);

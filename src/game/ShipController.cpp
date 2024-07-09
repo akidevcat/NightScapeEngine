@@ -1,8 +1,10 @@
 #include "ShipController.h"
 
 #include <algorithm>
+#include <iomanip>
 #include <iostream>
 #include <ostream>
+#include <sstream>
 
 #include "../engine/entity/QuadVisual.h"
 #include "../engine/servers/AssetServer.h"
@@ -66,6 +68,10 @@ ShipController::ShipController(NSE::Scene* scene, float screenAspect)
     _crosshair->color = {1,1,1,0};
     _crosshair->position = {0.0, 0.0, 0.1};
     _crosshair->renderingMaterial->MakeInvert();
+
+    _topText = scene->Create<TextVisual>();
+    _topText->SetText("3.21");
+    _topText->color = {0.95f, 0.4f, 0.0f, 1.0f};
 }
 
 ShipController::~ShipController()
@@ -84,7 +90,7 @@ void ShipController::OnUpdate()
     {
         if (input->GetKey(DIK_LSHIFT))
         {
-            targetVelocity += Forward() * 50.0f;
+            targetVelocity += Forward() * 100.0f;
         }
         else
         {
@@ -135,8 +141,6 @@ void ShipController::OnUpdate()
     _shipVelocity *= std::clamp(1.0 - time->Delta() * 0.5, 0.0, 1.0);
     _camMomentumR *= (float)std::clamp(1.0 - time->Delta() * 4.0, 0.0, 1.0);
 
-    position += _shipVelocity * time->Delta();
-
     int dx, dy;
     input->GetMouseDelta(dy, dx);
 
@@ -145,6 +149,16 @@ void ShipController::OnUpdate()
 
     _camMomentumX *= powf(0.0001f, time->Delta());
     _camMomentumY *= powf(0.0001f, time->Delta());
+
+    if (_isShiftSpaceActive)
+    {
+        // _shipVelocity = Forward() * 30000;
+        _shipVelocity = targetVelocity * 3000;
+        // _camMomentumX = 0.0f;
+        // _camMomentumY = 0.0f;
+    }
+
+    position += _shipVelocity * time->Delta();
 
     auto rot = XMQuaternionRotationRollPitchYaw(_camMomentumX * time->Delta(), _camMomentumY * time->Delta(), _camMomentumR * time->Delta());
     rotation = XMQuaternionMultiply(rot, rotation);
@@ -165,10 +179,54 @@ void ShipController::OnUpdate()
     _integrityBar->position = _shipRadar->position;
     _integrityBar->rotation = _shipRadar->rotation;
     _cockpitLight->position = _shipRadar->position;
+    _topText->position = position + Forward() * 3.5f + Up() * 0.5f;
 
     _crosshair->position = position + Forward() * 3.0f;
 
     float velDot = (float)Vector3d::Dot(_shipVelocity.Normalized(), Forward());
 
     _camera->SetFov(60.0f + velDot * 2.0f * (1.0f - 1.0f / (1 + (float)_shipVelocity.Magnitude() * 0.2f)));
+
+
+    std::stringstream str;
+    str << std::fixed << std::setprecision(3);
+
+    if (_shiftSpaceActivationTimer > 0)
+    {
+        _shiftSpaceActivationTimer -= time->Delta();
+        if (_shiftSpaceActivationTimer <= 0.0f)
+        {
+            _isShiftSpaceActive = true;
+            // ToDo VFX
+            _shiftSpaceActivationTimer = 0.0f;
+        }
+        str << _shiftSpaceActivationTimer;
+        _topText->SetText(str.str());
+        _topText->color.w = 1.0f - powf(_shiftSpaceActivationTimer / _shiftSpaceActivationTimeout, 2.0f);
+    } else
+    {
+        _topText->SetText("");
+    }
+
+    if (input->GetKeyDown(DIK_G))
+    {
+        if (_isShiftSpaceActive)
+        {
+            _isShiftSpaceActive = false;
+            _shipVelocity = Forward() * 1.0f;
+            // ToDo VFX
+        }
+        else
+        {
+            if (_shiftSpaceActivationTimer > 0.0f) // If charging
+            {
+                // Cancel
+                _shiftSpaceActivationTimer = 0.0f;
+            }
+            else // If not charging
+            {
+                _shiftSpaceActivationTimer = _shiftSpaceActivationTimeout;
+            }
+        }
+    }
 }

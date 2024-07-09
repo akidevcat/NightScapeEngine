@@ -23,7 +23,7 @@ namespace NSE
 
     public:
         bool isScreenSpace = false;
-        xmvector color{1,1,1,1};
+        float4 color{1,1,1,1};
     private:
         int _textLength = 0;
         std::string _text;

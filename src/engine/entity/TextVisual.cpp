@@ -48,6 +48,12 @@ void NSE::TextVisual::SetText(const std::string& text)
     auto textLength = text.length();
     auto flCreateBuffer = false;
 
+    if (textLength == 0)
+    {
+        _textLength = 0;
+        return;
+    }
+
     if (!_textBuffer)
     {
         flCreateBuffer = true;

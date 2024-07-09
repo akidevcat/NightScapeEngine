@@ -13,6 +13,8 @@ public:
     ~StarsCamera() override;
 
     void OnUpdate() override;
+
+    NSE::Scene* GetStarsScene() { return _starsScene; }
 private:
     NSE_Camera _parentCamera = nullptr;
     NSE::Scene* _starsScene = nullptr;

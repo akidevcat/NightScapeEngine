@@ -5,6 +5,7 @@
 #include "../engine/entity/ProgressBarVisual.h"
 #include "../engine/entity/VisualMeshEntity.h"
 #include "../engine/entity/SpriteVisual.h"
+#include "../engine/entity/TextVisual.h"
 
 class ShipController : public NSE::VisualMeshEntity
 {
@@ -27,6 +28,10 @@ private:
     float _integrity = 100.0f;
     float _fuel = 100.0f;
 
+    bool _isShiftSpaceActive = false;
+    float _shiftSpaceActivationTimer = 0.0f;
+    const float _shiftSpaceActivationTimeout = 3.0f;
+
     float _camMomentumX = 0;
     float _camMomentumY = 0;
     float _camMomentumR = 0;
@@ -39,6 +44,7 @@ private:
     obj_ptr<NSE::ProgressBarVisual> _fuelBar = nullptr;
     obj_ptr<NSE::ProgressBarVisual> _integrityBar = nullptr;
     obj_ptr<NSE::SpriteVisual> _crosshair = nullptr;
+    obj_ptr<NSE::TextVisual> _topText = nullptr;
 };
 
 #endif //SHIPCONTROLLER_H

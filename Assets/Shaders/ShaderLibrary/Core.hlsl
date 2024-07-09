@@ -197,16 +197,13 @@ float Dither(float value, uint2 screenPos)
     float rightStep = leftStep + 1;
     float timeStep = value * shadeCount - leftStep;
 
-
-
-
     float dValue = pow(timeStep, 1.0);
     float ditherMask = step(0.5 - shadeSize, dValue);
     ditherMask *= (screenPos.x % 2) ^ (screenPos.y % 2);
     ditherMask = saturate(ditherMask + step(0.5 + shadeSize, dValue));
 
     value = (leftStep + ditherMask) / shadeCount;
-//     return screenPos.x % 2;
+
     return saturate(value);
 }
 

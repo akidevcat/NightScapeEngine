@@ -26,11 +26,12 @@ float4 PixelMain(DefaultPixelInput input) : SV_TARGET
     n = saturate(n);
     n = Dither(n, screenPos);
 
-    float lightIntensity = dot(input.normalRS.xyz, normalize(float3(1, 0, -0.7)));
+    float lightIntensity = dot(normalize(input.normalRS.xyz), normalize(float3(1, 0, -0.7)));
     lightIntensity = smoothstep(-0.2, 0.6, lightIntensity);
     lightIntensity = Dither(lightIntensity, screenPos);
 
     result.rgb = lightIntensity * float3(0.4, 0.5, 0.9) * 1.3 * n;
 
+//     return float4(uv, 0, 1);
     return float4(result.rgb, 1.0);
 }
