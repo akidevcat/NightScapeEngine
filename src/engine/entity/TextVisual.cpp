@@ -21,14 +21,14 @@ NSE::TextVisual::TextVisual()
 
     if (!_defaultFontTexture)
     {
-        _defaultFontTexture = AssetsServer::Get()->LoadTextureAsset(L"Assets/Textures/NicoPups-FontAtlas.dds");
+        _defaultFontTexture = AssetsServer::Get()->LoadTextureAsset(L"Assets/Textures/Default-FontAtlas.dds");
     }
 
     renderingMaterial = CreateObject<Material>(_shader);
     renderingMaterial->MakeTransparent();
     renderingMaterial->SetDepthWrite(ShaderDepthState::Disabled);
 
-    SetFont(_defaultFontTexture, 15, 15);
+    SetFont(_defaultFontTexture, 4, 6);
 }
 
 NSE::TextVisual::~TextVisual()

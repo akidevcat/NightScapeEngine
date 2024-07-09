@@ -244,22 +244,26 @@ void NSE::Material::MakeOpaque()
 {
     SetBlendState(RenderServer::Get()->GetBlendStateOpaque());
     SetDepthWrite(ShaderDepthState::ReadWrite);
+    renderQueue = RenderQueue::Opaque;
 }
 
 void NSE::Material::MakeTransparent()
 {
     SetBlendState(RenderServer::Get()->GetBlendStateTransparent());
     SetDepthWrite(ShaderDepthState::OnlyRead);
+    renderQueue = RenderQueue::Transparent;
 }
 
 void NSE::Material::MakeAdditive()
 {
     SetBlendState(RenderServer::Get()->GetBlendStateAdditive());
     SetDepthWrite(ShaderDepthState::OnlyRead);
+    renderQueue = RenderQueue::Transparent;
 }
 
 void NSE::Material::MakeInvert()
 {
     SetBlendState(RenderServer::Get()->GetBlendStateInvert());
     SetDepthWrite(ShaderDepthState::OnlyRead);
+    renderQueue = RenderQueue::Transparent;
 }

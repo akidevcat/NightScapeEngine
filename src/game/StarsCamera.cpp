@@ -52,6 +52,14 @@ StarsCamera::StarsCamera(const NSE_Camera& parentCamera, const obj_ptr<ShipContr
     // _particles->position += {0, 0, 1};
 
     // _starsScene->Create<Planet>();
+
+    auto skyboxQuad = _starsScene->Create<NSE::QuadVisual>();
+    auto skyboxShader = NSE::CreateObject<NSE::Shader>(L"Assets/Shaders/Skybox.hlsl");
+    skyboxShader->Compile();
+    auto skyboxMaterial = NSE::CreateObject<NSE::Material>(skyboxShader);
+    skyboxMaterial->SetDepthWrite(NSE::ShaderDepthState::Disabled);
+    skyboxMaterial->renderQueue = NSE::Material::RenderQueue::Background;
+    skyboxQuad->renderingMaterial = skyboxMaterial;
 }
 
 StarsCamera::~StarsCamera()

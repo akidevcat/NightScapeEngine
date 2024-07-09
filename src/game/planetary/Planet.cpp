@@ -1,21 +1,23 @@
 #include "Planet.h"
 
+#include <iostream>
+
 #include "PlanetMeshTools.h"
 #include "../../engine/servers/AssetServer.h"
 #include "../../engine/servers/RenderServer.h"
 
 using namespace NSE;
 
-Planet::Planet(const obj_ptr<Planet> &scaledPlanet, const obj_ptr<SceneEntity>& playerEntity)
+Planet::Planet(const obj_ptr<Planet> &mainPlanet, const obj_ptr<SceneEntity>& playerEntity)
 {
-    if (!scaledPlanet)
+    if (mainPlanet)
     {
         _isScaled = true;
+        _mainPlanet = mainPlanet;
     }
     else
     {
         _isScaled = false;
-        _scaledPlanet = scaledPlanet;
     }
 
     _player = playerEntity;
@@ -23,103 +25,162 @@ Planet::Planet(const obj_ptr<Planet> &scaledPlanet, const obj_ptr<SceneEntity>& 
 
 obj_ptr<Planet> Planet::Create(Scene *mainScene, Scene *scaledScene, const obj_ptr<SceneEntity>& playerEntity)
 {
-    auto scaledPlanet = scaledScene->Create<Planet>(nullptr, playerEntity);
-    auto mainPlanet = mainScene->Create<Planet>(scaledPlanet, playerEntity);
+    auto mainPlanet = mainScene->Create<Planet>(nullptr, playerEntity);
+    auto scaledPlanet = scaledScene->Create<Planet>(mainPlanet, playerEntity);
 
     return mainPlanet;
 }
 
 void Planet::OnCreated()
 {
+    if (_isScaled)
+    {
+        // required for queue
+        renderingMaterial = _mainPlanet->renderingMaterial;
+        return;
+    }
+
     mesh = AssetsServer::Get()->LoadMeshAsset("Assets/Models/IcosphereSmooth3.obj");
     auto shader = CreateObject<Shader>(L"Assets/Shaders/Planet.hlsl");
     shader->Compile();
     renderingMaterial = CreateObject<Material>(shader);
 
-    scale = float3{1,1,1} * 60000;
+    // renderingMaterial->SetFloat(ShaderUtils::PropertyToID("_IsScaledInstance"), 0.0f);
+    // renderingMaterial->SetFloat(ShaderUtils::PropertyToID("_Scaling"), 1.0f);
+    // renderingMaterial->SetFloat(ShaderUtils::PropertyToID("_IsScaledInstance"), 1.0f);
+    // renderingMaterial->SetFloat(ShaderUtils::PropertyToID("_Scaling"), 1000.0f);
+
+    _chunkDrawBuffer = CreateObject<GraphicsBuffer>(GraphicsBuffer::Target::Constant, sizeof(ChunkDrawBufferData));
+    renderingMaterial->SetConstantBuffer(ShaderUtils::PropertyToID("ChunkDrawBuffer"), _chunkDrawBuffer);
+
+    // scale = float3{1,1,1} * 60000;
     position = Vector3d{0,0, 1} * 100000 * 1;
 
     // Create lod 0 chunks
-    if (_isScaled)
+    for (char i = 0; i < 6; i++)
     {
-        for (char i = 0; i < 6; i++)
-        {
-            AllocateChunk(init_cid(i));
-            SubdivideChunk(init_cid(i));
-        }
+        auto id = init_cid(i);
+        SetupChunk(AllocateChunk(id), id);
     }
 }
 
 void Planet::OnUpdate()
 {
-    float scaling = _isScaled ? 10000.0f : 1.0f;
+    if (_isScaled)
+    {
+        return;
+    }
 
     for (const auto& chunkPair : _activeChunks)
     {
         const auto& chunk = chunkPair.second;
 
+        float scaling = (chunk.lodLevel <= _maxScaledLodLevel) ? 1000.0f : 1.0f;
+
         auto lod = cid_to_lod(chunk.ID);
 
-        if (lod >= _maxScaledLodLevel)
+        // if (lod >= _maxScaledLodLevel)
+        //     continue;
+
+        if (lod >= _maxLodLevel)
             continue;
 
+        auto flCanDivide = chunk.childrenMaxLodLevel - chunk.lodLevel == 0;
+        auto flCanMerge = chunk.childrenMaxLodLevel - chunk.lodLevel == 1;
+
+        if (!flCanDivide && !flCanMerge)
+        {
+            continue;
+        }
+
         double playerDistance = length(position + chunk.position * scaling - _player->position);
-        float divisionThreshold = _planetRadius / 1.0f * powf(0.5f, lod);
+        float divisionThreshold = _planetRadius / 0.25f * powf(0.5f, lod);
 
         if (playerDistance < divisionThreshold)
         {
-            if (!chunk.hasChildren)
+            if (flCanDivide)
             {
                 SubdivideChunk(chunk.ID);
             }
         }
         else if (playerDistance > divisionThreshold * 2.0f)
         {
-            // ToDo check for children' children
-            MergeChunk(chunk.ID);
+            if (flCanMerge)
+            {
+                MergeChunk(chunk.ID);
+            }
         }
     }
-}
 
-static DirectX::XMVECTOR FACE_ROTATIONS[6] =
-{
-    DirectX::XMQuaternionRotationRollPitchYaw(0, 0, 0),
-    DirectX::XMQuaternionRotationRollPitchYaw(DirectX::XM_PIDIV2, 0, 0),
-    DirectX::XMQuaternionRotationRollPitchYaw(DirectX::XM_PI, 0, 0),
-    DirectX::XMQuaternionRotationRollPitchYaw(-DirectX::XM_PIDIV2, 0, 0),
-    DirectX::XMQuaternionRotationRollPitchYaw(0, DirectX::XM_PIDIV2, 0),
-    DirectX::XMQuaternionRotationRollPitchYaw(0, -DirectX::XM_PIDIV2, 0),
-};
-
-void Planet::RenderEntity(const obj_ptr<NSE::Camera> &camera)
-{
-    if (!mesh)
+    for (auto& it : _deallocatingChunks)
     {
-        return;
+        DeallocateChunkNow(it);
     }
 
-    float scaling = _isScaled ? 1.0f / 10000.0f : 1.0f;
+    _deallocatingChunks.clear();
+}
 
-
+void Planet::RenderEntityScaled(const obj_ptr<NSE::Camera> &camera)
+{
+    float scaling = 1.0f / 1000.0f;
 
     for (const auto& chunkPair : _activeChunks)
     {
         const auto& chunk = chunkPair.second;
 
-        if (chunk.hasChildren)
+        if (chunk.lodLevel > _maxScaledLodLevel)
+        {
+            continue; // This is a non-scaled chunk
+        }
+
+        // if (chunk.childrenMaxLodLevel != chunk.lodLevel && chunk.lodLevel != _maxScaledLodLevel)
+        if (chunk.childrenMaxLodLevel != chunk.lodLevel)
             continue;
 
         auto positionCS = (float3)((position + chunk.position / scaling - camera->position) * scaling);
-        // auto sc = scale;
-
-        // positionCS *= scaling;
-        // sc *= scaling;
-
-        // auto s = XMLoadFloat3(&sc);
         auto p = XMLoadFloat3(&positionCS);
+        auto matrix = XMMatrixAffineTransformation(DirectX::g_XMOne, DirectX::g_XMZero, rotation, p);
 
-        auto matrix = DirectX::XMMatrixAffineTransformation(DirectX::g_XMOne, DirectX::g_XMZero, rotation, p);
+        auto drawData = _chunkDrawBuffer->As<ChunkDrawBufferData>();
+        drawData->chunkScaling = 1000.0f;
+        drawData->chunkPosition = (float3)chunk.position;
+        _chunkDrawBuffer->Upload();
 
+        // RenderServer::Get()->DrawMesh(chunk.mesh, renderingMaterial, matrix, camera, GetUID());
+        RenderServer::Get()->DrawMesh(chunk.mesh, renderingMaterial, matrix, camera, GetUID());
+    }
+}
+
+void Planet::RenderEntity(const obj_ptr<NSE::Camera> &camera)
+{
+    if (_isScaled)
+    {
+        _mainPlanet->RenderEntityScaled(camera);
+        return;
+    }
+
+    for (const auto& chunkPair : _activeChunks)
+    {
+        const auto& chunk = chunkPair.second;
+
+        if (chunk.lodLevel <= _maxScaledLodLevel)
+        {
+            continue; // This is a scaled chunk
+        }
+
+        if (chunk.childrenMaxLodLevel != chunk.lodLevel)
+            continue;
+
+        auto positionCS = (float3)(position + chunk.position - camera->position);
+        auto p = XMLoadFloat3(&positionCS);
+        auto matrix = XMMatrixAffineTransformation(DirectX::g_XMOne, DirectX::g_XMZero, rotation, p);
+
+        auto drawData = _chunkDrawBuffer->As<ChunkDrawBufferData>();
+        drawData->chunkScaling = 1.0f;
+        drawData->chunkPosition = (float3)chunk.position;
+        _chunkDrawBuffer->Upload();
+
+        // RenderServer::Get()->DrawMesh(chunk.mesh, renderingMaterial, matrix, camera, GetUID());
         RenderServer::Get()->DrawMesh(chunk.mesh, renderingMaterial, matrix, camera, GetUID());
     }
 
@@ -129,17 +190,17 @@ Planet::Chunk Planet::CreateChunk(ChunkID id)
 {
     auto lodLevel = cid_to_lod(id);
     auto faceID = cid_to_face(id);
-    float radius = _isScaled ? _planetRadius / 10000.0f : _planetRadius;
 
     Chunk result;
 
-    result.ID = id;
-    result.mesh = PlanetMeshTools::CreateChunkMesh(id, _chunkResolution, radius, result.position);
+    result.isSetup = false;
+    result.mesh = PlanetMeshTools::CreateChunkMesh(_chunkResolution);
+    result.position = {};
 
     return result;
 }
 
-Planet::Chunk Planet::AllocateChunk(ChunkID id)
+Planet::Chunk& Planet::AllocateChunk(ChunkID id)
 {
     auto foundChunk = _activeChunks.find(id);
 
@@ -150,19 +211,66 @@ Planet::Chunk Planet::AllocateChunk(ChunkID id)
     {
         // actually create chunk
         auto result = CreateChunk(id);
-        _activeChunks.emplace(id, result);
-        return result;
+        result.isDeallocated = false;
+        auto it = _activeChunks.emplace(id, result);
+        return it.first->second;
     }
 
     auto result = _inactiveChunks.back();
+    result.isDeallocated = false;
     _inactiveChunks.pop_back();
-    _activeChunks.emplace(id, result);
-    return result;
+    auto it = _activeChunks.emplace(id, result);
+    return it.first->second;
 }
 
-void Planet::DeallocateChunk(ChunkID id)
+Planet::Chunk& Planet::DeallocateChunk(ChunkID id)
 {
+    auto chunkIt = _activeChunks.find(id);
+    assert(chunkIt != _activeChunks.end());
 
+    chunkIt->second.isDeallocated = true;
+    auto& chunk = _deallocatingChunks.emplace_back(chunkIt->second.ID);
+
+    return chunkIt->second;
+}
+
+Planet::Chunk& Planet::DeallocateChunkNow(ChunkID id)
+{
+    auto chunkIt = _activeChunks.find(id);
+    assert(chunkIt != _activeChunks.end());
+
+    auto& it = _inactiveChunks.emplace_back(chunkIt->second);
+    _activeChunks.erase(chunkIt);
+
+    it.isDeallocated = true;
+
+    return it;
+}
+
+void Planet::SetupChunk(Chunk &chunk, ChunkID id)
+{
+    chunk.ID = id;
+    chunk.lodLevel = cid_to_lod(id);
+    chunk.faceID = cid_to_face(id);
+    chunk.hasChildren = false;
+
+    float radius = (chunk.lodLevel <= _maxScaledLodLevel) ? _planetRadius / 1000.0f : _planetRadius;
+
+    PlanetMeshTools::SetupChunkMesh(chunk.mesh, id, _chunkResolution, radius, chunk.position);
+
+    chunk.childrenMaxLodLevel = chunk.lodLevel;
+    chunk.isSetup = true;
+}
+
+void Planet::ClearChunk(Chunk &chunk)
+{
+    assert(chunk.isDeallocated);
+
+    chunk.position = {};
+    chunk.lodLevel = 0;
+    chunk.faceID = 0;
+    chunk.ID = UINT_MAX;
+    chunk.childrenMaxLodLevel = 0;
 }
 
 void Planet::SubdivideChunk(ChunkID id)
@@ -174,13 +282,53 @@ void Planet::SubdivideChunk(ChunkID id)
     {
         auto childID = next_cid(id, i);
 
-        AllocateChunk(childID);
+        SetupChunk(AllocateChunk(childID), childID);
     }
 
-    chunkIt->second.hasChildren = true;
+    auto lod = cid_to_lod(id);
+    auto maxLod = (char)(lod + 1);
+    auto parentID = id;
+
+    do
+    {
+        chunkIt = _activeChunks.find(parentID);
+        assert(chunkIt != _activeChunks.end());
+        chunkIt->second.hasChildren = true;
+        chunkIt->second.childrenMaxLodLevel = maxLod;
+        lod--;
+        parentID = previous_cid(parentID);
+    }
+    while (lod > 0);
 }
 
 void Planet::MergeChunk(ChunkID id)
 {
+    auto chunkIt = _activeChunks.find(id);
+    assert(chunkIt != _activeChunks.end());
 
+    auto& chunk = chunkIt->second;
+
+    assert(chunk.childrenMaxLodLevel > chunk.lodLevel);
+
+    for (char i = 0; i < 4; i++)
+    {
+        auto childID = next_cid(id, i);
+
+        ClearChunk(DeallocateChunk(childID));
+    }
+
+    auto lod = cid_to_lod(id);
+    auto maxLod = lod;
+    auto parentID = id;
+
+    do
+    {
+        chunkIt = _activeChunks.find(parentID);
+        assert(chunkIt != _activeChunks.end());
+        chunkIt->second.hasChildren = true;
+        chunkIt->second.childrenMaxLodLevel = maxLod;
+        lod--;
+        parentID = previous_cid(parentID);
+    }
+    while (lod > 0);
 }

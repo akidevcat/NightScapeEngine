@@ -18,14 +18,25 @@ public:
 
     struct Chunk
     {
+        bool isSetup = false;
+        bool isDeallocated = true;
         ChunkID ID{0};
+        char lodLevel;
+        char faceID;
         NSE::Vector3d position{};
         obj_ptr<NSE::Mesh> mesh = nullptr;
         bool hasChildren = false;
+        char childrenMaxLodLevel;
+    };
+
+    struct ChunkDrawBufferData
+    {
+        float chunkScaling;
+        float3 chunkPosition;
     };
 
 public:
-    explicit Planet(const obj_ptr<Planet>& scaledPlanet, const obj_ptr<SceneEntity>& playerEntity);
+    explicit Planet(const obj_ptr<Planet>& mainPlanet, const obj_ptr<SceneEntity>& playerEntity);
 
     static obj_ptr<Planet> Create(NSE::Scene* mainScene, NSE::Scene* scaledScene, const obj_ptr<SceneEntity>& playerEntity);
 
@@ -52,6 +63,16 @@ public:
         return parentID;
     }
 
+    static ChunkID previous_cid(ChunkID childID)
+    {
+        // Decrease lod level by one
+        childID -= 0b1 << 24;
+        // Clear subdivision quarter
+        char lodLevel = cid_to_lod(childID);
+        childID &= ~(0b11 << (lodLevel * 2)); // Clear subdivision quarter value
+        return childID;
+    }
+
     static ChunkID init_cid(char faceID)
     {
         ChunkID result = 0;
@@ -63,25 +84,35 @@ public:
 
 protected:
     Chunk CreateChunk(ChunkID id);
-    Chunk AllocateChunk(ChunkID id);
-    void DeallocateChunk(ChunkID id);
+    Chunk& AllocateChunk(ChunkID id);
+    Chunk& DeallocateChunk(ChunkID id);
+    Chunk& DeallocateChunkNow(ChunkID id);
+    void SetupChunk(Chunk& chunk, ChunkID id);
+    void ClearChunk(Chunk& chunk);
     void SubdivideChunk(ChunkID id);
     void MergeChunk(ChunkID id);
 
     void OnCreated() override;
     void OnUpdate() override;
 
+    void RenderEntityScaled(const NSE_Camera& camera);
+
 private:
     bool _isScaled = false;
-    obj_ptr<Planet> _scaledPlanet = nullptr;
+    obj_ptr<Planet> _mainPlanet = nullptr;
     obj_ptr<SceneEntity> _player = nullptr;
-    int _maxLodLevel = 8; // Should be less than 14
-    int _maxScaledLodLevel = 4;
+    int _maxLodLevel = 10; // Should be less than 14
+    int _maxScaledLodLevel = 8;
     int _chunkResolution = 16;
     float _planetRadius = 60000.0f;
 
+    NSE_GraphicsBuffer _chunkDrawBuffer = nullptr;
+    // NSE_Material _scaledMaterial = nullptr;
+    // NSE_Material _mainMaterial = nullptr;
+
     std::vector<Chunk> _inactiveChunks;
     std::unordered_map<ChunkID, Chunk> _activeChunks;
+    std::vector<ChunkID> _deallocatingChunks;
 };
 
 #endif //PLANET_H

@@ -153,7 +153,7 @@ void ShipController::OnUpdate()
     if (_isShiftSpaceActive)
     {
         // _shipVelocity = Forward() * 30000;
-        _shipVelocity = targetVelocity * 3000;
+        _shipVelocity = targetVelocity * 500;
         // _camMomentumX = 0.0f;
         // _camMomentumY = 0.0f;
     }

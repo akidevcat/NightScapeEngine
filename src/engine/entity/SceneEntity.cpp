@@ -11,7 +11,6 @@ XMMATRIX NSE::SceneEntity::GetModelMatrix(Vector3d relativeTo, float scaling) co
     auto positionCS = (XMFLOAT3)((position - relativeTo) * scaling);
     auto sc = scale;
 
-    // positionCS *= scaling;
     sc *= scaling;
 
     auto s = XMLoadFloat3(&sc);

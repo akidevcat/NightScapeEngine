@@ -37,28 +37,15 @@ TextPixelInput VertexMain(TextVertexInput input)
 
     output.uv = float2(vPosOS.x, vPosOS.y) * 0.5 + 0.5;
 
-//     output.position = TransformObjectToView(positionOS);
-//     output.position.xyz += vPosOS * size;
-//     output.position = TransformViewToClip(output.position.xyz);
-
-
-//     if (_IsScreenSpace)
-//     {
-//         output.position = TransformObjectToWorld(input.position);
-//     }
-
-    uint stripLeftPx = 4;
-    uint stripRightPx = 4;
+    uint stripLeftPx = 0;
+    uint stripRightPx = 0;
 
     uint2 charSizePx = (uint2)_TextImage_AtlasParams.xy;
     charSizePx.x -= stripLeftPx + stripRightPx;
     uint2 lineSizePx = charSizePx * uint2(_TextLength, 1);
 
-//     output.position += _TextLineIndex * float4(0, -2.0f, 0, 0);
     output.position = TransformObjectToClip_PixelPerfect(vPosOS, uint2(lineSizePx));
 
-//     output.uv.y = 1.0 - output.uv.y;
-//     output.uv.xy = _Image_AtlasParams.xy + _Image_AtlasParams.zw * output.uv.xy;
     output.uv.y = 1.0 - output.uv.y;
 
     return output;
@@ -74,10 +61,10 @@ float4 PixelMain(TextPixelInput input) : SV_TARGET
     uv = TransformUV_PixelPerfect(uv, lineSizePx);
 
     uint charIndex = (uint)(uv.x * _TextLength);
-    uint charData = _TextBuffer[charIndex];
+    uint charData = _TextBuffer[charIndex] - 32;
 
     uint charAtlasIndexX = charData % charAtlasCount.x;
-    uint charAtlasIndexY = charData / charAtlasCount.y;
+    uint charAtlasIndexY = charData / charAtlasCount.x;
 
     uv.x *= _TextLength;
     uv.x %= 1.0;
@@ -85,11 +72,11 @@ float4 PixelMain(TextPixelInput input) : SV_TARGET
     uint charStartXPx = charAtlasIndexX * charSizePx.x;
     uint charStartYPx = charAtlasIndexY * charSizePx.y;
 
-    uint stripLeftPx = 4;
-    uint stripRightPx = 4;
+    uint stripLeftPx = 0;
+    uint stripRightPx = 0;
 
-    uv.x = (charStartXPx + uv.x * (charSizePx.x - stripRightPx - stripLeftPx) + stripLeftPx) / (_TextImage_AtlasParams.z - 1);
-    uv.y = (charStartYPx + uv.y * charSizePx.y) / (_TextImage_AtlasParams.w - 1);
+    uv.x = (charStartXPx + uv.x * (charSizePx.x - stripRightPx - stripLeftPx) + stripLeftPx) / (_TextImage_AtlasParams.z);
+    uv.y = (charStartYPx + uv.y * charSizePx.y) / (_TextImage_AtlasParams.w);
 
     float4 color = SAMPLE_TEXTURE2D_POINT(_TextImage, uv);
 

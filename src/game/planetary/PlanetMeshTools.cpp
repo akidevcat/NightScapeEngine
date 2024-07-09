@@ -43,10 +43,16 @@ inline void ApplyFaceRotation(Vector3d& value, char faceID)
     }
 }
 
-obj_ptr<Mesh> PlanetMeshTools::CreateChunkMesh(uint32_t chunkID, int resolution, float radius, Vector3d& chunkPivot)
+obj_ptr<Mesh> PlanetMeshTools::CreateChunkMesh(int resolution)
 {
     auto mesh = CreateObject<Mesh>(resolution * resolution, (resolution - 1) * (resolution - 1) * 6);
 
+    return mesh;
+}
+
+void PlanetMeshTools::SetupChunkMesh(const obj_ptr<NSE::Mesh>& mesh, uint32_t chunkID, int resolution, float radius,
+    NSE::Vector3d &chunkPivot)
+{
     double scale = 1.0;
     double offsetX = 0.0;
     double offsetY = 0.0;
@@ -104,6 +110,9 @@ obj_ptr<Mesh> PlanetMeshTools::CreateChunkMesh(uint32_t chunkID, int resolution,
 
             v = normalize(v);
 
+            // generate height
+
+
             auto n = (float3)v;
 
             v *= radius;
@@ -134,6 +143,4 @@ obj_ptr<Mesh> PlanetMeshTools::CreateChunkMesh(uint32_t chunkID, int resolution,
     mesh->Upload();
 
     chunkPivot = pivot;
-
-    return mesh;
 }

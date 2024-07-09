@@ -58,12 +58,6 @@ void Game::Start()
     _presentPlane = _presentScene->Create<QuadVisual>();
     _presentPlane->renderingMaterial = _presentMaterial;
 
-    // auto camera = _scene->Create<FreeCamera>();
-    // camera->targetScene = _scene;
-    // camera->SetParams(_engine->GetScreenAspect(), 60.0f, 0.1f, 1000.0f, false, 0.0f);
-    // camera->position = {0, 0, -1};
-    // camera->clearMode = CAMERA_CLEAR_MODE_DEPTH;
-
     _testShader = CreateObject<Shader>(L"Assets/Shaders/Triangle.hlsl");
     _testShader->Compile();
 
@@ -73,7 +67,6 @@ void Game::Start()
     _triangle->renderingMaterial = _testMaterial;
     _triangle->position = {0, 0, 6};
 
-    // _cameraRT = CreateObject<RenderTexture>(120, 90, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_D24_UNORM_S8_UINT);
     _renderColorRT = CreateObject<RenderTexture>(120, 90, DXGI_FORMAT_R8G8B8A8_UNORM, false);
     _renderDepthRT = CreateObject<RenderTexture>(120, 90, DXGI_FORMAT_D24_UNORM_S8_UINT, true);
 
@@ -108,9 +101,9 @@ void Game::Start()
     marker->color = {1, 0.4, 0, 1};
     marker->position = _triangle->position;
 
-    // auto text = _scene->Create<TextVisual>();
+    auto text = _scene->Create<TextVisual>();
     // text->SetText("Fuel: 37u");
-    // text->SetText("12345");
+    text->SetText("12345");
 
     Planet::Create(_scene, starsCamera->GetStarsScene(), controller);
 }

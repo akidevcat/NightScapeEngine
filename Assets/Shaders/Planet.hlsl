@@ -2,6 +2,12 @@
 #include "ShaderLibrary/Lighting.hlsl"
 #include "ShaderLibrary/Noise.hlsl"
 
+cbuffer ChunkDrawBuffer
+{
+    float _ChunkScaling;
+    float3 _ChunkPosition;
+};
+
 DefaultPixelInput VertexMain(DefaultVertexInput input)
 {
     DefaultPixelInput output;
@@ -22,7 +28,7 @@ float4 PixelMain(DefaultPixelInput input) : SV_TARGET
 
     float4 result = float4(0.25, 0.17, 0.17, 1) * 1.25;
 
-    float n = VNoiseD3FBM(input.positionRS.xyz * 5.0, 3, 0.5, 2.0).x;
+    float n = VNoiseD3FBM((input.positionRS.xyz + _ChunkPosition) * (_ChunkScaling * 0.0001), 3, 0.5, 2.0).x;
     n = saturate(n);
     n = Dither(n, screenPos);
 

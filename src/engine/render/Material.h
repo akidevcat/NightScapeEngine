@@ -18,16 +18,18 @@
 
 namespace NSE
 {
-    enum MATERIAL_RENDER_QUEUE : short
-    {
-        MATERIAL_RENDER_QUEUE_BACKGROUND = -1000,
-        MATERIAL_RENDER_QUEUE_OPAQUE = 0,
-        MATERIAL_RENDER_QUEUE_TRANSPARENT = 1000,
-        MATERIAL_RENDER_QUEUE_OVERLAY = 2000
-    };
+
 
     class Material : public Object
     {
+    public:
+        enum class RenderQueue : unsigned short
+        {
+            Background = 10000,
+            Opaque = 20000,
+            Transparent = 30000,
+            Overlay = 40000
+        };
     public:
         explicit Material(const NSE_Shader& shader);
         ~Material() override;
@@ -76,7 +78,7 @@ namespace NSE
         void MakeInvert();
 
     public:
-        int               renderQueue = MATERIAL_RENDER_QUEUE_OPAQUE;
+        RenderQueue renderQueue = RenderQueue::Opaque;
 
     private:
         NSE_Shader       _shader = nullptr;
