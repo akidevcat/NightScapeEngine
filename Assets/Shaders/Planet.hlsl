@@ -26,17 +26,21 @@ float4 PixelMain(DefaultPixelInput input) : SV_TARGET
     float2 uv = input.uv;
     uint2 screenPos = GetScreenPos(input.position.xy);
 
-    float4 result = float4(0.25, 0.17, 0.17, 1) * 1.25;
+    float4 result = float4(0.804, 0.541, 0.91, 1) * 1.25;
 
     float n = VNoiseD3FBM((input.positionRS.xyz + _ChunkPosition) * (_ChunkScaling * 0.0001), 3, 0.5, 2.0).x;
     n = saturate(n);
     n = Dither(n, screenPos);
 
-    float lightIntensity = dot(normalize(input.normalRS.xyz), normalize(float3(1, 0, -0.7)));
+    float3 normal = -normalize(cross(ddx(input.positionRS.xyz), ddy(input.positionRS.xyz)));
+    normal = TransformObjectToWorldDirection(normal);
+
+//     float lightIntensity = dot(normalize(input.normalRS.xyz), normalize(float3(1, 0, -0.7)));
+    float lightIntensity = dot(normal, normalize(float3(1, 0, -0.7)));
     lightIntensity = smoothstep(-0.2, 0.6, lightIntensity);
     lightIntensity = Dither(lightIntensity, screenPos);
 
-    result.rgb = lightIntensity * float3(0.4, 0.5, 0.9) * 1.3 * n;
+    result.rgb = lightIntensity * float3(0.773, 0.404, 0.922) * 1.3 * n;
 
 //     return float4(uv, 0, 1);
     return float4(result.rgb, 1.0);

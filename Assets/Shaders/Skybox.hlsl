@@ -40,7 +40,7 @@ float4 PixelMain(PixelInput input) : SV_TARGET
     layer0 = saturate(layer0 - 0.6) / 0.4;
     layer0 = Dither(layer0 * 0.6, screenPos, 5, 0.3);
 
-    float layer1 = VNoiseD3FBM(dir * 2.0 + 48.214 + 2.0 * abs(VNoiseD3FBM(dir * 2.0, 4, 0.5, 1.5).x - 0.5), 3, 0.75, 3.0).x;
+    float layer1 = VNoiseD3FBM(dir * 2.0 + 48.214 + 1.0 * abs(VNoiseD3FBM(dir * 8.0, 4, 0.5, 1.5).x - 0.5), 3, 0.75, 3.0).x;
     layer1 = saturate(layer1 - 0.5) / 0.5;
 //     layer1 = Dither(layer1 * 0.6, uint2(hash13(dir + 12.421) * 10000, hash13(dir + 56.123) * 10000), 5, 0.3);
 //     layer1 *= VNoiseD3FBM(dir * 100.0 + 418.214, 1, 0.75, 2.3).x;

@@ -8,6 +8,7 @@ RadarParticleSystem::RadarParticleSystem(): ParticleSystem(128, sizeof(Particle)
     auto shader = CreateObject<Shader>(L"Assets/Shaders/RadarParticle.hlsl");
     shader->Compile();
     renderingMaterial = CreateObject<Material>(shader);
+    renderingMaterial->renderQueue = Material::RENDER_QUEUE_OVERLAY;
 }
 
 void RadarParticleSystem::AddTarget(const NSE_SceneEntity& target, float4 color)

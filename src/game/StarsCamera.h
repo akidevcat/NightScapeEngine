@@ -2,6 +2,7 @@
 #define STARSCAMERA_H
 
 #include "ShipController.h"
+#include "SkyboxStarsParticles.h"
 #include "StarDustParticles.h"
 #include "../engine/entity/Camera.h"
 #include "../engine/entity/QuadVisual.h"
@@ -22,6 +23,7 @@ private:
     NSE_Material _quadMaterial;
     NSE_Shader _quadShader;
     obj_ptr<StarDustParticles> _particles = nullptr;
+    obj_ptr<SkyboxStarsParticles> _starsParticles = nullptr;
     obj_ptr<ShipController> _shipController = nullptr;
 };
 

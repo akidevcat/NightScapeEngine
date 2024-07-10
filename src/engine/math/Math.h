@@ -107,6 +107,9 @@ namespace NSE
         // constexpr DirectX::XMVECTOR ZeroVector
     public:
         static float Random();
+        static unsigned int MurmurHash13(unsigned int x, unsigned int y, unsigned int z);
+        static float Hash13(float3 value);
+        static float Noise3D(float3 pos);
     };
 
     float length(float3 v);

@@ -1,5 +1,6 @@
 #include "PlanetMeshTools.h"
 
+#include "../../engine/addon/FastNoiseLite.h"
 #include "../../engine/math/Math.h"
 #include "../../engine/servers/ObjectServer.h"
 
@@ -53,6 +54,16 @@ obj_ptr<Mesh> PlanetMeshTools::CreateChunkMesh(int resolution)
 void PlanetMeshTools::SetupChunkMesh(const obj_ptr<NSE::Mesh>& mesh, uint32_t chunkID, int resolution, float radius,
     NSE::Vector3d &chunkPivot)
 {
+    FastNoiseLite noise;
+    noise.SetNoiseType(FastNoiseLite::NoiseType_OpenSimplex2);
+
+    noise.SetSeed(0);
+    noise.SetFrequency(2.0f);
+    noise.SetFractalType(FastNoiseLite::FractalType_FBm);
+    noise.SetFractalOctaves(4);
+    noise.SetFractalGain(0.8f);
+    noise.SetFractalLacunarity(1.8f);
+
     double scale = 1.0;
     double offsetX = 0.0;
     double offsetY = 0.0;
@@ -110,12 +121,16 @@ void PlanetMeshTools::SetupChunkMesh(const obj_ptr<NSE::Mesh>& mesh, uint32_t ch
 
             v = normalize(v);
 
-            // generate height
 
 
             auto n = (float3)v;
 
-            v *= radius;
+            // generate height
+            float height = noise.GetNoise(n.x, n.y, n.z) * 0.5f + 0.5f;
+            height *= (radius * 0.02f);
+            height = 0;
+
+            v *= radius + height;
             v -= pivot;
 
             VertexData vd;

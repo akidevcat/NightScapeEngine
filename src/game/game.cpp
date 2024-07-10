@@ -103,7 +103,7 @@ void Game::Start()
 
     auto text = _scene->Create<TextVisual>();
     // text->SetText("Fuel: 37u");
-    text->SetText("12345");
+    text->SetText("FUEL:37%");
 
     Planet::Create(_scene, starsCamera->GetStarsScene(), controller);
 }

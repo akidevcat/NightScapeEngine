@@ -23,30 +23,31 @@ StarsCamera::StarsCamera(const NSE_Camera& parentCamera, const obj_ptr<ShipContr
 
     this->CopyParams(parentCamera);
 
-    _quadShader = NSE::CreateObject<NSE::Shader>(L"Assets/Shaders/StarQuad.hlsl");
-    _quadShader->Compile();
-    _quadMaterial = NSE::CreateObject<NSE::Material>(_quadShader);
-    _quadMaterial->MakeAdditive();
-    _quadMaterial->SetUnsignedInt(sid_PixelSizeX, 5*3);
-    _quadMaterial->SetUnsignedInt(sid_PixelSizeY, 9*3);
+    // _quadShader = NSE::CreateObject<NSE::Shader>(L"Assets/Shaders/StarQuad.hlsl");
+    // _quadShader->Compile();
+    // _quadMaterial = NSE::CreateObject<NSE::Material>(_quadShader);
+    // _quadMaterial->MakeAdditive();
+    // _quadMaterial->SetUnsignedInt(sid_PixelSizeX, 5*3);
+    // _quadMaterial->SetUnsignedInt(sid_PixelSizeY, 9*3);
 
-    for (int i = 0; i < 100; i++)
-    {
-        auto quad = _starsScene->Create<NSE::QuadVisual>();
-
-        auto rot = DirectX::XMQuaternionRotationRollPitchYaw(NSE::Math::Random() * 2.0f * DirectX::XM_PI, NSE::Math::Random() * 2.0f * DirectX::XM_PI, 0);
-        quad->position = DirectX::XMMatrixRotationQuaternion(rot).r[2];
-        quad->rotation = rot;
-        // quad->position = DirectX::XMVector3Rotate({-1, 0, 0}, rot);
-        quad->position *= 1000.0f;
-        quad->scale = {1, 1, 1};
-
-        // quad->position = {0, 0, 0.5};
-        quad->renderingMaterial = _quadMaterial;
-        _largeStars.emplace_back(quad);
-    }
+    // for (int i = 0; i < 100; i++)
+    // {
+    //     auto quad = _starsScene->Create<NSE::QuadVisual>();
+    //
+    //     auto rot = DirectX::XMQuaternionRotationRollPitchYaw(NSE::Math::Random() * 2.0f * DirectX::XM_PI, NSE::Math::Random() * 2.0f * DirectX::XM_PI, 0);
+    //     quad->position = DirectX::XMMatrixRotationQuaternion(rot).r[2];
+    //     quad->rotation = rot;
+    //     // quad->position = DirectX::XMVector3Rotate({-1, 0, 0}, rot);
+    //     quad->position *= 1000.0f;
+    //     quad->scale = {1, 1, 1};
+    //
+    //     // quad->position = {0, 0, 0.5};
+    //     quad->renderingMaterial = _quadMaterial;
+    //     _largeStars.emplace_back(quad);
+    // }
 
     _particles = _starsScene->Create<StarDustParticles>();
+    _starsParticles = _starsScene->Create<SkyboxStarsParticles>();
 
     _shipController = controller;
     // _particles->position += {0, 0, 1};
@@ -58,7 +59,7 @@ StarsCamera::StarsCamera(const NSE_Camera& parentCamera, const obj_ptr<ShipContr
     skyboxShader->Compile();
     auto skyboxMaterial = NSE::CreateObject<NSE::Material>(skyboxShader);
     skyboxMaterial->SetDepthWrite(NSE::ShaderDepthState::Disabled);
-    skyboxMaterial->renderQueue = NSE::Material::RenderQueue::Background;
+    skyboxMaterial->renderQueue = NSE::Material::RENDER_QUEUE_BACKGROUND;
     skyboxQuad->renderingMaterial = skyboxMaterial;
 }
 
@@ -67,14 +68,14 @@ StarsCamera::~StarsCamera()
     // ToDo
     // NSE::SceneServer::Get()->UnloadScene(_starsScene->GetUID());
 
-    for (const auto& quad : _largeStars)
-    {
-        if (quad) // ToDo why?
-        _starsScene->Destroy(quad);
-    }
+    // for (const auto& quad : _largeStars)
+    // {
+    //     if (quad) // ToDo why?
+    //     _starsScene->Destroy(quad);
+    // }
 
-    NSE::DestroyObject(_quadMaterial);
-    NSE::DestroyObject(_quadShader);
+    // NSE::DestroyObject(_quadMaterial);
+    // NSE::DestroyObject(_quadShader);
 }
 
 void StarsCamera::OnUpdate()
@@ -90,4 +91,5 @@ void StarsCamera::OnUpdate()
     position = _parentCamera->position;
 
     _particles->velocity = (float3)_shipController->GetShipVelocity();
+    _starsParticles->position = position;
 }

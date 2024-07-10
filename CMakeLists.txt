@@ -135,6 +135,9 @@ add_executable(${PROJECT_NAME} WIN32
         src/engine/ecs/Entity.h
         src/game/planetary/PlanetMeshTools.cpp
         src/game/planetary/PlanetMeshTools.h
+        src/game/SkyboxStarsParticles.cpp
+        src/game/SkyboxStarsParticles.h
+        src/engine/addon/FastNoiseLite.h
 )
 
 target_link_libraries(${PROJECT_NAME} d3d9 d3d11 d3dcompiler dinput8 dxguid)

@@ -94,7 +94,7 @@ void Planet::OnUpdate()
         }
 
         double playerDistance = length(position + chunk.position * scaling - _player->position);
-        float divisionThreshold = _planetRadius / 0.25f * powf(0.5f, lod);
+        float divisionThreshold = _planetRadius / 0.4f * powf(0.5f, lod);
 
         if (playerDistance < divisionThreshold)
         {
