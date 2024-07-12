@@ -33,7 +33,7 @@ float4 GetBasicLighting(float3 positionCS, float3 normalRS, uint2 screenPos)
 
         float intensity = (_GlobalLights[i].Intensity / (dot(deltaPosition, deltaPosition) + _GlobalLights[i].Color.w)) * ndotl;
 
-        intensity = Dither(intensity, screenPos);
+        intensity = Dither(intensity, screenPos, 3, 0.03);
 
         result += intensity * float4(_GlobalLights[i].Color.xyz, 1.0);
     }

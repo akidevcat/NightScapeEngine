@@ -18,5 +18,5 @@ void NSE::VisualMeshEntity::RenderEntity(const NSE_Camera &camera)
         return;
     }
 
-    RenderServer::Get()->DrawMesh(mesh, renderingMaterial, GetModelMatrix(camera->position), camera, GetUID());
+    RenderServer::Get()->DrawMesh(mesh, renderingMaterial, GetModelMatrix(camera->position, renderingScaling), camera, GetUID());
 }

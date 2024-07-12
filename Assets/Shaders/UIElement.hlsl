@@ -31,8 +31,7 @@ DefaultPixelInput VertexMain(DefaultVertexInput input)
 
     output.uv = input.uv;
     output.uv.y = 1.0 - output.uv.y;
-    output.uv.xy = _Image_AtlasParams.xy + _Image_AtlasParams.zw * output.uv.xy;
-//     output.uv.y = 1.0 - output.uv.y;
+
 
     return output;
 }
@@ -40,11 +39,9 @@ DefaultPixelInput VertexMain(DefaultVertexInput input)
 float4 PixelMain(DefaultPixelInput input) : SV_TARGET
 {
     float2 uv = input.uv;
-//     float2 uv = TransformUV_PixelPerfect(input.uv, uint2(_Size));
+    uv = TransformUV_PixelPerfect(uv, uint2(_Size));
+    uv = _Image_AtlasParams.xy + _Image_AtlasParams.zw * uv.xy;
 
-//     return _Tint;
-
-//     return float4(uv, 0, 1);
     float4 color = SAMPLE_TEXTURE2D_POINT(_Image, uv);
 
     return color * _Tint;

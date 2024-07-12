@@ -51,18 +51,18 @@ obj_ptr<Mesh> PlanetMeshTools::CreateChunkMesh(int resolution)
     return mesh;
 }
 
-void PlanetMeshTools::SetupChunkMesh(const obj_ptr<NSE::Mesh>& mesh, uint32_t chunkID, int resolution, float radius,
+void PlanetMeshTools::SetupChunkMesh(const obj_ptr<NSE::Mesh>& mesh, uint32_t chunkID, int resolution, float radius, float maxHeight,
     NSE::Vector3d &chunkPivot)
 {
     FastNoiseLite noise;
-    noise.SetNoiseType(FastNoiseLite::NoiseType_OpenSimplex2);
+    noise.SetNoiseType(FastNoiseLite::NoiseType_Cellular);
 
     noise.SetSeed(0);
-    noise.SetFrequency(2.0f);
+    noise.SetFrequency(8.0f);
     noise.SetFractalType(FastNoiseLite::FractalType_FBm);
-    noise.SetFractalOctaves(4);
-    noise.SetFractalGain(0.8f);
-    noise.SetFractalLacunarity(1.8f);
+    noise.SetFractalOctaves(5);
+    noise.SetFractalGain(0.3f);
+    noise.SetFractalLacunarity(4.0f);
 
     double scale = 1.0;
     double offsetX = 0.0;
@@ -102,46 +102,60 @@ void PlanetMeshTools::SetupChunkMesh(const obj_ptr<NSE::Mesh>& mesh, uint32_t ch
     auto vertices = mesh->GetVertices();
     auto indices = mesh->GetIndices();
 
-    Vector3d pivot{offsetX, 0.5, offsetY};
+    static Vector3d verticesDouble[16 * 16];
+    assert(resolution <= 16);
 
-    ApplyFaceRotation(pivot, faceID);
+    Vector3d pivot{};
 
-    pivot = normalize(pivot) * radius;
+    // Vector3d pivot{offsetX, 0.5, offsetY};
+
+    // ApplyFaceRotation(pivot, faceID);
+    //
+    // pivot = normalize(pivot) * radius;
 
     for (int i = 0, y = 0; y < resolution; y++)
     {
         for (int x = 0; x < resolution; x++, i++)
         {
-            double nx = x / (double)(resolution - 1) - 0.5;
-            double ny = y / (double)(resolution - 1) - 0.5;
+            double nx = (x - 1) / (double)(resolution - 1 - 2) - 0.5;
+            double ny = (y - 1) / (double)(resolution - 1 - 2) - 0.5;
 
             Vector3d v{nx * scale + offsetX, 0.5, ny * scale + offsetY};
 
             ApplyFaceRotation(v, faceID);
 
+            float3 normal;
+
             v = normalize(v);
+            normal = (float3)v;
 
+            float height = noise.GetNoise(v.x, v.y, v.z) * 0.5f + 0.5f;
+            height *= maxHeight;
 
-
-            auto n = (float3)v;
-
-            // generate height
-            float height = noise.GetNoise(n.x, n.y, n.z) * 0.5f + 0.5f;
-            height *= (radius * 0.02f);
-            height = 0;
+            if (x == 0 || y == 0 || x == resolution - 1 || y == resolution - 1)
+                height -= maxHeight * 0.001f;
 
             v *= radius + height;
-            v -= pivot;
+
+            verticesDouble[i] = v;
+
+            pivot += v;
 
             VertexData vd;
 
             vd.color = {1,1,1,1};
-            vd.normal = n;
-            vd.position = (float3)v;
+            vd.normal = normal;
             vd.uv = float2((float)(nx + 0.5), (float)(ny + 0.5));
 
             vertices[i] = vd;
         }
+    }
+
+    pivot /= (resolution * resolution);
+
+    for (int i = 0; i < resolution * resolution; i++)
+    {
+        vertices[i].position = (float3)(verticesDouble[i] - pivot);
     }
 
     for (int ti = 0, vi = 0, y = 0; y < resolution - 1; y++, vi++)

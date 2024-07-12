@@ -27,6 +27,7 @@ public:
 private:
     float _integrity = 100.0f;
     float _fuel = 100.0f;
+    float _exposure = 50.0f;
 
     bool _isShiftSpaceActive = false;
     float _shiftSpaceActivationTimer = 0.0f;
@@ -43,6 +44,7 @@ private:
     obj_ptr<ShipRadarController> _shipRadar = nullptr;
     obj_ptr<NSE::ProgressBarVisual> _fuelBar = nullptr;
     obj_ptr<NSE::ProgressBarVisual> _integrityBar = nullptr;
+    obj_ptr<NSE::ProgressBarVisual> _exposureBar = nullptr;
     obj_ptr<NSE::SpriteVisual> _crosshair = nullptr;
     obj_ptr<NSE::TextVisual> _topText = nullptr;
 };

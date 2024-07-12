@@ -9,7 +9,7 @@ class PlanetMeshTools
 {
 public:
     static obj_ptr<NSE::Mesh> CreateChunkMesh(int resolution);
-    static void SetupChunkMesh(const obj_ptr<NSE::Mesh>& mesh, uint32_t chunkID, int resolution, float radius, NSE::Vector3d& chunkPivot);
+    static void SetupChunkMesh(const obj_ptr<NSE::Mesh>& mesh, uint32_t chunkID, int resolution, float radius, float maxHeight, NSE::Vector3d& chunkPivot);
 };
 
 #endif //PLANETMESHTOOLS_H

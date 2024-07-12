@@ -17,6 +17,8 @@ using namespace NSE;
 
 ShipController::ShipController(NSE::Scene* scene, float screenAspect)
 {
+    auto atlasUITexture = AssetsServer::Get()->LoadTextureAsset(L"Assets/Textures/UI_Atlas.dds");
+
     mesh = NSE::AssetsServer::Get()->LoadMeshAsset("Assets/Models/Cockpit.obj");
     auto renderingShader = NSE::CreateObject<NSE::Shader>(L"Assets/Shaders/Base.hlsl");
     renderingShader->Compile();
@@ -37,31 +39,52 @@ ShipController::ShipController(NSE::Scene* scene, float screenAspect)
 
     _cockpitLight = scene->Create<NSE::Light>();
     _cockpitLight->lightColor = {0.87f, 0.27f, 0.02f, 0.0f};
-    _cockpitLight->lightIntensity = 0.2;
+    _cockpitLight->lightIntensity = 0.25;
 
     _shipRadar = scene->Create<ShipRadarController>(scene);
     _shipRadar->scale = {0.6f, 0.6f, 0.6f};
 
-    auto* barVertices = new float3[3];
-    barVertices[0] = {-0.4, 0.2 - 0.03, 0};
-    barVertices[1] = {-0.4, 0 - 0.03, 0};
-    barVertices[2] = {-0.4, -0.2 - 0.03, 0};
-    _fuelBar = scene->Create<ProgressBarVisual>(barVertices, 3);
-    _fuelBar->foregroundColor = {0.04, 0.45, 1.0, 1.0f};
-    _fuelBar->backgroundColor = {0.04 / 4.0f, 0.45 / 4.0f, 1.0 / 4.0f, 0.1f};
-    _fuelBar->renderingMaterial->MakeTransparent();
+    _integrityBar = scene->Create<ProgressBarVisual>();
+    _integrityBar->color = {0.85, 0.35, 0.05, 1};
+    _integrityBar->foregroundColor = {0.6, 0.6, 0.6, 1.0f};
+    _integrityBar->backgroundColor = {0.05, 0.05, 0.05, 0.5f};
+    _integrityBar->renderingMaterial->MakeAdditive();
+    _integrityBar->renderingMaterial->SetDepthWrite(ShaderDepthState::Disabled);
+    _integrityBar->renderingMaterial->renderQueue = Material::RenderQueue::RENDER_QUEUE_OVERLAY;
+    _integrityBar->progress = 0.8f;
+    _integrityBar->invertY = false;
+    _integrityBar->sprite.SetRectRectPixel(12, 22, 41, 11);
 
-    barVertices[0] = {0.4, 0.2 - 0.03, 0};
-    barVertices[1] = {0.4, 0 - 0.03, 0};
-    barVertices[2] = {0.4, -0.2 - 0.03, 0};
-    _integrityBar = scene->Create<ProgressBarVisual>(barVertices, 3);
-    _integrityBar->foregroundColor = {0.04, 1.0, 0.45, 1.0f};
-    _integrityBar->backgroundColor = {0.04 / 4.0f, 1.0 / 4.0f, 0.45 / 4.0f, 0.1f};
-    _integrityBar->renderingMaterial->MakeTransparent();
-    _integrityBar->progress = 0.1;
+    _fuelBar = scene->Create<ProgressBarVisual>();
+    _fuelBar->color = {0.85, 0.35, 0.05, 1};
+    _fuelBar->foregroundColor = {0.8, 0.25, 0.0, 1.0f};
+    _fuelBar->backgroundColor = {0.05, 0.05, 0.05, 0.5f};
+    _fuelBar->renderingMaterial->MakeAdditive();
+    _fuelBar->renderingMaterial->SetDepthWrite(ShaderDepthState::Disabled);
+    _fuelBar->renderingMaterial->renderQueue = Material::RenderQueue::RENDER_QUEUE_OVERLAY;
+    _fuelBar->progress = 0.8f;
+    _fuelBar->invertY = false;
+    _fuelBar->sprite.SetRectRectPixel(12, 0, 41, 11);
+
+    _exposureBar = scene->Create<ProgressBarVisual>();
+    _exposureBar->color = {0.85, 0.35, 0.05, 1};
+    _exposureBar->foregroundColor = {0.6, 0.2, 0.8, 1.0f};
+    _exposureBar->backgroundColor = {0.05, 0.05, 0.05, 0.5f};
+    _exposureBar->renderingMaterial->MakeAdditive();
+    _exposureBar->renderingMaterial->SetDepthWrite(ShaderDepthState::Disabled);
+    _exposureBar->renderingMaterial->renderQueue = Material::RenderQueue::RENDER_QUEUE_OVERLAY;
+    _exposureBar->progress = 0.8f;
+    _exposureBar->invertY = true;
+    _exposureBar->sprite.SetRectRectPixel(12, 11, 41, 11);
+
+    // _integrityBar = scene->Create<ProgressBarVisual>();
+    // _integrityBar->foregroundColor = {0.04, 1.0, 0.45, 1.0f};
+    // _integrityBar->backgroundColor = {0.04 / 4.0f, 1.0 / 4.0f, 0.45 / 4.0f, 0.1f};
+    // _integrityBar->renderingMaterial->MakeTransparent();
+    // _integrityBar->progress = 0.1;
 
     _crosshair = scene->Create<SpriteVisual>();
-    _crosshair->sprite.atlasTexture = AssetsServer::Get()->LoadTextureAsset(L"Assets/Textures/UI_Atlas.dds");
+    _crosshair->sprite.atlasTexture = atlasUITexture;
     _crosshair->sprite.SetRectRectPixel(8, 0, 4, 4);
     _crosshair->isPixelPerfect = true;
     _crosshair->isScreenSpace = false;
@@ -154,6 +177,7 @@ void ShipController::OnUpdate()
     {
         // _shipVelocity = Forward() * 30000;
         _shipVelocity = targetVelocity * 500;
+        _fuel -= time->Delta();
         // _camMomentumX = 0.0f;
         // _camMomentumY = 0.0f;
     }
@@ -174,10 +198,17 @@ void ShipController::OnUpdate()
     _shipRadar->rotation = rotation;
     _shipRadar->GetParticleSystem()->position = _shipRadar->position;
     _shipRadar->GetParticleSystem()->rotation = _shipRadar->rotation;
-    _fuelBar->position = _shipRadar->position;
-    _fuelBar->rotation = _shipRadar->rotation;
-    _integrityBar->position = _shipRadar->position;
-    _integrityBar->rotation = _shipRadar->rotation;
+
+    _fuelBar->position = _shipRadar->position + Forward() * 3.0f - Up() * 1.2f - Right() * 2.35f;
+    _integrityBar->position = _shipRadar->position + Forward() * 3.0f - Up() * 1.7f - Right() * 2.35f;
+    _exposureBar->position = _shipRadar->position + Forward() * 3.0f - Up() * 1.7f + Right() * 2.35f;
+    _fuelBar->progress = _fuel / 100.0f;
+    _integrityBar->progress = _integrity / 100.0f;
+    _exposureBar->progress = _exposure / 100.0f;
+    // _integrityBar->position = _shipRadar->position;
+    // _integrityBar->rotation = _shipRadar->rotation;
+
+
     _cockpitLight->position = _shipRadar->position;
     _topText->position = position + Forward() * 3.5f + Up() * 0.5f;
 

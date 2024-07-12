@@ -24,6 +24,7 @@ namespace NSE
         bool _isDisposed = false;
 
         friend class ObjectServer;
+        friend class Scene;
     };
 }
 

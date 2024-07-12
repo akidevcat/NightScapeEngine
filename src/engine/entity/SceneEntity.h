@@ -10,6 +10,8 @@
 
 namespace NSE
 {
+    class Scene;
+
     class SceneEntity : public Entity
     {
     public:
@@ -22,6 +24,7 @@ namespace NSE
         [[nodiscard]] DirectX::XMVECTOR Right() const;
         [[nodiscard]] DirectX::XMVECTOR Up() const;
 
+        [[nodiscard]] Scene* GetScene() const;
         bool GetSceneUID(size_t& uid) const;
         void SetSceneUID(size_t uid);
         void ResetSceneUID() { _sceneUID = 0; }

@@ -103,10 +103,13 @@ private:
     obj_ptr<SceneEntity> _player = nullptr;
     int _maxLodLevel = 10; // Should be less than 14
     int _maxScaledLodLevel = 8;
-    int _chunkResolution = 16;
+    int _chunkResolution = 8;
     float _planetRadius = 60000.0f;
+    float _planetTerrainMaxHeight = 4000.0f;
+    float _planetAtmosphereHeight = 4000.0f;
 
     NSE_GraphicsBuffer _chunkDrawBuffer = nullptr;
+    obj_ptr<VisualMeshEntity> _atmosphereEntity = nullptr;
     // NSE_Material _scaledMaterial = nullptr;
     // NSE_Material _mainMaterial = nullptr;
 

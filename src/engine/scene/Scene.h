@@ -73,10 +73,12 @@ namespace NSE
         obj_ptr<T> Scene::Create(ArgTypes&&... args)
     {
         // Transfer creation process to ObjectServer
-        obj_ptr<T> result = ObjectServer::Get()->Create<T>(std::forward<ArgTypes>(args)...);
+        obj_ptr<T> result = ObjectServer::Get()->CreateSilently<T>(std::forward<ArgTypes>(args)...);
 
         // Register created entity on the scene
         RegisterEntity(result);
+
+        static_cast<obj_ptr<SceneEntity>>(result)->OnCreated();
 
         return result;
 

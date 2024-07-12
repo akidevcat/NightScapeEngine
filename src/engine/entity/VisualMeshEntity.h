@@ -16,6 +16,7 @@ namespace NSE
 
     public:
         NSE_Mesh mesh;
+        float renderingScaling = 1.0f;
     };
 }
 

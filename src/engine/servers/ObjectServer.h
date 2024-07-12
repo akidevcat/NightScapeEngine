@@ -23,13 +23,23 @@ namespace NSE
         ~ObjectServer();
 
         template <class T, class... ArgTypes, std::enable_if_t<std::is_base_of_v<Object, T>, int> = 0>
-            obj_ptr<T> Create(ArgTypes&&... args)
+            obj_ptr<T> CreateSilently(ArgTypes&&... args)
         {
             std::shared_ptr<T> ent = std::make_shared<T>(std::forward<ArgTypes>(args)...);
             auto obj = static_cast<std::shared_ptr<Object>>(ent);
             _objects.emplace(obj->GetUID(), ent);
-            obj->OnCreated();
             return ent;
+        }
+
+        template <class T, class... ArgTypes, std::enable_if_t<std::is_base_of_v<Object, T>, int> = 0>
+            obj_ptr<T> Create(ArgTypes&&... args)
+        {
+            return CreateSilently<T>(std::forward<ArgTypes>(args)...);
+            // std::shared_ptr<T> ent = std::make_shared<T>(std::forward<ArgTypes>(args)...);
+            // auto obj = static_cast<std::shared_ptr<Object>>(ent);
+            // _objects.emplace(obj->GetUID(), ent);
+            // obj->OnCreated();
+            // return ent;
         }
 
         void Destroy(const NSE_Object& obj);

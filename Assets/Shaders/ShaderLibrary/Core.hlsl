@@ -97,6 +97,23 @@ float4x4 inverse(float4x4 m) {
     return ret;
 }
 
+inline bool IntersectSphere(float3 rO, float3 rD, float3 sO, float sR, out float2 i)
+{
+    float a = dot(rD, rD);
+    float3 s0_r0 = rO - sO;
+    float b = 2.0 * dot(rD, s0_r0);
+    float c = dot(s0_r0, s0_r0) - sR * sR;
+    float d = b * b - 4.0 * a * c;
+    if (d < 0.0)
+    {
+        i = 0;
+        return false;
+    }
+    float dR = sqrt(d);
+    i = float2(-b - dR, -b + dR) / (2.0 * a);
+    return true;
+}
+
 float4 TransformObjectToClip(float3 position)
 {
     float4 result = mul(_ModelMatrix, float4(position, 1));

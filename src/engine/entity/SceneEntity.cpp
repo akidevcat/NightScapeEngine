@@ -1,5 +1,8 @@
 #include "SceneEntity.h"
 
+#include "../scene/Scene.h"
+#include "../servers/SceneServer.h"
+
 using namespace DirectX;
 
 NSE::SceneEntity::~SceneEntity()
@@ -40,6 +43,15 @@ XMVECTOR NSE::SceneEntity::Right() const
 XMVECTOR NSE::SceneEntity::Up() const
 {
     return XMVector4Transform({0, 1, 0, 0}, GetModelMatrix({}));
+}
+
+NSE::Scene* NSE::SceneEntity::GetScene() const
+{
+    size_t sceneUid;
+    if (GetSceneUID(sceneUid))
+        return SceneServer::Get()->GetScene(sceneUid);
+
+    return nullptr;
 }
 
 bool NSE::SceneEntity::GetSceneUID(size_t &uid) const

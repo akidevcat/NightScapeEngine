@@ -37,6 +37,20 @@ void Planet::OnCreated()
     {
         // required for queue
         renderingMaterial = _mainPlanet->renderingMaterial;
+        // create atmosphere entity
+        auto scene = GetScene();
+        _atmosphereEntity = scene->Create<VisualMeshEntity>();
+        auto atmShader = CreateObject<Shader>(L"Assets/Shaders/PlanetAtmosphere.hlsl");
+        atmShader->Compile();
+        _atmosphereEntity->renderingMaterial = CreateObject<Material>(atmShader);
+        _atmosphereEntity->renderingMaterial->MakeTransparent();
+        float r = _planetRadius + _planetAtmosphereHeight;
+        _atmosphereEntity->renderingMaterial->SetFloat(ShaderUtils::PropertyToID("_AtmosphereRadius"), r / 1000.0f);
+        _atmosphereEntity->renderingMaterial->SetFloat(ShaderUtils::PropertyToID("_PlanetRadius"), _planetRadius / 1000.0f);
+        _atmosphereEntity->mesh = AssetsServer::Get()->LoadMeshAsset("Assets/Models/IcosphereSmooth5_Inverted.obj");
+        _atmosphereEntity->scale = float3{1,1,1} * r;
+        _atmosphereEntity->renderingScaling = 1.0f / 1000.0f;
+        // _atmosphereEntity->scale = float3{0.5,0.5,0.5};
         return;
     }
 
@@ -52,6 +66,8 @@ void Planet::OnCreated()
 
     _chunkDrawBuffer = CreateObject<GraphicsBuffer>(GraphicsBuffer::Target::Constant, sizeof(ChunkDrawBufferData));
     renderingMaterial->SetConstantBuffer(ShaderUtils::PropertyToID("ChunkDrawBuffer"), _chunkDrawBuffer);
+    renderingMaterial->SetFloat(ShaderUtils::PropertyToID("_AtmosphereRadius"), (_planetRadius + _planetAtmosphereHeight) / 1000.0f);
+    renderingMaterial->SetFloat(ShaderUtils::PropertyToID("_PlanetRadius"), _planetRadius / 1000.0f);
 
     // scale = float3{1,1,1} * 60000;
     position = Vector3d{0,0, 1} * 100000 * 1;
@@ -68,6 +84,7 @@ void Planet::OnUpdate()
 {
     if (_isScaled)
     {
+        _atmosphereEntity->position = _mainPlanet->position;
         return;
     }
 
@@ -78,9 +95,6 @@ void Planet::OnUpdate()
         float scaling = (chunk.lodLevel <= _maxScaledLodLevel) ? 1000.0f : 1.0f;
 
         auto lod = cid_to_lod(chunk.ID);
-
-        // if (lod >= _maxScaledLodLevel)
-        //     continue;
 
         if (lod >= _maxLodLevel)
             continue;
@@ -254,9 +268,9 @@ void Planet::SetupChunk(Chunk &chunk, ChunkID id)
     chunk.faceID = cid_to_face(id);
     chunk.hasChildren = false;
 
-    float radius = (chunk.lodLevel <= _maxScaledLodLevel) ? _planetRadius / 1000.0f : _planetRadius;
+    float scaling = (chunk.lodLevel <= _maxScaledLodLevel) ? 1.0f / 1000.0f : 1.0f;
 
-    PlanetMeshTools::SetupChunkMesh(chunk.mesh, id, _chunkResolution, radius, chunk.position);
+    PlanetMeshTools::SetupChunkMesh(chunk.mesh, id, _chunkResolution, _planetRadius * scaling, _planetTerrainMaxHeight * scaling, chunk.position);
 
     chunk.childrenMaxLodLevel = chunk.lodLevel;
     chunk.isSetup = true;

@@ -18,6 +18,7 @@ namespace NSE
         size_t  CreateScene(_Out_ Scene*& scene);
         void    UnloadScene(size_t sceneId);
         void    GetAllScenes(std::vector<Scene*>& vec);
+        Scene*  GetScene(size_t sceneId);
 
         // void SetMainCamera(const NSE_Camera& camera) { _mainCamera = camera; }
         // [[nodiscard]] Camera* GetMainCamera() const { return _mainCamera; }

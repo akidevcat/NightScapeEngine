@@ -38,3 +38,14 @@ void NSE::SceneServer::GetAllScenes(std::vector<Scene*>& vec)
         vec.emplace_back(it.second);
     }
 }
+
+NSE::Scene* NSE::SceneServer::GetScene(size_t sceneId)
+{
+    auto result = _scenes.find(sceneId);
+    if (result == _scenes.end())
+    {
+        return nullptr;
+    }
+
+    return result->second;
+}
