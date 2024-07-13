@@ -21,7 +21,7 @@ DefaultPixelInput VertexMain(DefaultVertexInput input)
 
 float4 GetAtmosphericScattering(float3 planetOrigin, float planetRadius, float atmosphereRadius, float3 rayOrigin, float3 rayDirection, float rayLength)
 {
-    const uint sampleCount = 6;
+    const uint sampleCount = 4;
     float3 samplePos = rayOrigin;
     float sampleLength = rayLength / sampleCount;
 
@@ -36,17 +36,17 @@ float4 GetAtmosphericScattering(float3 planetOrigin, float planetRadius, float a
     for (int i = 0; i < sampleCount; i++)
     {
         float height = 1.0 - max(length(samplePos - planetOrigin) - planetRadius, 0.0) / (atmosphereRadius - planetRadius);
-        height = saturate(height);
+        height = saturate(pow(height, 2.0));
 
-        float sampleDensity = height * 2.2;
+        float sampleDensity = height * 0.3;
 
         atmAccumDensity += sampleDensity * sampleLength;
 
 //         float sampleLight = lerp(float3(0.506, 0.835, 1), float3(0.9, 0.2, 0.0), saturate(atmAccumRayLength * 0.1));
-        float3 absorbedLight = float3(0.506, 0.835, 1) * (exp(sampleLength)) * 0.001;
+        float3 absorbedLight = float3(0.506, 0.835, 1) * (exp(sampleLength)) * 0.1;
 
         // light correction by height
-        absorbedLight *= 1.0 + (1.0 - camHeight) * 10.0;
+//         absorbedLight *= 1.0 + (1.0 - camHeight) * 10.0;
 
         atmAccumLightEnergy += atmTransmittance * absorbedLight;
 

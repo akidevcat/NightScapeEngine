@@ -3,6 +3,8 @@
 
 #include "../../engine/entity/VisualMeshEntity.h"
 
+struct PlanetCreationParameters;
+
 class Planet : public NSE::VisualMeshEntity
 {
 public:
@@ -36,9 +38,9 @@ public:
     };
 
 public:
-    explicit Planet(const obj_ptr<Planet>& mainPlanet, const obj_ptr<SceneEntity>& playerEntity);
+    explicit Planet(PlanetCreationParameters params, const obj_ptr<Planet>& mainPlanet, const obj_ptr<SceneEntity>& playerEntity);
 
-    static obj_ptr<Planet> Create(NSE::Scene* mainScene, NSE::Scene* scaledScene, const obj_ptr<SceneEntity>& playerEntity);
+    static obj_ptr<Planet> Create(PlanetCreationParameters params, NSE::Scene* mainScene, NSE::Scene* scaledScene, const obj_ptr<SceneEntity>& playerEntity);
 
     void RenderEntity(const NSE_Camera& camera) override;
 

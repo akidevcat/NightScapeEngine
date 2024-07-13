@@ -5,11 +5,16 @@
 #include "PlanetMeshTools.h"
 #include "../../engine/servers/AssetServer.h"
 #include "../../engine/servers/RenderServer.h"
+#include "../data/PlanetCreationParameters.h"
 
 using namespace NSE;
 
-Planet::Planet(const obj_ptr<Planet> &mainPlanet, const obj_ptr<SceneEntity>& playerEntity)
+Planet::Planet(PlanetCreationParameters params, const obj_ptr<Planet> &mainPlanet, const obj_ptr<SceneEntity>& playerEntity)
 {
+    _planetRadius = params.radius;
+    _planetAtmosphereHeight = params.atmosphereHeight;
+    _planetTerrainMaxHeight = params.terrainMaxHeight;
+
     if (mainPlanet)
     {
         _isScaled = true;
@@ -23,10 +28,10 @@ Planet::Planet(const obj_ptr<Planet> &mainPlanet, const obj_ptr<SceneEntity>& pl
     _player = playerEntity;
 }
 
-obj_ptr<Planet> Planet::Create(Scene *mainScene, Scene *scaledScene, const obj_ptr<SceneEntity>& playerEntity)
+obj_ptr<Planet> Planet::Create(PlanetCreationParameters params, Scene *mainScene, Scene *scaledScene, const obj_ptr<SceneEntity>& playerEntity)
 {
-    auto mainPlanet = mainScene->Create<Planet>(nullptr, playerEntity);
-    auto scaledPlanet = scaledScene->Create<Planet>(mainPlanet, playerEntity);
+    auto mainPlanet = mainScene->Create<Planet>(params, nullptr, playerEntity);
+    auto scaledPlanet = scaledScene->Create<Planet>(params, mainPlanet, playerEntity);
 
     return mainPlanet;
 }

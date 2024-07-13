@@ -60,7 +60,7 @@ void PlanetMeshTools::SetupChunkMesh(const obj_ptr<NSE::Mesh>& mesh, uint32_t ch
     noise.SetSeed(0);
     noise.SetFrequency(8.0f);
     noise.SetFractalType(FastNoiseLite::FractalType_FBm);
-    noise.SetFractalOctaves(5);
+    noise.SetFractalOctaves(3);
     noise.SetFractalGain(0.3f);
     noise.SetFractalLacunarity(4.0f);
 

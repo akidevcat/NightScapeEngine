@@ -138,6 +138,24 @@ add_executable(${PROJECT_NAME} WIN32
         src/game/SkyboxStarsParticles.cpp
         src/game/SkyboxStarsParticles.h
         src/engine/addon/FastNoiseLite.h
+        src/game/systems/NavigationSystem.cpp
+        src/game/systems/NavigationSystem.h
+        src/game/systems/GenerationSystem.cpp
+        src/game/systems/GenerationSystem.h
+        src/game/systems/LevelSystem.cpp
+        src/game/systems/LevelSystem.h
+        src/game/systems/GalaxySystem.cpp
+        src/game/systems/GalaxySystem.h
+        src/game/systems/InventorySystem.cpp
+        src/game/systems/InventorySystem.h
+        src/game/systems/ShipSystem.cpp
+        src/game/systems/ShipSystem.h
+        src/game/systems/GameSystem.h
+        src/game/planetary/ISpaceObject.h
+        src/game/data/GalaxyLayer.h
+        src/game/systems/MainSystem.cpp
+        src/game/systems/MainSystem.h
+        src/game/data/PlanetCreationParameters.h
 )
 
 target_link_libraries(${PROJECT_NAME} d3d9 d3d11 d3dcompiler dinput8 dxguid)

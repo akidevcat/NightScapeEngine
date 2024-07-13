@@ -42,11 +42,11 @@ float4 GetAtmosphericScattering(float3 planetOrigin, float planetRadius, float a
         float height = 1.0 - max(length(samplePos - planetOrigin) - planetRadius, 0.0) / (atmosphereRadius - planetRadius);
         height = saturate(height);
 
-        float sampleDensity = height * 2.2;
+        float sampleDensity = height * 0.3;
 
         atmAccumDensity += sampleDensity * sampleLength;
 
-        float3 absorbedLight = float3(0.506, 0.835, 1) * (exp(sampleLength)) * 0.001;
+        float3 absorbedLight = float3(0.506, 0.835, 1) * (exp(sampleLength)) * 0.1;
 
         // light correction by height
 //         absorbedLight *= 1.0 + (1.0 - camHeight) * 10.0;
@@ -78,7 +78,7 @@ float4 PixelMain(DefaultPixelInput input) : SV_TARGET
     float3 normal = -normalize(cross(ddx(input.positionRS.xyz), ddy(input.positionRS.xyz)));
     normal = TransformObjectToWorldDirection(normal);
 
-    normal = normalize(input.normalRS);
+//     normal = normalize(input.normalRS);
 
 //     float lightIntensity = dot(normalize(input.normalRS.xyz), normalize(float3(1, 0, -0.7)));
     float lightIntensity = dot(normal, normalize(float3(1, 0, -0.7)));
@@ -105,7 +105,7 @@ float4 PixelMain(DefaultPixelInput input) : SV_TARGET
 
 //     return scattering * 10.0;
 //     return scattering;
-    result.rgb = lerp(result.rgb, scattering.rgb * 40.0, scattering.a * 0.5);
+    result.rgb = lerp(result.rgb, scattering.rgb * 1.0, scattering.a * 0.5);
 
 //     return float4(uv, 0, 1);
     return float4(result.rgb, 1.0);
