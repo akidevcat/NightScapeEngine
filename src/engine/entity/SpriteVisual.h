@@ -21,7 +21,7 @@ namespace NSE
         SpriteTexture sprite{};
         bool isPixelPerfect = true;
         bool isScreenSpace = false;
-        xmvector color{1,1,1,1};
+        float4 color{1,1,1,1};
 
     private:
         NSE_Mesh _mesh = nullptr;

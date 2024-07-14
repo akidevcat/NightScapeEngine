@@ -156,6 +156,9 @@ add_executable(${PROJECT_NAME} WIN32
         src/game/systems/MainSystem.cpp
         src/game/systems/MainSystem.h
         src/game/data/PlanetCreationParameters.h
+        src/game/data/INavigatable.h
+        src/game/ShipMarkersVisual.cpp
+        src/game/ShipMarkersVisual.h
 )
 
 target_link_libraries(${PROJECT_NAME} d3d9 d3d11 d3dcompiler dinput8 dxguid)

@@ -1,5 +1,6 @@
 #ifndef SHIPCONTROLLER_H
 #define SHIPCONTROLLER_H
+#include "ShipMarkersVisual.h"
 #include "ShipRadarController.h"
 #include "../engine/data/Light.h"
 #include "../engine/entity/ProgressBarVisual.h"
@@ -47,6 +48,7 @@ private:
     obj_ptr<NSE::ProgressBarVisual> _exposureBar = nullptr;
     obj_ptr<NSE::SpriteVisual> _crosshair = nullptr;
     obj_ptr<NSE::TextVisual> _topText = nullptr;
+    obj_ptr<ShipMarkersVisual> _markers = nullptr;
 };
 
 #endif //SHIPCONTROLLER_H

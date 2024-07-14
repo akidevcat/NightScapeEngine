@@ -27,6 +27,7 @@ namespace NSE
         {
             std::shared_ptr<T> ent = std::make_shared<T>(std::forward<ArgTypes>(args)...);
             auto obj = static_cast<std::shared_ptr<Object>>(ent);
+            obj->_selfPointer = obj;
             _objects.emplace(obj->GetUID(), ent);
             return ent;
         }
@@ -34,7 +35,9 @@ namespace NSE
         template <class T, class... ArgTypes, std::enable_if_t<std::is_base_of_v<Object, T>, int> = 0>
             obj_ptr<T> Create(ArgTypes&&... args)
         {
-            return CreateSilently<T>(std::forward<ArgTypes>(args)...);
+            auto result = CreateSilently<T>(std::forward<ArgTypes>(args)...);
+            static_cast<obj_ptr<Object>>(result)->OnCreated();
+            return result;
             // std::shared_ptr<T> ent = std::make_shared<T>(std::forward<ArgTypes>(args)...);
             // auto obj = static_cast<std::shared_ptr<Object>>(ent);
             // _objects.emplace(obj->GetUID(), ent);

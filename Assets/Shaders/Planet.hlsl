@@ -69,7 +69,8 @@ float4 PixelMain(DefaultPixelInput input) : SV_TARGET
 
     float3 positionWS = TransformObjectToWorld(input.positionRS.xyz);
 
-    float4 result = float4(0.804, 0.541, 0.91, 1) * 1.25;
+//     float4 result = float4(0.804, 0.541, 0.91, 1) * 1.25;
+    float4 result = float4(0.304, 0.841, 0.1, 1) * 1.25;
 
     float n = VNoiseD3FBM((input.positionRS.xyz + _ChunkPosition) * (_ChunkScaling * 0.0001), 3, 0.5, 2.0).x;
     n = saturate(n);
@@ -85,7 +86,7 @@ float4 PixelMain(DefaultPixelInput input) : SV_TARGET
     lightIntensity = smoothstep(-0.2, 0.6, lightIntensity);
     lightIntensity = Dither(lightIntensity, screenPos);
 
-    result.rgb = lightIntensity * float3(0.773, 0.404, 0.922) * 1.3 * n;
+    result.rgb = lightIntensity * float3(0.504, 0.841, 0.25) * 1.3 * n;
 
     // Atmospheric Scattering
     float viewLen = length(positionWS);

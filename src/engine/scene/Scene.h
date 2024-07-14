@@ -22,7 +22,8 @@ namespace NSE
         [[nodiscard]] size_t GetUID() const { return _uid; }
 
         void GetAllEntities(std::vector<NSE_SceneEntity>& vec);
-        template <typename T, std::enable_if_t<std::is_base_of_v<SceneEntity, T>, int> = 0>
+        // template <typename T, std::enable_if_t<std::is_base_of_v<SceneEntity, T>, int> = 0>
+        template <typename T>
             void FindAllEntitiesFromBaseType(std::vector<obj_ptr<T>>& vec, bool skipDisabled = true);
 
         template <class T, class... ArgTypes, std::enable_if_t<std::is_base_of_v<SceneEntity, T>, int> = 0>
@@ -42,7 +43,8 @@ namespace NSE
             std::unordered_map<size_t, std::unordered_map<size_t, NSE_SceneEntity>*>();
     };
 
-    template <typename T, std::enable_if_t<std::is_base_of_v<SceneEntity, T>, int>>
+    // template <typename T, std::enable_if_t<std::is_base_of_v<SceneEntity, T>, int>>
+    template <typename T>
         void Scene::FindAllEntitiesFromBaseType(std::vector<obj_ptr<T>>& vec, bool skipDisabled)
     {
         for (auto it : _entities)
@@ -54,6 +56,8 @@ namespace NSE
             }
 
             // check if the new type is a child for this type
+            T* test = dynamic_cast<T*>(it.second->begin()->second.get());
+
             if (!dynamic_cast<T*>(it.second->begin()->second.get())) // ToDo looks evil
             {
                 continue;

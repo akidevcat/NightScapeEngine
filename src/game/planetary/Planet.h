@@ -2,10 +2,11 @@
 #define PLANET_H
 
 #include "../../engine/entity/VisualMeshEntity.h"
+#include "../data/INavigatable.h"
 
 struct PlanetCreationParameters;
 
-class Planet : public NSE::VisualMeshEntity
+class Planet : public NSE::VisualMeshEntity, public INavigatable
 {
 public:
     using ChunkID = uint32_t;
@@ -43,6 +44,9 @@ public:
     static obj_ptr<Planet> Create(PlanetCreationParameters params, NSE::Scene* mainScene, NSE::Scene* scaledScene, const obj_ptr<SceneEntity>& playerEntity);
 
     void RenderEntity(const NSE_Camera& camera) override;
+
+    NSE::Vector3d GetNavigatablePosition() override { return position; }
+    float4        GetNavigatableColor() override { return float4{1,1,1,1}; }
 
     static char cid_to_face(ChunkID id)
     {

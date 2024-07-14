@@ -1,20 +1,15 @@
-#ifndef NAVIGATIONSYSTEM_H
-#define NAVIGATIONSYSTEM_H
+#pragma once
+
 #include <unordered_map>
+#include <unordered_set>
 
+#include "GameSystem.h"
 #include "../../engine/obj_ptr.h"
+#include "../data/INavigatable.h"
 
-class INavigatable
+class NavigationSystem : public GameSystem<NavigationSystem>
 {
+public:
+    void OnUpdate() override;
 
 };
-
-class NavigationSystem
-{
-    
-
-private:
-    std::unordered_map<size_t, obj_ptr<INavigatable>> _targets;
-};
-
-#endif //NAVIGATIONSYSTEM_H

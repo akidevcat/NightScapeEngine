@@ -56,7 +56,7 @@ void Game::Start()
     _generationSystem->OnStart();
     // _galaxySystem->OnStart();
     _levelSystem->OnStart();
-    // _navigationSystem->OnStart();
+    _navigationSystem->OnStart();
     // _inventorySystem->OnStart();
     _shipSystem->OnStart();
 
@@ -128,7 +128,7 @@ void Game::OnFrameUpdate()
     _generationSystem->OnUpdate();
     // _galaxySystem->OnUpdate();
     _levelSystem->OnUpdate();
-    // _navigationSystem->OnUpdate();
+    _navigationSystem->OnUpdate();
     // _inventorySystem->OnUpdate();
     _shipSystem->OnUpdate();
 }

@@ -95,6 +95,8 @@ ShipController::ShipController(NSE::Scene* scene, float screenAspect)
     _topText = scene->Create<TextVisual>();
     _topText->SetText("3.21");
     _topText->color = {0.95f, 0.4f, 0.0f, 1.0f};
+
+    _markers = scene->Create<ShipMarkersVisual>();
 }
 
 ShipController::~ShipController()
