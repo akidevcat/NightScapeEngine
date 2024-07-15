@@ -47,7 +47,7 @@ ShipController::ShipController(NSE::Scene* scene, float screenAspect)
     _integrityBar = scene->Create<ProgressBarVisual>();
     _integrityBar->color = {0.85, 0.35, 0.05, 1};
     _integrityBar->foregroundColor = {0.6, 0.6, 0.6, 1.0f};
-    _integrityBar->backgroundColor = {0.05, 0.05, 0.05, 0.5f};
+    _integrityBar->backgroundColor = {0.85, 0.35, 0.05, 0.5f};
     _integrityBar->renderingMaterial->MakeAdditive();
     _integrityBar->renderingMaterial->SetDepthWrite(ShaderDepthState::Disabled);
     _integrityBar->renderingMaterial->renderQueue = Material::RenderQueue::RENDER_QUEUE_OVERLAY;
@@ -58,7 +58,7 @@ ShipController::ShipController(NSE::Scene* scene, float screenAspect)
     _fuelBar = scene->Create<ProgressBarVisual>();
     _fuelBar->color = {0.85, 0.35, 0.05, 1};
     _fuelBar->foregroundColor = {0.8, 0.25, 0.0, 1.0f};
-    _fuelBar->backgroundColor = {0.05, 0.05, 0.05, 0.5f};
+    _fuelBar->backgroundColor = {0.85, 0.35, 0.05, 0.5f};
     _fuelBar->renderingMaterial->MakeAdditive();
     _fuelBar->renderingMaterial->SetDepthWrite(ShaderDepthState::Disabled);
     _fuelBar->renderingMaterial->renderQueue = Material::RenderQueue::RENDER_QUEUE_OVERLAY;
@@ -68,8 +68,8 @@ ShipController::ShipController(NSE::Scene* scene, float screenAspect)
 
     _exposureBar = scene->Create<ProgressBarVisual>();
     _exposureBar->color = {0.85, 0.35, 0.05, 1};
-    _exposureBar->foregroundColor = {0.6, 0.2, 0.8, 1.0f};
-    _exposureBar->backgroundColor = {0.05, 0.05, 0.05, 0.5f};
+    _exposureBar->foregroundColor = {0.4, 0.2, 0.8, 1.0f};
+    _exposureBar->backgroundColor = {0.85, 0.35, 0.05, 0.5f};
     _exposureBar->renderingMaterial->MakeAdditive();
     _exposureBar->renderingMaterial->SetDepthWrite(ShaderDepthState::Disabled);
     _exposureBar->renderingMaterial->renderQueue = Material::RenderQueue::RENDER_QUEUE_OVERLAY;

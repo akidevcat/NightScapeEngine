@@ -1,5 +1,4 @@
-#ifndef SCENEENTITY_H
-#define SCENEENTITY_H
+#pragma once
 
 #include <directxmath.h>
 
@@ -16,6 +15,7 @@ namespace NSE
     {
     public:
         SceneEntity() = default;
+        // ~SceneEntity() override = 0;
         ~SceneEntity() override = 0;
 
         [[nodiscard]] DirectX::XMMATRIX GetModelMatrix(Vector3d relativeTo, float scaling = 1.0f) const;
@@ -44,5 +44,3 @@ namespace NSE
         size_t            _sceneUID = 0;
     };
 }
-
-#endif //SCENEENTITY_H

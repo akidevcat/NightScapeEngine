@@ -1,5 +1,4 @@
-#ifndef OBJECT_H
-#define OBJECT_H
+#pragma once
 
 #include "../obj_ptr.h"
 
@@ -31,5 +30,3 @@ namespace NSE
         friend class Scene;
     };
 }
-
-#endif //OBJECT_H

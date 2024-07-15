@@ -2,6 +2,7 @@
 #define SCENE_H
 
 #include <memory>
+#include <typeindex>
 #include <unordered_map>
 #include "../obj_ptr.h"
 
@@ -33,12 +34,53 @@ namespace NSE
 
 
     private:
+        using TypeID = size_t;
+        using EntityID = size_t;
+
+        template <typename T>
+        struct TypeTreeNode
+        {
+            using type = T;
+            std::unordered_map<EntityID, NSE_SceneEntity> entitiesMap;
+            std::vector<NSE_SceneEntity> entitiesList;
+            std::unordered_map<TypeID, TypeTreeNode> childNodes;
+
+            void Add(const NSE_SceneEntity& entity)
+            {
+                entitiesMap.emplace(entity->GetUID(), entity);
+                entitiesList.emplace_back(entity);
+            }
+
+            void Remove(const NSE_SceneEntity& entity)
+            {
+                entitiesMap.erase(entity->GetUID());
+                int i = 0;
+                for (; i < entitiesList.size(); i++)
+                {
+                    if (entitiesList[i] == entity)
+                        break;
+                }
+                entitiesList.erase(entitiesList.begin() + i);
+            }
+
+            // void AddChild(TypeTreeNode* childNode)
+            // {
+            //     childNodes.emplace(childNode->typeID, childNode);
+            // }
+        };
+
         void RegisterEntity(const NSE_SceneEntity& entity);
         void UnregisterEntity(const NSE_SceneEntity& entity);
+        void RefreshLookups();
 
         size_t _uid;
         static size_t _uidCount;
 
+        // TypeTreeNode<SceneEntity> _entityTree;
+        // std::unordered_map<TypeID, TypeTreeNode<SceneEntity>*> _entityTreeNodes;
+
+        // std::unordered_map<size_t, NSE_SceneEntity> _entities =
+        //     std::unordered_map<size_t, NSE_SceneEntity>();
         std::unordered_map<size_t, std::unordered_map<size_t, NSE_SceneEntity>*> _entities =
             std::unordered_map<size_t, std::unordered_map<size_t, NSE_SceneEntity>*>();
     };
@@ -47,6 +89,55 @@ namespace NSE
     template <typename T>
         void Scene::FindAllEntitiesFromBaseType(std::vector<obj_ptr<T>>& vec, bool skipDisabled)
     {
+        // size_t typeId = typeid(T);
+        //
+        // auto nodeIt = _entityTreeNodes.find(typeId);
+        // if (nodeIt == _entityTreeNodes.end())
+        // {
+        //     // Node missing in the tree structure
+        //     TypeTreeNode<SceneEntity>* node = &_entityTree;
+        //
+        //     TypeTreeNode<SceneEntity>* derivedNode = nullptr;
+        //
+        //     for (auto& childNode : node->childNodes)
+        //     {
+        //
+        //         childNode.second = TypeTreeNode<SceneEntity>{};
+        //         childNode.second = TypeTreeNode<T>{};
+        //
+        //
+        //         childNode.second::type;
+        //
+        //         // assert(!childNode.second->entitiesList.empty());
+        //         // void* childElementPtr = childNode.second->entitiesList.front().get();
+        //
+        //         // T* castResultPtr = dynamic_cast<T>(childNode.second->metadataObject);
+        //         // if (!castResultPtr)
+        //         //     continue;
+        //
+        //
+        //
+        //         // typeid(T).before()
+        //     }
+        //
+        // }
+
+        // auto resultIt = _entitiesByTypeLookup.find(typeId);
+        // if (resultIt == _entitiesByTypeLookup.end())
+        // {
+        //     // Create lookup
+        //     resultIt = _entitiesByTypeLookup.emplace(typeId, std::vector<NSE_SceneEntity>{}).first;
+        //     const auto& entities = resultIt->second;
+        //
+        //     for (const auto& it : _entities)
+        //     {
+        //         T* rawPtr = dynamic_cast<T*>(it.second.get());
+        //
+        //     }
+        // }
+
+
+
         for (auto it : _entities)
         {
             // Check if map is empty
@@ -56,8 +147,6 @@ namespace NSE
             }
 
             // check if the new type is a child for this type
-            T* test = dynamic_cast<T*>(it.second->begin()->second.get());
-
             if (!dynamic_cast<T*>(it.second->begin()->second.get())) // ToDo looks evil
             {
                 continue;
@@ -68,7 +157,23 @@ namespace NSE
                 if (skipDisabled && !eit.second->IsEnabled())
                     continue;
 
-                vec.emplace_back(*reinterpret_cast<obj_ptr<T>*>(const_cast<obj_ptr<SceneEntity>*>(&eit.second))); // This is evil AF
+                // const_cast<obj_ptr<SceneEntity>*>(&eit.second);
+
+                // std::dynamic_pointer_cast<>()
+
+                // dynamic_cast<T*>(eit.second.get());
+                // vec.emplace_back(obj_ptr<T>(eit.second));
+                // vec.emplace_back(dynamic_pointer_cast<T>(eit.second));
+
+                // vec.emplace_back(obj_ptr<T>(eit.second, dynamic_cast<T*>(eit.second.get())));
+                vec.emplace_back(dynamic_pointer_cast<T>(eit.second));
+
+                // std::dynamic_pointer_cast<>()
+
+                // std::dynamic_pointer_cast<>()
+
+                // ;
+                // vec.emplace_back(*reinterpret_cast<obj_ptr<T>*>(const_cast<obj_ptr<SceneEntity>*>(&eit.second))); // This is evil AF
             }
         }
     }
@@ -85,11 +190,6 @@ namespace NSE
         static_cast<obj_ptr<SceneEntity>>(result)->OnCreated();
 
         return result;
-
-        // static_assert(std::is_base_of_v<SceneEntity, T>, "T must inherit from SceneEntity");
-        // T* ent = new T(_STD forward<ArgTypes>(args)...);
-        // shared_ptr<T> shared_ent = make_shared<T, ArgTypes>(args);
-        // std::shared_ptr<T> ent = make_shared<T, ArgTypes>(std::forward<ArgTypes>(args)...);
     }
 }
 

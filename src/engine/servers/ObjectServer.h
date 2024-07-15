@@ -38,11 +38,6 @@ namespace NSE
             auto result = CreateSilently<T>(std::forward<ArgTypes>(args)...);
             static_cast<obj_ptr<Object>>(result)->OnCreated();
             return result;
-            // std::shared_ptr<T> ent = std::make_shared<T>(std::forward<ArgTypes>(args)...);
-            // auto obj = static_cast<std::shared_ptr<Object>>(ent);
-            // _objects.emplace(obj->GetUID(), ent);
-            // obj->OnCreated();
-            // return ent;
         }
 
         void Destroy(const NSE_Object& obj);

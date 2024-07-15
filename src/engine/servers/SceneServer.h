@@ -3,6 +3,7 @@
 #include <unordered_map>
 
 #include "BaseServer.h"
+#include "../ecs/EntityRegistry.h"
 #include "../entity/Camera.h"
 #include "../scene/Scene.h"
 
@@ -20,14 +21,11 @@ namespace NSE
         void    GetAllScenes(std::vector<Scene*>& vec);
         Scene*  GetScene(size_t sceneId);
 
-        // void SetMainCamera(const NSE_Camera& camera) { _mainCamera = camera; }
-        // [[nodiscard]] Camera* GetMainCamera() const { return _mainCamera; }
-
     private:
         std::unordered_map<size_t, Scene*> _scenes
             = std::unordered_map<size_t, Scene*>();
 
-        // Camera* _mainCamera = nullptr;
+        // EntityRegistry _registry;
     };
 }
 

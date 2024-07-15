@@ -63,6 +63,9 @@ void NSE::Scene::RegisterEntity(const NSE_SceneEntity& entity)
 
     typeMap->try_emplace(entity->GetUID(), entity);
     entity->SetSceneUID(GetUID());
+
+    // Refresh Lookups
+    RefreshLookups();
 }
 
 void NSE::Scene::UnregisterEntity(const NSE_SceneEntity& entity)
@@ -90,6 +93,14 @@ void NSE::Scene::UnregisterEntity(const NSE_SceneEntity& entity)
     // Unregister entity
     eit->second->ResetSceneUID();
     typeMap->erase(eit);
+
+    // Refresh Lookups
+    RefreshLookups();
+}
+
+void NSE::Scene::RefreshLookups()
+{
+    // _entitiesByTypeLookup.clear();
 }
 
 void NSE::Scene::Destroy(const NSE_SceneEntity& entity)

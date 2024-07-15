@@ -271,4 +271,12 @@ float Dither(float value, uint2 screenPos, uint shadeCount = 3, float shadeSize 
     return saturate(value);
 }
 
+float3 DitherByLuminance(float3 value, uint2 screenPos, uint shadeCount = 3, float shadeSize = 0.1f)
+{
+    float lum = Luminance(value);
+    value /= lum;
+    value *= Dither(lum, screenPos, shadeCount, shadeSize);
+    return value;
+}
+
 #endif

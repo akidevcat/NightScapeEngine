@@ -4,6 +4,8 @@
 #include "data/INavigatable.h"
 #include "systems/MainSystem.h"
 
+using namespace NSE;
+
 ShipMarkersVisual::ShipMarkersVisual()
 {
     sprite.atlasTexture = NSE::AssetsServer::Get()->LoadTextureAsset(L"Assets/Textures/UI_Atlas.dds");
@@ -24,9 +26,8 @@ void ShipMarkersVisual::RenderEntity(const obj_ptr<NSE::Camera> &camera)
 
     for (const auto& marker : targets)
     {
-        auto test = marker->GetNavigatablePosition();
-        // position = test;
-        // color = marker->GetNavigatableColor();
-        // SpriteVisual::RenderEntity(camera);
+        position = camera->position + normalize(marker->GetNavigatablePosition() - camera->position);
+        color = marker->GetNavigatableColor();
+        SpriteVisual::RenderEntity(camera);
     }
 }
