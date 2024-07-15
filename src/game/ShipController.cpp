@@ -11,6 +11,7 @@
 #include "../engine/servers/ObjectServer.h"
 #include "../engine/servers/TimeServer.h"
 #include "../engine/servers/InputServer.h"
+#include "systems/NavigationSystem.h"
 
 using namespace DirectX;
 using namespace NSE;
@@ -92,9 +93,8 @@ ShipController::ShipController(NSE::Scene* scene, float screenAspect)
     _crosshair->position = {0.0, 0.0, 0.1};
     _crosshair->renderingMaterial->MakeInvert();
 
-    _topText = scene->Create<TextVisual>();
-    _topText->SetText("3.21");
-    _topText->color = {0.95f, 0.4f, 0.0f, 1.0f};
+    _infoText = scene->Create<TextVisual>();
+    _infoText->color = {0.95f, 0.4f, 0.0f, 1.0f};
 
     _markers = scene->Create<ShipMarkersVisual>();
 }
@@ -106,41 +106,48 @@ ShipController::~ShipController()
 
 void ShipController::OnUpdate()
 {
+    UpdateInfoText();
+
     auto input = NSE::InputServer::Get();
     auto time = NSE::TimeServer::Get();
 
     NSE::Vector3d targetVelocity{};
+    Vector3d cameraOffset{};
 
     if (input->GetKey(DIK_W))
     {
         if (input->GetKey(DIK_LSHIFT))
         {
-            targetVelocity += Forward() * 100.0f;
+            targetVelocity += Forward() * 200.0f;
+            // cameraOffset.x = (sinf(time->Time() * 20.0f) + sinf(time->Time() * 1.8415f * 20.0f) * 0.2345f) * 0.005f ;
+            // cameraOffset.y = (sinf(time->Time() * 20.0f + 57.314f) + sinf(time->Time() * 1.8415f * 20.0f + 57.314f) * 0.2345f) * 0.005f;
         }
         else
         {
-            targetVelocity += Forward() * 20.0f;
+            targetVelocity += Forward() * 50.0f;
+            // cameraOffset.x = (sinf(time->Time() * 10.0f) + sinf(time->Time() * 1.8415f * 10.0f) * 0.2345f) * 0.002f ;
+            // cameraOffset.y = (sinf(time->Time() * 10.0f + 57.314f) + sinf(time->Time() * 1.8415f * 10.0f + 57.314f) * 0.2345f) * 0.002f;
         }
     }
     if (input->GetKey(DIK_S))
     {
-        targetVelocity += Forward() * -10.0f;
+        targetVelocity += Forward() * -30.0f;
     }
     if (input->GetKey(DIK_D))
     {
-        targetVelocity += Right() * 10.0f;
+        targetVelocity += Right() * 30.0f;
     }
     if (input->GetKey(DIK_A))
     {
-        targetVelocity += Right() * -10.0f;
+        targetVelocity += Right() * -30.0f;
     }
     if (input->GetKey(DIK_SPACE))
     {
-        targetVelocity += Up() * 10.0f;
+        targetVelocity += Up() * 30.0f;
     }
     if (input->GetKey(DIK_LCONTROL))
     {
-        targetVelocity += Up() * -10.0f;
+        targetVelocity += Up() * -30.0f;
     }
     if (input->GetKey(DIK_R))
     {
@@ -175,13 +182,42 @@ void ShipController::OnUpdate()
     _camMomentumX *= powf(0.0001f, time->Delta());
     _camMomentumY *= powf(0.0001f, time->Delta());
 
+    double masslockedDistance;
+    auto masslocked = GetClosestMasslocked(masslockedDistance);
+
+
+
     if (_isShiftSpaceActive)
     {
-        // _shipVelocity = Forward() * 30000;
-        _shipVelocity = targetVelocity * 500;
+        float minVelocity = 300.0;
+        float maxVelocity = 60000.0;
+        float maxDistance = 100000.0;
+
+        float shiftVelocity = maxVelocity;
+        float mTime = 1.0f;
+        if (masslockedDistance < maxDistance)
+        {
+            mTime = (masslockedDistance / maxDistance);
+            mTime = powf(mTime, 0.5);
+            shiftVelocity = minVelocity + (maxVelocity - minVelocity) * mTime;
+        }
+
+        _shipVelocity = Forward() * shiftVelocity;
+        // _shipVelocity = targetVelocity * 500;
         _fuel -= time->Delta();
-        // _camMomentumX = 0.0f;
-        // _camMomentumY = 0.0f;
+        _camMomentumX = 0.0f;
+        _camMomentumY = 0.0f;
+
+        cameraOffset.x = (sinf(time->Time() * 30.0f) + sinf(time->Time() * 1.8415f * 30.0f) * 0.2345f) * 0.01f * mTime ;
+        cameraOffset.y = (sinf(time->Time() * 30.0f + 57.314f) + sinf(time->Time() * 1.8415f * 30.0f + 57.314f) * 0.2345f) * 0.01f * mTime;
+
+        SetInfoText("shift drive\x88\x89", 0);
+
+        if (masslockedDistance <= 0.0)
+        {
+            _isShiftSpaceActive = false; // ToDo
+            _shipVelocity = Forward() * 300.0f;
+        }
     }
 
     position += _shipVelocity * time->Delta();
@@ -190,7 +226,7 @@ void ShipController::OnUpdate()
     rotation = XMQuaternionMultiply(rot, rotation);
 
     // _camera->position = Vector3d::Lerp(_camera->position, position + Forward() * 1.0f + Up() * 0.1f, saturate(time->Delta() * 10.0f));
-    _camera->position = position + Forward() * 1.0f + Up() * 0.1f;
+    _camera->position = (position + cameraOffset) + Forward() * 1.0f + Up() * 0.1f;
     // ToDo noise
 
     _camera->rotation = XMQuaternionSlerp(_camera->rotation, rotation, saturate(30.0f * time->Delta()));
@@ -212,13 +248,14 @@ void ShipController::OnUpdate()
 
 
     _cockpitLight->position = _shipRadar->position;
-    _topText->position = position + Forward() * 3.5f + Up() * 0.5f;
+    _infoText->position = position + Forward() * 3.5f + Up() * 0.5f;
 
     _crosshair->position = position + Forward() * 3.0f;
 
     float velDot = (float)Vector3d::Dot(_shipVelocity.Normalized(), Forward());
 
-    _camera->SetFov(60.0f + velDot * 2.0f * (1.0f - 1.0f / (1 + (float)_shipVelocity.Magnitude() * 0.2f)));
+    _camera->SetFov(60.0f + velDot * 4.0f * (1.0f - 1.0f / (1 + (float)_shipVelocity.Magnitude() * 0.01f)));
+
 
 
     std::stringstream str;
@@ -226,19 +263,35 @@ void ShipController::OnUpdate()
 
     if (_shiftSpaceActivationTimer > 0)
     {
+        // Charging
         _shiftSpaceActivationTimer -= time->Delta();
         if (_shiftSpaceActivationTimer <= 0.0f)
         {
+            // Jump
             _isShiftSpaceActive = true;
             // ToDo VFX
             _shiftSpaceActivationTimer = 0.0f;
         }
+        else
+        {
+
+        }
+
+        if (_shiftSpaceTarget)
+        {
+            float3 dir = normalize((float3)(_shiftSpaceTarget->GetNavigatablePosition() - position));
+            auto up = Up();
+
+            auto targetRotation = Math::LookRotation(dir, float3{up.m128_f32[0], up.m128_f32[1], up.m128_f32[2]});
+            rotation = XMQuaternionSlerp(rotation, targetRotation, saturate(time->Delta() * 4.0f));
+        }
+
         str << _shiftSpaceActivationTimer;
-        _topText->SetText(str.str());
-        _topText->color.w = 1.0f - powf(_shiftSpaceActivationTimer / _shiftSpaceActivationTimeout, 2.0f);
+        SetInfoText(str.str(), 0);
+        _infoText->color.w = 1.0f - powf(_shiftSpaceActivationTimer / _shiftSpaceActivationTimeout, 2.0f);
     } else
     {
-        _topText->SetText("");
+        // _infoText->SetText("");
     }
 
     if (input->GetKeyDown(DIK_G))
@@ -247,6 +300,7 @@ void ShipController::OnUpdate()
         {
             _isShiftSpaceActive = false;
             _shipVelocity = Forward() * 1.0f;
+            _shiftSpaceTarget = nullptr;
             // ToDo VFX
         }
         else
@@ -255,11 +309,66 @@ void ShipController::OnUpdate()
             {
                 // Cancel
                 _shiftSpaceActivationTimer = 0.0f;
+                _shiftSpaceTarget = nullptr;
             }
             else // If not charging
             {
-                _shiftSpaceActivationTimer = _shiftSpaceActivationTimeout;
+                if (masslockedDistance > 0.0)
+                {
+                    _shiftSpaceActivationTimer = _shiftSpaceActivationTimeout;
+                    _shiftSpaceTarget = NavigationSystem::Get()->FindAlignedNavigatable(position, Forward(), 0.99);
+                }
+                else
+                {
+                    // print masslocked
+                    SetInfoText("masslocked\x8C\x8D", 3);
+                }
             }
         }
     }
+
+
+}
+
+void ShipController::UpdateInfoText()
+{
+    if (_textTimeout > 0.0f)
+    {
+        _textTimeout -= TimeServer::Get()->Delta();
+    }
+
+    if (_textTimeout <= 0.0f)
+    {
+        _textTimeout = 0.0f;
+        _infoText->SetText("");
+    }
+}
+
+obj_ptr<INavigatable> ShipController::GetClosestMasslocked(double& outSurfaceDistance)
+{
+    auto nav = NavigationSystem::Get();
+
+    double minDistance = DBL_MAX;
+    obj_ptr<INavigatable> result = nullptr;
+
+    for (const auto& target : *nav)
+    {
+        auto distance = length(target->GetNavigatablePosition() - position);
+        distance -= target->GetMasslockRadius();
+
+        if (distance < minDistance)
+        {
+            minDistance = distance;
+            result = target;
+        }
+    }
+
+    outSurfaceDistance = minDistance;
+    return result;
+}
+
+void ShipController::SetInfoText(const std::string &text, float textTimeout)
+{
+    _infoText->SetText(text);
+    _textTimeout = textTimeout;
 }

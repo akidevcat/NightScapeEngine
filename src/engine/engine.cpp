@@ -83,8 +83,9 @@ bool NSE::Engine::UpdateFrame()
     OnFrameInput();
     _gameInstance->OnFrameInput();
 
+    _gameInstance->OnBeginFrameUpdate();
     OnFrameUpdate();
-    _gameInstance->OnFrameUpdate();
+    _gameInstance->OnFinishFrameUpdate();
 
     OnFrameRender();
     _gameInstance->OnFrameRender();

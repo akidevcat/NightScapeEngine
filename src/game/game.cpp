@@ -122,7 +122,7 @@ void Game::OnFrameInput()
 
 }
 
-void Game::OnFrameUpdate()
+void Game::OnBeginFrameUpdate()
 {
     _mainSystem->OnUpdate();
     _generationSystem->OnUpdate();
@@ -132,6 +132,12 @@ void Game::OnFrameUpdate()
     // _inventorySystem->OnUpdate();
     _shipSystem->OnUpdate();
 }
+
+void Game::OnFinishFrameUpdate()
+{
+
+}
+
 
 void Game::OnFrameRender()
 {

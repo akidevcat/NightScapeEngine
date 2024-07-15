@@ -26,7 +26,8 @@ public:
 
     void Start() override;
     void OnFrameInput() override;
-    void OnFrameUpdate() override;
+    void OnBeginFrameUpdate() override;
+    void OnFinishFrameUpdate() override;
     void OnFrameRender() override;
     void OnFrameCleanup() override;
 

@@ -43,7 +43,7 @@ float4 GetAtmosphericScattering(float3 planetOrigin, float planetRadius, float a
         atmAccumDensity += sampleDensity * sampleLength;
 
 //         float sampleLight = lerp(float3(0.506, 0.835, 1), float3(0.9, 0.2, 0.0), saturate(atmAccumRayLength * 0.1));
-        float3 absorbedLight = float3(0.506, 0.835, 1) * (exp(sampleLength)) * 0.1;
+        float3 absorbedLight = float3(0.506, 0.835, 1) * (exp(sampleLength)) * 0.05;
 
         // light correction by height
 //         absorbedLight *= 1.0 + (1.0 - camHeight) * 10.0;
@@ -74,5 +74,11 @@ float4 PixelMain(DefaultPixelInput input) : SV_TARGET
 
     intersections = max(intersections, 0);
 
-    return GetAtmosphericScattering(originWS, _PlanetRadius, _AtmosphereRadius, viewDir * intersections.x, viewDir, intersections.y - intersections.x, screenPos);
+//     float nearFade = length(input.positionRS);
+//     nearFade -= 1.0f;
+//     nearFade /= 0.3f;
+//     nearFade = saturate(nearFade);
+float nearFade = 1;
+
+    return GetAtmosphericScattering(originWS, _PlanetRadius, _AtmosphereRadius, viewDir * intersections.x, viewDir, intersections.y - intersections.x, screenPos) * float4(1,1,1,nearFade);
 }

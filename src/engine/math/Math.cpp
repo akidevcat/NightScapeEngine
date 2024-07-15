@@ -220,6 +220,33 @@ namespace NSE
         return -1.0f+2.0f*(k0 + k1*u.x + k2*u.y + k3*u.z + k4*u.x*u.y + k5*u.y*u.z + k6*u.z*u.x + k7*u.x*u.y*u.z);
     }
 
+    void Math::OrthoNormalize(float3& normal, float3& tangent)
+    {
+        normal = normalize(normal);
+        tangent = normalize(tangent);
+        tangent = normalize(tangent - normal * dotproduct(normal, tangent));
+    }
+
+    DirectX::XMVECTOR Math::LookRotation(float3 lookAt, float3 upDirection)
+    {
+        float3 forward = lookAt;
+        float3 up = upDirection;
+        OrthoNormalize(forward, up);
+
+        DirectX::XMVECTOR a = XMLoadFloat3(&up);
+        DirectX::XMVECTOR b = XMLoadFloat3(&forward);
+        auto right = DirectX::XMVector3Cross(a, b);
+
+        DirectX::XMVECTOR ret;
+        ret.m128_f32[3] = sqrtf(1.0f + right.m128_f32[0] + up.y + forward.z) * 0.5f;
+        float w4_recip = 1.0f / (4.0f * ret.m128_f32[3]);
+        ret.m128_f32[0] = (up.z - forward.y) * w4_recip;
+        ret.m128_f32[1] = (forward.x - right.m128_f32[2]) * w4_recip;
+        ret.m128_f32[2] = (right.m128_f32[1] - up.x) * w4_recip;
+
+        return ret;
+    }
+
     float length(float3 v)
     {
         return sqrtf(v.x * v.x + v.y * v.y + v.z * v.z);
@@ -238,6 +265,16 @@ namespace NSE
     Vector3d normalize(Vector3d v)
     {
         return v / length(v);
+    }
+
+    float dotproduct(float3 v0, float3 v1)
+    {
+        return v0.x * v1.x + v0.y * v1.y + v0.z * v1.z;
+    }
+
+    double dotproduct(Vector3d v0, Vector3d v1)
+    {
+        return v0.x * v1.x + v0.y * v1.y + v0.z * v1.z;
     }
 
     float saturate(float v)

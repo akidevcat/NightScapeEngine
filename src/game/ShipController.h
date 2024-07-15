@@ -7,6 +7,7 @@
 #include "../engine/entity/VisualMeshEntity.h"
 #include "../engine/entity/SpriteVisual.h"
 #include "../engine/entity/TextVisual.h"
+#include "data/INavigatable.h"
 
 class ShipController : public NSE::VisualMeshEntity
 {
@@ -21,6 +22,12 @@ public:
 
     [[nodiscard]] NSE::Vector3d GetShipVelocity() const { return _shipVelocity; }
 
+private:
+    void UpdateInfoText();
+
+    obj_ptr<INavigatable> GetClosestMasslocked(double& outSurfaceDistance);
+    void SetInfoText(const std::string& text, float textTimeout = 1.0f);
+
 public:
     float shipSpeed = 3.0f;
     float shipRotationSpeed = 1.0f;
@@ -33,7 +40,9 @@ private:
     bool _isShiftSpaceActive = false;
     float _shiftSpaceActivationTimer = 0.0f;
     const float _shiftSpaceActivationTimeout = 3.0f;
+    obj_ptr<INavigatable> _shiftSpaceTarget = nullptr;
 
+    float _textTimeout = 0.0f;
     float _camMomentumX = 0;
     float _camMomentumY = 0;
     float _camMomentumR = 0;
@@ -47,7 +56,7 @@ private:
     obj_ptr<NSE::ProgressBarVisual> _integrityBar = nullptr;
     obj_ptr<NSE::ProgressBarVisual> _exposureBar = nullptr;
     obj_ptr<NSE::SpriteVisual> _crosshair = nullptr;
-    obj_ptr<NSE::TextVisual> _topText = nullptr;
+    obj_ptr<NSE::TextVisual> _infoText = nullptr;
     obj_ptr<ShipMarkersVisual> _markers = nullptr;
 };
 

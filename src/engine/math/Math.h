@@ -110,14 +110,20 @@ namespace NSE
         static unsigned int MurmurHash13(unsigned int x, unsigned int y, unsigned int z);
         static float Hash13(float3 value);
         static float Noise3D(float3 pos);
+        static void OrthoNormalize(float3& normal, float3& tangent);
+        static DirectX::XMVECTOR LookRotation(float3 lookAt, float3 upDirection);
     };
 
     float length(float3 v);
     double length(Vector3d v);
     float3 normalize(float3 v);
     Vector3d normalize(Vector3d v);
+    float dotproduct(float3 v0, float3 v1);
+    double dotproduct(Vector3d v0, Vector3d v1);
     float saturate(float v);
     double saturate(double v);
+
+
 }
 
 typedef NSE::Vector3d double3;

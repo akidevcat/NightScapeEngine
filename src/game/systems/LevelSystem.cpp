@@ -20,8 +20,8 @@ void LevelSystem::CreateSystem(int seed, GalaxyLayer layer)
     srand(seed);
 
     int planetCount = (int)(NSE::Math::Random() * 6.0f) + 1;
-    float maxPlanetRadius = 20000.0f;
-    float minPlanetRadius = 10000.0f;
+    float maxPlanetRadius = 40000.0f;
+    float minPlanetRadius = 20000.0f;
     float maxVerticalOffset = 20000.0f;
     float slotFreeAreaMultiplier = 1.0f;
 

@@ -17,7 +17,8 @@ namespace NSE
         virtual ~IGame() {}
         virtual void Start() = 0;
         virtual void OnFrameInput() = 0;
-        virtual void OnFrameUpdate() = 0;
+        virtual void OnBeginFrameUpdate() = 0;
+        virtual void OnFinishFrameUpdate() = 0;
         virtual void OnFrameRender() = 0;
         virtual void OnFrameCleanup() = 0;
     };
