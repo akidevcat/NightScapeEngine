@@ -89,55 +89,6 @@ namespace NSE
     template <typename T>
         void Scene::FindAllEntitiesFromBaseType(std::vector<obj_ptr<T>>& vec, bool skipDisabled)
     {
-        // size_t typeId = typeid(T);
-        //
-        // auto nodeIt = _entityTreeNodes.find(typeId);
-        // if (nodeIt == _entityTreeNodes.end())
-        // {
-        //     // Node missing in the tree structure
-        //     TypeTreeNode<SceneEntity>* node = &_entityTree;
-        //
-        //     TypeTreeNode<SceneEntity>* derivedNode = nullptr;
-        //
-        //     for (auto& childNode : node->childNodes)
-        //     {
-        //
-        //         childNode.second = TypeTreeNode<SceneEntity>{};
-        //         childNode.second = TypeTreeNode<T>{};
-        //
-        //
-        //         childNode.second::type;
-        //
-        //         // assert(!childNode.second->entitiesList.empty());
-        //         // void* childElementPtr = childNode.second->entitiesList.front().get();
-        //
-        //         // T* castResultPtr = dynamic_cast<T>(childNode.second->metadataObject);
-        //         // if (!castResultPtr)
-        //         //     continue;
-        //
-        //
-        //
-        //         // typeid(T).before()
-        //     }
-        //
-        // }
-
-        // auto resultIt = _entitiesByTypeLookup.find(typeId);
-        // if (resultIt == _entitiesByTypeLookup.end())
-        // {
-        //     // Create lookup
-        //     resultIt = _entitiesByTypeLookup.emplace(typeId, std::vector<NSE_SceneEntity>{}).first;
-        //     const auto& entities = resultIt->second;
-        //
-        //     for (const auto& it : _entities)
-        //     {
-        //         T* rawPtr = dynamic_cast<T*>(it.second.get());
-        //
-        //     }
-        // }
-
-
-
         for (auto it : _entities)
         {
             // Check if map is empty
@@ -157,22 +108,8 @@ namespace NSE
                 if (skipDisabled && !eit.second->IsEnabled())
                     continue;
 
-                // const_cast<obj_ptr<SceneEntity>*>(&eit.second);
-
-                // std::dynamic_pointer_cast<>()
-
-                // dynamic_cast<T*>(eit.second.get());
-                // vec.emplace_back(obj_ptr<T>(eit.second));
-                // vec.emplace_back(dynamic_pointer_cast<T>(eit.second));
-
-                // vec.emplace_back(obj_ptr<T>(eit.second, dynamic_cast<T*>(eit.second.get())));
                 vec.emplace_back(dynamic_pointer_cast<T>(eit.second));
 
-                // std::dynamic_pointer_cast<>()
-
-                // std::dynamic_pointer_cast<>()
-
-                // ;
                 // vec.emplace_back(*reinterpret_cast<obj_ptr<T>*>(const_cast<obj_ptr<SceneEntity>*>(&eit.second))); // This is evil AF
             }
         }

@@ -82,6 +82,7 @@ void NSE::TextVisual::RenderEntity(const NSE_Camera& camera)
     SPID(_TextBuffer);
     SPID(_TextLength);
     SPID(_Tint);
+    SPID(_IsScreenSpace);
 
     if (_textLength <= 0)
         return;
@@ -97,9 +98,13 @@ void NSE::TextVisual::RenderEntity(const NSE_Camera& camera)
         renderingMaterial->SetBuffer(PID_TextBuffer, _textBuffer);
         renderingMaterial->SetUnsignedInt(PID_TextLength, _textLength);
         renderingMaterial->SetColor(PID_Tint, color);
+        renderingMaterial->SetFloat(PID_IsScreenSpace, isScreenSpace ? 1.0f : 0.0f);
     }
 
-    RenderServer::Get()->DrawMesh(_mesh, renderingMaterial, GetModelMatrix(camera->position), camera, GetUID());
+    if (isScreenSpace)
+        RenderServer::Get()->DrawMesh(_mesh, renderingMaterial, GetModelMatrixUI(), camera, GetUID());
+    else
+        RenderServer::Get()->DrawMesh(_mesh, renderingMaterial, GetModelMatrix(camera->position), camera, GetUID());
 }
 
 void NSE::TextVisual::Release()

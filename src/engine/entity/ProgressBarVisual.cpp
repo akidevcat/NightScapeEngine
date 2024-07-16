@@ -8,36 +8,6 @@ NSE_Shader NSE::ProgressBarVisual::_shader = nullptr;
 
 NSE::ProgressBarVisual::ProgressBarVisual()
 {
-    // mesh = CreateObject<Mesh>(pathLength, pathLength);
-    // mesh->SetTopology(D3D_PRIMITIVE_TOPOLOGY_LINESTRIP);
-    //
-    // const auto indices = mesh->GetIndices();
-    // for (int i = 0; i < pathLength; i++)
-    // {
-    //     indices[i] = i;
-    // }
-    //
-    // const auto vertices = mesh->GetVertices();
-    // VertexData data;
-    // for (int i = 0; i < pathLength; i++)
-    // {
-    //     data.position = path[i];
-    //     data.normal = {};
-    //     data.color = {};
-    //     data.uv = {(float)i / (float)(pathLength - 1), 0.5f}; // ToDo make length-based
-    //     vertices[i] = data;
-    // }
-    //
-    // mesh->Upload();
-    //
-    // if (_shader == nullptr)
-    // {
-    //     _shader = CreateObject<Shader>(L"Assets/Shaders/ProgressBarLine.hlsl");
-    //     _shader->Compile();
-    // }
-    //
-    // renderingMaterial = CreateObject<Material>(_shader);
-
     _mesh = RenderServer::Get()->GetPrimitiveQuadMesh();
 
     if (!_shader)

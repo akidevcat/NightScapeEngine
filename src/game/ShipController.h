@@ -1,5 +1,6 @@
 #ifndef SHIPCONTROLLER_H
 #define SHIPCONTROLLER_H
+#include "StarDustParticles.h"
 #include "ShipMarkersVisual.h"
 #include "ShipRadarController.h"
 #include "../engine/data/Light.h"
@@ -58,6 +59,7 @@ private:
     obj_ptr<NSE::SpriteVisual> _crosshair = nullptr;
     obj_ptr<NSE::TextVisual> _infoText = nullptr;
     obj_ptr<ShipMarkersVisual> _markers = nullptr;
+    obj_ptr<StarDustParticles> _dustParticles = nullptr;
 };
 
 #endif //SHIPCONTROLLER_H

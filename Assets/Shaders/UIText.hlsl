@@ -3,6 +3,7 @@
 TEXTURE2D_ATLAS(_TextImage)
 Buffer<uint> _TextBuffer;
 uint _TextLength;
+bool _IsScreenSpace;
 
 float4 _Tint;
 
@@ -44,7 +45,14 @@ TextPixelInput VertexMain(TextVertexInput input)
     charSizePx.x -= stripLeftPx + stripRightPx;
     uint2 lineSizePx = charSizePx * uint2(_TextLength, 1);
 
-    output.position = TransformObjectToClip_PixelPerfect(vPosOS, uint2(lineSizePx));
+    if (_IsScreenSpace)
+    {
+        output.position = TransformClip_PixelPerfect(vPosOS, uint2(lineSizePx));
+    }
+    else
+    {
+        output.position = TransformObjectToClip_PixelPerfect(vPosOS, uint2(lineSizePx));
+    }
 
     output.uv.y = 1.0 - output.uv.y;
 

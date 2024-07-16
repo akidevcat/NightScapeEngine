@@ -8,6 +8,6 @@ public:
     virtual ~INavigatable() = default;
 
     virtual const NSE::Vector3d& GetNavigatablePosition() = 0;
-    virtual const float4& GetNavigatableColor() = 0;
-    virtual const float GetMasslockRadius() = 0;
+    virtual float4 GetNavigatableColor() = 0;
+    virtual float GetMasslockRadius() = 0;
 };

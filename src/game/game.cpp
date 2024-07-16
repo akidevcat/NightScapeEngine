@@ -57,7 +57,7 @@ void Game::Start()
     // _galaxySystem->OnStart();
     _levelSystem->OnStart();
     _navigationSystem->OnStart();
-    // _inventorySystem->OnStart();
+    _inventorySystem->OnStart();
     _shipSystem->OnStart();
 
     // static size_t mainTexID = ShaderUtils::PropertyToID("_MainTex");
@@ -129,7 +129,7 @@ void Game::OnBeginFrameUpdate()
     // _galaxySystem->OnUpdate();
     _levelSystem->OnUpdate();
     _navigationSystem->OnUpdate();
-    // _inventorySystem->OnUpdate();
+    _inventorySystem->OnUpdate();
     _shipSystem->OnUpdate();
 }
 

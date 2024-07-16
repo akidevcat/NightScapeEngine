@@ -46,43 +46,45 @@ ShipController::ShipController(NSE::Scene* scene, float screenAspect)
     _shipRadar->scale = {0.6f, 0.6f, 0.6f};
 
     _integrityBar = scene->Create<ProgressBarVisual>();
-    _integrityBar->color = {0.85, 0.35, 0.05, 1};
+    _integrityBar->color = {1, 1, 1, 1};
     _integrityBar->foregroundColor = {0.6, 0.6, 0.6, 1.0f};
-    _integrityBar->backgroundColor = {0.85, 0.35, 0.05, 0.5f};
-    _integrityBar->renderingMaterial->MakeAdditive();
+    _integrityBar->backgroundColor = {0.2, 0.2, 0.2, 0.25f};
+    // _integrityBar->renderingMaterial->MakeAdditive();
     _integrityBar->renderingMaterial->SetDepthWrite(ShaderDepthState::Disabled);
     _integrityBar->renderingMaterial->renderQueue = Material::RenderQueue::RENDER_QUEUE_OVERLAY;
     _integrityBar->progress = 0.8f;
-    _integrityBar->invertY = false;
-    _integrityBar->sprite.SetRectRectPixel(12, 22, 41, 11);
+    _integrityBar->invertY = true;
+    _integrityBar->sprite.SetRectRectPixel(12, 26, 43, 13);
 
     _fuelBar = scene->Create<ProgressBarVisual>();
-    _fuelBar->color = {0.85, 0.35, 0.05, 1};
+    _fuelBar->color = {1, 1, 1, 1};
     _fuelBar->foregroundColor = {0.8, 0.25, 0.0, 1.0f};
-    _fuelBar->backgroundColor = {0.85, 0.35, 0.05, 0.5f};
-    _fuelBar->renderingMaterial->MakeAdditive();
+    _fuelBar->backgroundColor = {0.8 / 3.0, 0.25 / 3.0, 0.0, 0.25f};
+    // _fuelBar->renderingMaterial->MakeAdditive();
     _fuelBar->renderingMaterial->SetDepthWrite(ShaderDepthState::Disabled);
     _fuelBar->renderingMaterial->renderQueue = Material::RenderQueue::RENDER_QUEUE_OVERLAY;
     _fuelBar->progress = 0.8f;
-    _fuelBar->invertY = false;
-    _fuelBar->sprite.SetRectRectPixel(12, 0, 41, 11);
+    _fuelBar->invertY = true;
+    _fuelBar->sprite.SetRectRectPixel(12, 0, 43, 13);
+    _fuelBar->SetEnabled(false);
 
     _exposureBar = scene->Create<ProgressBarVisual>();
-    _exposureBar->color = {0.85, 0.35, 0.05, 1};
-    _exposureBar->foregroundColor = {0.4, 0.2, 0.8, 1.0f};
-    _exposureBar->backgroundColor = {0.85, 0.35, 0.05, 0.5f};
-    _exposureBar->renderingMaterial->MakeAdditive();
+    _exposureBar->color = {1, 1, 1, 1};
+    _exposureBar->foregroundColor = {0.4, 0.2, 0.7, 1.0f};
+    _exposureBar->backgroundColor = {0.4 / 3.0, 0.2 / 3.0, 0.7 / 3.0, 0.25f};
+    // _exposureBar->renderingMaterial->MakeAdditive();
     _exposureBar->renderingMaterial->SetDepthWrite(ShaderDepthState::Disabled);
     _exposureBar->renderingMaterial->renderQueue = Material::RenderQueue::RENDER_QUEUE_OVERLAY;
     _exposureBar->progress = 0.8f;
-    _exposureBar->invertY = true;
-    _exposureBar->sprite.SetRectRectPixel(12, 11, 41, 11);
+    _exposureBar->invertY = false;
+    _exposureBar->sprite.SetRectRectPixel(12, 13, 43, 13);
 
     // _integrityBar = scene->Create<ProgressBarVisual>();
     // _integrityBar->foregroundColor = {0.04, 1.0, 0.45, 1.0f};
     // _integrityBar->backgroundColor = {0.04 / 4.0f, 1.0 / 4.0f, 0.45 / 4.0f, 0.1f};
     // _integrityBar->renderingMaterial->MakeTransparent();
     // _integrityBar->progress = 0.1;
+    _dustParticles = scene->Create<StarDustParticles>();
 
     _crosshair = scene->Create<SpriteVisual>();
     _crosshair->sprite.atlasTexture = atlasUITexture;
@@ -190,7 +192,7 @@ void ShipController::OnUpdate()
     if (_isShiftSpaceActive)
     {
         float minVelocity = 300.0;
-        float maxVelocity = 60000.0;
+        float maxVelocity = 30000.0;
         float maxDistance = 100000.0;
 
         float shiftVelocity = maxVelocity;
@@ -198,6 +200,7 @@ void ShipController::OnUpdate()
         if (masslockedDistance < maxDistance)
         {
             mTime = (masslockedDistance / maxDistance);
+            mTime = std::clamp(mTime, 0.0001f, 1.0f);
             mTime = powf(mTime, 0.5);
             shiftVelocity = minVelocity + (maxVelocity - minVelocity) * mTime;
         }
@@ -213,11 +216,17 @@ void ShipController::OnUpdate()
 
         SetInfoText("shift drive\x88\x89", 0);
 
+        _dustParticles->velocity = (float3)(normalize(_shipVelocity) * std::clamp(length(_shipVelocity) / 500.0, 0.0, 1000.0));
+
         if (masslockedDistance <= 0.0)
         {
             _isShiftSpaceActive = false; // ToDo
             _shipVelocity = Forward() * 300.0f;
         }
+    }
+    else
+    {
+        _dustParticles->velocity = {};
     }
 
     position += _shipVelocity * time->Delta();
@@ -231,20 +240,23 @@ void ShipController::OnUpdate()
 
     _camera->rotation = XMQuaternionSlerp(_camera->rotation, rotation, saturate(30.0f * time->Delta()));
 
+    // SetInfoText("caution \x8E\x8F", 0);
 
     _shipRadar->position = position + Forward() * 2.8f - Up() * 0.5f;
     _shipRadar->rotation = rotation;
     _shipRadar->GetParticleSystem()->position = _shipRadar->position;
     _shipRadar->GetParticleSystem()->rotation = _shipRadar->rotation;
 
-    _fuelBar->position = _shipRadar->position + Forward() * 3.0f - Up() * 1.2f - Right() * 2.35f;
-    _integrityBar->position = _shipRadar->position + Forward() * 3.0f - Up() * 1.7f - Right() * 2.35f;
-    _exposureBar->position = _shipRadar->position + Forward() * 3.0f - Up() * 1.7f + Right() * 2.35f;
+    _fuelBar->position = _shipRadar->position + Forward() * 3.0f + Up() * 2.15f - Right() * 2.25f;
+    _integrityBar->position = _shipRadar->position + Forward() * 3.0f + Up() * 2.8f - Right() * 2.25f;
+    _exposureBar->position = _shipRadar->position + Forward() * 3.0f + Up() * 2.8f + Right() * 2.25f;
     _fuelBar->progress = _fuel / 100.0f;
     _integrityBar->progress = _integrity / 100.0f;
     _exposureBar->progress = _exposure / 100.0f;
     // _integrityBar->position = _shipRadar->position;
     // _integrityBar->rotation = _shipRadar->rotation;
+
+    _dustParticles->position = position;
 
 
     _cockpitLight->position = _shipRadar->position;

@@ -1,4 +1,5 @@
 #include "ShaderLibrary/Core.hlsl"
+#include "ShaderLibrary/Hash.hlsl"
 
 TEXTURE2D_ATLAS(_Image)
 
@@ -39,9 +40,10 @@ DefaultPixelInput VertexMain(DefaultVertexInput input)
 float4 PixelMain(DefaultPixelInput input) : SV_TARGET
 {
     float2 uv = input.uv;
+
     uv = TransformUV_PixelPerfect(uv, uint2(_Size));
     uv = _Image_AtlasParams.xy + _Image_AtlasParams.zw * uv.xy;
-
+    uv.y *= 0.99; // ToDo
     float4 color = SAMPLE_TEXTURE2D_POINT(_Image, uv);
 
     return color * _Tint;

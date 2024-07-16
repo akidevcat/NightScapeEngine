@@ -46,8 +46,8 @@ public:
     void RenderEntity(const NSE_Camera& camera) override;
 
     const NSE::Vector3d& GetNavigatablePosition() override { return position; }
-    const float4&        GetNavigatableColor() override { return float4{1,1,1,1}; }
-    const float          GetMasslockRadius() override { return _planetRadius + _planetAtmosphereHeight; }
+    float4        GetNavigatableColor() override { return float4{1,1,1,1}; }
+    float          GetMasslockRadius() override { return _planetRadius + _planetAtmosphereHeight; }
 
     static char cid_to_face(ChunkID id)
     {

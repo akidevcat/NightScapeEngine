@@ -11,13 +11,14 @@ StarDustParticles::StarDustParticles() : ParticleSystem(1000, sizeof(Particle), 
     auto shader = NSE::CreateObject<NSE::Shader>(L"Assets/Shaders/ParticleUnlitLine.hlsl");
     shader->Compile();
     renderingMaterial = NSE::CreateObject<NSE::Material>(shader);
+    renderingMaterial->MakeAdditive();
 }
 
 void StarDustParticles::OnSetupParticles(void *particlesData, size_t particleCount)
 {
     auto particles = static_cast<Particle*>(particlesData);
 
-    constexpr float r = 50.0f;
+    constexpr float r = 20.0f;
 
     for (size_t i = 0; i < particleCount; i++)
     {
@@ -33,7 +34,7 @@ void StarDustParticles::OnProcessParticles(void *particlesData, size_t particleC
     auto particles = static_cast<Particle*>(particlesData);
     auto dt = NSE::TimeServer::Get()->Delta();
 
-    constexpr float r = 50.0f;
+    constexpr float r = 20.0f;
     constexpr float r2 = r*r;
 
     for (size_t i = 0; i < particleCount; i++)

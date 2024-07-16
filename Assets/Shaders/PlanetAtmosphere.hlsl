@@ -38,7 +38,7 @@ float4 GetAtmosphericScattering(float3 planetOrigin, float planetRadius, float a
         float height = 1.0 - max(length(samplePos - planetOrigin) - planetRadius, 0.0) / (atmosphereRadius - planetRadius);
 //         height = saturate(pow(height, 0.3));
 
-        float sampleDensity = height * 0.3;
+        float sampleDensity = height * 0.5;
 
         atmAccumDensity += sampleDensity * sampleLength;
 

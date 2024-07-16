@@ -43,7 +43,7 @@ float4 PixelMain(DefaultPixelInput input) : SV_TARGET
     float barMask = 1.0 - step(0.01, color.b);
     float barStep = color.r;
 
-    if (color.b < 0.01 && color.a > 0.5)
+    if (color.b < 0.01 && color.a > 0.999)
     {
         if (_ProgressValue > color.g)
         {
