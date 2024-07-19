@@ -30,6 +30,7 @@ void NSE::TimeServer::BeginFrame()
     }
 
     float deltaTime = (float)std::chrono::duration_cast<std::chrono::microseconds>(deltaTimeMs).count() / 1000000.0f;
+    deltaTime *= _timeScale;
 
     _deltaTimeSeconds = deltaTime;
     _timeSeconds += deltaTime;
@@ -38,4 +39,9 @@ void NSE::TimeServer::BeginFrame()
 void NSE::TimeServer::EndFrame()
 {
     _lastAbsoluteTimeMs = _absoluteTimeMs;
+}
+
+void NSE::TimeServer::SetTimeScale(float timeScale)
+{
+    _timeScale = timeScale;
 }

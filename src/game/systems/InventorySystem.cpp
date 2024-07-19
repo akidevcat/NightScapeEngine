@@ -6,6 +6,7 @@
 #include "MainSystem.h"
 #include "../../engine/servers/AssetServer.h"
 #include "../../engine/servers/InputServer.h"
+#include "../../engine/servers/TimeServer.h"
 
 using namespace NSE;
 
@@ -154,6 +155,8 @@ void InventorySystem::OnUpdate()
 
 void InventorySystem::Show()
 {
+    TimeServer::Get()->SetTimeScale(0.0f);
+
     _background->SetEnabled(true);
     _tabNameSprite->SetEnabled(true);
     _nextTabNameSprite->SetEnabled(true);
@@ -181,6 +184,8 @@ void InventorySystem::Show()
 
 void InventorySystem::Hide()
 {
+    TimeServer::Get()->SetTimeScale(1.0f);
+
     _background->SetEnabled(false);
     _tabNameSprite->SetEnabled(false);
     _nextTabNameSprite->SetEnabled(false);
