@@ -38,6 +38,7 @@ private:
     float _fuel = 100.0f;
     float _exposure = 50.0f;
 
+    bool _isShipDragEnabled = true;
     bool _isShiftSpaceActive = false;
     float _shiftSpaceActivationTimer = 0.0f;
     const float _shiftSpaceActivationTimeout = 3.0f;

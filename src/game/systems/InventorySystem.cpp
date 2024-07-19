@@ -16,8 +16,8 @@ void InventorySystem::OnStart()
     auto scene = main->GetMainScene();
 
     _itemRegistry.emplace(0, InventoryItemDescription{0, "VOID OBJECT", "SOME VOID\nOBJECT...\n\nVERY VERY\nINTERESTING"});
-    _itemRegistry.emplace(1, InventoryItemDescription{1, "EMBERITE", "USEFUL FOR\nSHIP FUEL\nREFILL"});
-    _itemRegistry.emplace(2, InventoryItemDescription{2, "SPECTRITE", "USEFUL FOR\nSHIP HULL\nREPAIR"});
+    _itemRegistry.emplace(1, InventoryItemDescription{1, "EMBERITE", "USEFUL FOR\nSHIP FUEL\nREFILL\n\n+5 FUEL"});
+    _itemRegistry.emplace(2, InventoryItemDescription{2, "SPECTRITE", "USEFUL FOR\nSHIP HULL\nREPAIR\n\n+5 HULL"});
 
     _items.emplace_back(InventoryItemStack{1, 37});
     _items.emplace_back(InventoryItemStack{2, 24});

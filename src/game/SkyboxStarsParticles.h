@@ -9,9 +9,9 @@ public:
     struct Particle
     {
         float3 position = {};
-        float size = 1;
+        float2 size = {1,1};
         float3 color = {1,1,1};
-        float padding;
+        float4 atlasMapping = {};
     };
 
 public:

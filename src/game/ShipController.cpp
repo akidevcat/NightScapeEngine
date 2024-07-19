@@ -159,8 +159,17 @@ void ShipController::OnUpdate()
             val = sqrtf(val);
         }
     }
+    if (input->GetKeyDown(DIK_X))
+    {
+        _isShipDragEnabled = !_isShipDragEnabled;
+        if (_isShipDragEnabled)
+            SetInfoText("stabilizer on", 3.0f);
+        else
+            SetInfoText("stabilizer off", 3.0f);
+    }
 
-    _shipVelocity = NSE::Vector3d::Lerp(_shipVelocity, targetVelocity, time->Delta());
+    if (length(targetVelocity) > 0.1f || _isShipDragEnabled)
+        _shipVelocity = NSE::Vector3d::Lerp(_shipVelocity, targetVelocity, time->Delta());
 
     if (input->GetKey(DIK_E))
     {
@@ -171,7 +180,9 @@ void ShipController::OnUpdate()
         _camMomentumR = _camMomentumR + (4.0f - _camMomentumR) * time->Delta() * 4.0f;
     }
 
-    _shipVelocity *= std::clamp(1.0 - time->Delta() * 0.5, 0.0, 1.0);
+    if (_isShipDragEnabled)
+        _shipVelocity *= std::clamp(1.0 - time->Delta() * 0.5, 0.0, 1.0);
+
     _camMomentumR *= (float)std::clamp(1.0 - time->Delta() * 4.0, 0.0, 1.0);
 
     int dx, dy;
@@ -203,7 +214,6 @@ void ShipController::OnUpdate()
         }
 
         _shipVelocity = Forward() * shiftVelocity;
-        // _shipVelocity = targetVelocity * 500;
         _fuel -= time->Delta();
         _camMomentumX = 0.0f;
         _camMomentumY = 0.0f;
