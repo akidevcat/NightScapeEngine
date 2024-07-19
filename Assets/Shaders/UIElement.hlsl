@@ -5,8 +5,8 @@ TEXTURE2D_ATLAS(_Image)
 
 float4 _Tint;
 float2 _Size;
-bool _IsPixelPerfect;
 bool _IsScreenSpace;
+float2 _AlignmentOffset;
 
 DefaultPixelInput VertexMain(DefaultVertexInput input)
 {
@@ -14,20 +14,12 @@ DefaultPixelInput VertexMain(DefaultVertexInput input)
 
     if (_IsScreenSpace)
     {
-        output.position = TransformObjectToWorld(input.position);
-
-        if (_IsPixelPerfect)
-//             output.position = TransformObjectToClip_PixelPerfect(input.position, uint2(_Size));
-            output.position = TransformClip_PixelPerfect(input.position, uint2(_Size));
-        else
-            output.position = TransformObjectToClip(input.position);
+        output.position = TransformClip_PixelPerfect(input.position, uint2(_Size), float2(_AlignmentOffset.x, -_AlignmentOffset.y));
     }
     else
     {
-        if (_IsPixelPerfect)
-            output.position = TransformObjectToClip_PixelPerfect(input.position, uint2(_Size));
-        else
-            output.position = TransformObjectToClip(input.position);
+        input.position.xy += _AlignmentOffset;
+        output.position = TransformObjectToClip_PixelPerfect(input.position, uint2(_Size));
     }
 
     output.uv = input.uv;
@@ -43,7 +35,9 @@ float4 PixelMain(DefaultPixelInput input) : SV_TARGET
 
     uv = TransformUV_PixelPerfect(uv, uint2(_Size));
     uv = _Image_AtlasParams.xy + _Image_AtlasParams.zw * uv.xy;
-    uv.y *= 0.99; // ToDo
+
+//     return hash41(_ObjectID);
+
     float4 color = SAMPLE_TEXTURE2D_POINT(_Image, uv);
 
     return color * _Tint;

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "GameSystem.h"
+#include "../SkyboxStarsParticles.h"
 #include "../../engine/entity/Camera.h"
 #include "../../engine/entity/QuadVisual.h"
 
@@ -40,5 +41,5 @@ private:
     NSE_RenderTexture   _mainDepthRenderTarget = nullptr;
 
     NSE_QuadVisual      _skyboxQuad = nullptr;
-
+    obj_ptr<SkyboxStarsParticles> _skyboxParticles = nullptr;
 };

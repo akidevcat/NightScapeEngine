@@ -190,11 +190,63 @@ float3 TransformClipToWorld(float4 position)
     return result;
 }
 
-float4 TransformClip_PixelPerfect(float3 position, uint2 sizeInPixels)
+float4 TransformClip_PixelPerfect(float3 position, uint2 sizeInPixels, float2 offset = float2(0, 0))
 {
-    float4 result = mul(_ModelMatrix, float4(0, 0, 0, 1));
-
     float2 pixelSize = float2(2.0, 2.0) / (float2)_TargetResolution;
+
+    float4 result = mul(_ModelMatrix, float4(0, 0, 0, 1));
+    result /= result.w;
+
+    if (offset.x == 0 && sizeInPixels.x % 2 == 1)
+    {
+        result.x += pixelSize.x / 2.0;
+    }
+
+    if (offset.y == 0 && sizeInPixels.y % 2 == 1)
+    {
+        result.y += pixelSize.y / 2.0;
+    }
+
+    // result.xy now stores screen NDC position of the pivot
+    // ToDo make result.xy always left top position of the quad?
+    // Target: find top left corner always
+
+    // if offset = 0:
+    // topLeft = result.xy - pixelSize * float2(1, 1) <---- pixelSize which is multiplied by px
+    // if offset != 0:
+    // topLeft = result.xy - pixelSize * (float2(1, 1) - offset)
+
+
+
+
+
+    float2 screenPixelSize = float2(1.0, 1.0) / (float2)_TargetResolution;
+    float2 quadScreenSize = float2(sizeInPixels) * screenPixelSize;
+
+
+    float2 topLeftPositionSS = result.xy + (float2(-1, 1) - offset) / 1.0 * quadScreenSize;
+
+    // suppose result.xy was positioned as we want it to be...
+    // topLeftPositionSS would be right at the needed place
+
+    float2 vertexPositionOS = position.xy + float2(1, -1);
+//     float2 vertexPositionOS = position.xy + float2(0.3, 0.3);
+//     float2 vertexPositionOS = position.xy;
+
+    // offset 0
+    // 1) result.xy + float2(-1, -1) / 2.0...
+    // 2) position.xy + float2(1, 1)
+
+    float2 vertexPositionSS = topLeftPositionSS + vertexPositionOS / 1.0 * quadScreenSize;
+
+//     vertexPositionSS = topLeftPositionSS;
+//     float2 vertexPositionSS = result.xy + vertexPositionOS / 1.0 * quadScreenSize;
+
+    return float4(vertexPositionSS, result.z, result.w);
+
+//     result.xy = result.xy * (float2)_TargetResolution / float2(2.0, 2.0);
+//     result.xy = round(result.xy);
+//     result.xy = result.xy / ((float2)_TargetResolution / float2(2.0, 2.0));
 
     uint2 px = uint2(sizeInPixels.x / 2, sizeInPixels.y / 2);
 
@@ -210,8 +262,7 @@ float4 TransformClip_PixelPerfect(float3 position, uint2 sizeInPixels)
     pixelSize.x *= (float)px.x;
     pixelSize.y *= (float)px.y;
 
-    result /= result.w;
-    result += float4(position.xy * pixelSize, 0, 0);
+    result += float4((position.xy + offset) * pixelSize, 0, 0);
 
     return result;
 }

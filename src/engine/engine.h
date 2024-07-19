@@ -7,6 +7,7 @@
 #include "servers/RenderPipelineServer.h"
 #include "servers/RenderServer.h"
 #include "servers/SceneServer.h"
+#include "servers/ScreenServer.h"
 #include "servers/TimeServer.h"
 
 namespace NSE
@@ -62,6 +63,7 @@ namespace NSE
         SceneServer* _sceneServer = nullptr;
         TimeServer* _timeServer = nullptr;
         AssetsServer* _assetsServer = nullptr;
+        ScreenServer* _screenServer = nullptr;
         int _screenWidth;
         int _screenHeight;
     };

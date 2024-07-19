@@ -5,6 +5,8 @@
 #include "ShipSystem.h"
 #include "../data/GalaxyLayer.h"
 
+using namespace NSE;
+
 void LevelSystem::OnStart()
 {
     CreateSystem(5426, GalaxyLayer::Layer0);
@@ -45,6 +47,34 @@ void LevelSystem::CreateSystem(int seed, GalaxyLayer layer)
         params.radius = minPlanetRadius + (maxPlanetRadius - minPlanetRadius) * NSE::Math::Random();
         params.atmosphereHeight = params.radius / 20.0f;
         params.terrainMaxHeight = params.radius / 20.0f;
+
+        if (Math::Random() > 0.5f)
+            params.noise.SetNoiseType(FastNoiseLite::NoiseType_OpenSimplex2S);
+        else
+            params.noise.SetNoiseType(FastNoiseLite::NoiseType_Cellular);
+
+        params.noise.SetSeed(seed + i);
+        params.noise.SetFrequency(2.0f + Math::Random() * 8.0f);
+        params.noise.SetFractalLacunarity(2.0f + Math::Random() * 2.0f);
+        params.noise.SetFractalGain(0.15f + Math::Random() * 0.25f);
+        params.noise.SetFractalOctaves(3);
+
+        if (Math::Random() > 0.5f)
+            params.noise.SetFractalType(FastNoiseLite::FractalType_FBm);
+        else
+            params.noise.SetFractalType(FastNoiseLite::FractalType_Ridged);
+
+        if (Math::Random() > 0.5f)
+        {
+            params.noise.SetDomainWarpType(FastNoiseLite::DomainWarpType_OpenSimplex2Reduced);
+            params.noise.SetDomainWarpAmp(2.0f + Math::Random() * 6.0f);
+        }
+        else
+        {
+
+        }
+
+        params.primaryColor = float4{Math::Random(), Math::Random(), Math::Random(), 1.0};
 
         auto planet = Planet::Create(params, main->GetMainScene(), main->GetScaledScene(), ship);
 

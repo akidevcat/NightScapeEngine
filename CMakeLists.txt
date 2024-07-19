@@ -161,6 +161,9 @@ add_executable(${PROJECT_NAME} WIN32
         src/game/ShipMarkersVisual.h
         src/game/ItemVisualUI.cpp
         src/game/ItemVisualUI.h
+        src/game/data/InventoryItemStack.h
+        src/game/data/InventoryItemDescription.cpp
+        src/game/data/InventoryItemDescription.h
 )
 
 target_link_libraries(${PROJECT_NAME} d3d9 d3d11 d3dcompiler dinput8 dxguid)

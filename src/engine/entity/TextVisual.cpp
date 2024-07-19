@@ -75,6 +75,40 @@ void NSE::TextVisual::SetText(const std::string& text)
     _textLength = (int)textLength;
 }
 
+void NSE::TextVisual::SetAlignment(Alignment alignment)
+{
+    switch (alignment)
+    {
+        case Alignment::TopLeft:
+            alignmentOffset = {-1, -1};
+        break;
+        case Alignment::TopCenter:
+            alignmentOffset = {0, -1};
+        break;
+        case Alignment::TopRight:
+            alignmentOffset = {1, -1};
+        break;
+        case Alignment::CenterLeft:
+            alignmentOffset = {-1, 0};
+        break;
+        case Alignment::Center:
+            alignmentOffset = {0, 0};
+        break;
+        case Alignment::CenterRight:
+            alignmentOffset = {1, 0};
+        break;
+        case Alignment::BottomLeft:
+            alignmentOffset = {-1, 1};
+        break;
+        case Alignment::BottomCenter:
+            alignmentOffset = {0, 1};
+        break;
+        case Alignment::BottomRight:
+            alignmentOffset = {1, 1};
+        break;
+    }
+}
+
 void NSE::TextVisual::RenderEntity(const NSE_Camera& camera)
 {
     SPID(_TextImage);
@@ -83,6 +117,7 @@ void NSE::TextVisual::RenderEntity(const NSE_Camera& camera)
     SPID(_TextLength);
     SPID(_Tint);
     SPID(_IsScreenSpace);
+    SPID(_AlignmentOffset);
 
     if (_textLength <= 0)
         return;
@@ -99,6 +134,7 @@ void NSE::TextVisual::RenderEntity(const NSE_Camera& camera)
         renderingMaterial->SetUnsignedInt(PID_TextLength, _textLength);
         renderingMaterial->SetColor(PID_Tint, color);
         renderingMaterial->SetFloat(PID_IsScreenSpace, isScreenSpace ? 1.0f : 0.0f);
+        renderingMaterial->SetFloat2(PID_AlignmentOffset, alignmentOffset);
     }
 
     if (isScreenSpace)

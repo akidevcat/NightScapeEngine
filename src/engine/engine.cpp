@@ -23,6 +23,7 @@ NSE::Engine::~Engine()
     delete _inputServer;
     delete _renderPipelineServer;
     delete _renderServer;
+    delete _screenServer;
     delete _sceneServer;
     delete _timeServer;
     delete _applicationServer;
@@ -53,6 +54,8 @@ bool NSE::Engine::Initialize(IGame* game, HINSTANCE histance, int screenWidth, i
     {
         return false;
     }
+
+    _screenServer = new ScreenServer{screenWidth, screenHeight};
 
     _renderServer = new RenderServer{};
     if (!_renderServer->Initialize(screenWidth, screenHeight, hwnd))

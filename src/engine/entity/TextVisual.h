@@ -10,11 +10,19 @@ namespace NSE
     class TextVisual : public VisualEntity
     {
     public:
+        enum class Alignment
+        {
+            TopLeft, TopCenter, TopRight,
+            CenterLeft, Center, CenterRight,
+            BottomLeft, BottomCenter, BottomRight
+        };
+    public:
         explicit TextVisual();
         ~TextVisual() override;
 
         void SetFont(const NSE_Texture2D& fontTexture, int charSizeX, int charSizeY);
         void SetText(const std::string& text);
+        void SetAlignment(Alignment alignment);
 
         void RenderEntity(const NSE_Camera& camera) override;
 
@@ -24,6 +32,7 @@ namespace NSE
     public:
         bool isScreenSpace = false;
         float4 color{1,1,1,1};
+        float2 alignmentOffset{0, 0};
     private:
         int _textLength = 0;
         std::string _text;

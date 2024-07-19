@@ -10,6 +10,7 @@ cbuffer ChunkDrawBuffer
 
 float _PlanetRadius;
 float _AtmosphereRadius;
+float4 _PrimaryColor;
 
 DefaultPixelInput VertexMain(DefaultVertexInput input)
 {
@@ -68,25 +69,31 @@ float4 PixelMain(DefaultPixelInput input) : SV_TARGET
     uint2 screenPos = GetScreenPos(input.position.xy);
 
     float3 positionWS = TransformObjectToWorld(input.positionRS.xyz);
+    float camDistance = length(positionWS) * _ChunkScaling;
 
 //     float4 result = float4(0.804, 0.541, 0.91, 1) * 1.25;
-    float4 result = float4(0.304, 0.841, 0.1, 1) * 1.25;
+//     float4 result = float4(0.304, 0.841, 0.1, 1) * 1.25;
+    float4 result = _PrimaryColor;
 
-    float n = VNoiseD3FBM((input.positionRS.xyz + _ChunkPosition) * (_ChunkScaling * 0.0001), 3, 0.5, 2.0).x;
+    float ditherSize = 0.2f;
+    ditherSize *= smoothstep(-200, 10000, camDistance);
+
+    float3 noisePos = (input.positionRS.xyz + _ChunkPosition) * (_ChunkScaling * 0.00003);
+    float n = VNoiseD3FBM(noisePos + VNoiseD3(noisePos * 6.0 + 57.2418) * 6.0, 3, 0.5, 3.0).x;
     n = saturate(n);
-    n = Dither(n, screenPos);
+    n = Dither(n, screenPos, 3, ditherSize);
 
     float3 normal = -normalize(cross(ddx(input.positionRS.xyz), ddy(input.positionRS.xyz)));
     normal = TransformObjectToWorldDirection(normal);
 
-//     normal = normalize(input.normalRS);
+    normal = normalize(input.normalRS);
 
 //     float lightIntensity = dot(normalize(input.normalRS.xyz), normalize(float3(1, 0, -0.7)));
     float lightIntensity = dot(normal, normalize(float3(1, 0, -0.7)));
     lightIntensity = smoothstep(-0.2, 0.6, lightIntensity);
-    lightIntensity = Dither(lightIntensity, screenPos);
+    lightIntensity = Dither(lightIntensity, screenPos, 3, ditherSize);
 
-    result.rgb = lightIntensity * float3(0.504, 0.841, 0.25) * 1.3 * n;
+    result.rgb = lightIntensity * _PrimaryColor.rgb * n;
 
     // Atmospheric Scattering
     float viewLen = length(positionWS);

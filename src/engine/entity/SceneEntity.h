@@ -30,9 +30,14 @@ namespace NSE
         void ResetSceneUID() { _sceneUID = 0; }
 
         virtual void OnUpdate() {}
+        virtual void OnEnabled() {}
+        virtual void OnDisabled() {}
 
         [[nodiscard]] bool IsEnabled() const { return _enabled; }
         void SetEnabled(bool state);
+
+        void SetPositionUI(int posX, int posY, int resX, int resY);
+        void AddPositionUI(int posX, int posY, int resX, int resY);
 
     public:
         Vector3d          position = Vector3d{};

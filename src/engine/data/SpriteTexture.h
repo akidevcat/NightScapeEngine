@@ -22,11 +22,11 @@ namespace NSE
             yMax = yMin + ySize;
         }
 
-        void SetRectRectPixel(const int xMin, const int yMin, const int xSize, const int ySize)
+        void SetRectPixel(const int xMin, const int yMin, const int xSize, const int ySize)
         {
             assert(atlasTexture);
-            const auto w = (float)(atlasTexture->Width() - 1);
-            const auto h = (float)(atlasTexture->Height() - 1);
+            const auto w = (float)atlasTexture->Width();
+            const auto h = (float)atlasTexture->Height();
             this->xMin = (float)xMin / w;
             this->yMin = (float)yMin / h;
             xMax = (float)(xMin + xSize) / w;

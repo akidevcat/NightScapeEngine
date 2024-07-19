@@ -48,6 +48,8 @@ MainSystem::MainSystem(Engine* engine) : _engine(engine)
     skyboxMaterial->SetDepthWrite(ShaderDepthState::Disabled);
     skyboxMaterial->renderQueue = Material::RENDER_QUEUE_BACKGROUND;
     _skyboxQuad->renderingMaterial = skyboxMaterial;
+
+    _skyboxParticles = _scaledScene->Create<SkyboxStarsParticles>();
 }
 
 MainSystem::~MainSystem()
@@ -79,6 +81,8 @@ void MainSystem::OnUpdate()
 
     _scaledCamera->position = mainCamera->position;
     _scaledCamera->rotation = mainCamera->rotation;
+
+    _skyboxParticles->position = mainCamera->position;
 
     // _particles->velocity = (float3)_shipController->GetShipVelocity();
     // _starsParticles->position = position;

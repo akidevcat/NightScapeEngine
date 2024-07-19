@@ -1,6 +1,7 @@
 #ifndef PLANET_H
 #define PLANET_H
 
+#include "../../engine/addon/FastNoiseLite.h"
 #include "../../engine/entity/VisualMeshEntity.h"
 #include "../data/INavigatable.h"
 
@@ -114,6 +115,9 @@ private:
     float _planetRadius = 60000.0f;
     float _planetTerrainMaxHeight = 4000.0f;
     float _planetAtmosphereHeight = 4000.0f;
+    float4 _planetPrimaryColor = {1,1,1,1};
+
+    FastNoiseLite _surfaceNoise;
 
     NSE_GraphicsBuffer _chunkDrawBuffer = nullptr;
     obj_ptr<VisualMeshEntity> _atmosphereEntity = nullptr;

@@ -48,7 +48,8 @@ float4 GetAtmosphericScattering(float3 planetOrigin, float planetRadius, float a
         // light correction by height
 //         absorbedLight *= 1.0 + (1.0 - camHeight) * 10.0;
 
-        atmAccumLightEnergy += Dither(pow(atmTransmittance, 0.1), screenPos) * absorbedLight;
+//         atmAccumLightEnergy += Dither(pow(atmTransmittance, 0.1), screenPos) * absorbedLight;
+        atmAccumLightEnergy += pow(atmTransmittance, 0.1) * absorbedLight;
 
         samplePos += rayDirection * sampleLength;
         atmAccumRayLength += sampleLength;

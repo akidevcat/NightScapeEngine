@@ -4,6 +4,7 @@ TEXTURE2D_ATLAS(_TextImage)
 Buffer<uint> _TextBuffer;
 uint _TextLength;
 bool _IsScreenSpace;
+float2 _AlignmentOffset;
 
 float4 _Tint;
 
@@ -47,10 +48,11 @@ TextPixelInput VertexMain(TextVertexInput input)
 
     if (_IsScreenSpace)
     {
-        output.position = TransformClip_PixelPerfect(vPosOS, uint2(lineSizePx));
+        output.position = TransformClip_PixelPerfect(vPosOS, uint2(lineSizePx), float2(_AlignmentOffset.x, -_AlignmentOffset.y));
     }
     else
     {
+        vPosOS.xy += _AlignmentOffset;
         output.position = TransformObjectToClip_PixelPerfect(vPosOS, uint2(lineSizePx));
     }
 

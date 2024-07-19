@@ -14,6 +14,8 @@ Planet::Planet(PlanetCreationParameters params, const obj_ptr<Planet> &mainPlane
     _planetRadius = params.radius;
     _planetAtmosphereHeight = params.atmosphereHeight;
     _planetTerrainMaxHeight = params.terrainMaxHeight;
+    _surfaceNoise = params.noise;
+    _planetPrimaryColor = params.primaryColor;
 
     if (mainPlanet)
     {
@@ -73,6 +75,7 @@ void Planet::OnCreated()
     renderingMaterial->SetConstantBuffer(ShaderUtils::PropertyToID("ChunkDrawBuffer"), _chunkDrawBuffer);
     renderingMaterial->SetFloat(ShaderUtils::PropertyToID("_AtmosphereRadius"), (_planetRadius + _planetAtmosphereHeight) / 1000.0f);
     renderingMaterial->SetFloat(ShaderUtils::PropertyToID("_PlanetRadius"), _planetRadius / 1000.0f);
+    renderingMaterial->SetColor(ShaderUtils::PropertyToID("_PrimaryColor"), _planetPrimaryColor);
 
     // scale = float3{1,1,1} * 60000;
     position = Vector3d{0,0, 1} * 100000 * 1;
@@ -275,7 +278,7 @@ void Planet::SetupChunk(Chunk &chunk, ChunkID id)
 
     float scaling = (chunk.lodLevel <= _maxScaledLodLevel) ? 1.0f / 1000.0f : 1.0f;
 
-    PlanetMeshTools::SetupChunkMesh(chunk.mesh, id, _chunkResolution, _planetRadius * scaling, _planetTerrainMaxHeight * scaling, chunk.position);
+    PlanetMeshTools::SetupChunkMesh(chunk.mesh, id, _chunkResolution, _planetRadius * scaling, _planetTerrainMaxHeight * scaling, chunk.position, _surfaceNoise);
 
     chunk.childrenMaxLodLevel = chunk.lodLevel;
     chunk.isSetup = true;

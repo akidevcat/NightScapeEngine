@@ -52,18 +52,8 @@ obj_ptr<Mesh> PlanetMeshTools::CreateChunkMesh(int resolution)
 }
 
 void PlanetMeshTools::SetupChunkMesh(const obj_ptr<NSE::Mesh>& mesh, uint32_t chunkID, int resolution, float radius, float maxHeight,
-    NSE::Vector3d &chunkPivot)
+    NSE::Vector3d &chunkPivot, const FastNoiseLite& noise)
 {
-    FastNoiseLite noise;
-    noise.SetNoiseType(FastNoiseLite::NoiseType_Cellular);
-
-    noise.SetSeed(0);
-    noise.SetFrequency(8.0f);
-    noise.SetFractalType(FastNoiseLite::FractalType_FBm);
-    noise.SetFractalOctaves(3);
-    noise.SetFractalGain(0.3f);
-    noise.SetFractalLacunarity(4.0f);
-
     double scale = 1.0;
     double offsetX = 0.0;
     double offsetY = 0.0;

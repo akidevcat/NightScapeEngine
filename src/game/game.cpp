@@ -102,7 +102,7 @@ void Game::Start()
 
     // auto marker = _scene->Create<SpriteVisual>();
     // marker->sprite.atlasTexture = AssetsServer::Get()->LoadTextureAsset(L"Assets/Textures/UI_Atlas.dds");
-    // marker->sprite.SetRectRectPixel(0, 0, 8, 8);
+    // marker->sprite.SetRectPixel(0, 0, 8, 8);
     // marker->isPixelPerfect = true;
     // marker->isScreenSpace = false;
     // marker->color = {1, 0.4, 0, 1};

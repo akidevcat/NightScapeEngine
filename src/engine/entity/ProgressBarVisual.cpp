@@ -21,7 +21,7 @@ NSE::ProgressBarVisual::ProgressBarVisual()
     renderingMaterial->SetDepthWrite(ShaderDepthState::Disabled);
 
     sprite.atlasTexture = AssetsServer::Get()->LoadTextureAsset(L"Assets/Textures/UI_Atlas.dds");
-    sprite.SetRectRectPixel(16, 0, 37, 11);
+    sprite.SetRectPixel(16, 0, 37, 11);
     isScreenSpace = false;
 }
 

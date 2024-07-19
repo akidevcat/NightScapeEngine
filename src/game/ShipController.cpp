@@ -54,7 +54,7 @@ ShipController::ShipController(NSE::Scene* scene, float screenAspect)
     _integrityBar->renderingMaterial->renderQueue = Material::RenderQueue::RENDER_QUEUE_OVERLAY;
     _integrityBar->progress = 0.8f;
     _integrityBar->invertY = true;
-    _integrityBar->sprite.SetRectRectPixel(12, 26, 43, 13);
+    _integrityBar->sprite.SetRectPixel(12, 26, 43, 13);
 
     _fuelBar = scene->Create<ProgressBarVisual>();
     _fuelBar->color = {1, 1, 1, 1};
@@ -65,7 +65,7 @@ ShipController::ShipController(NSE::Scene* scene, float screenAspect)
     _fuelBar->renderingMaterial->renderQueue = Material::RenderQueue::RENDER_QUEUE_OVERLAY;
     _fuelBar->progress = 0.8f;
     _fuelBar->invertY = true;
-    _fuelBar->sprite.SetRectRectPixel(12, 0, 43, 13);
+    _fuelBar->sprite.SetRectPixel(12, 0, 43, 13);
     _fuelBar->SetEnabled(false);
 
     _exposureBar = scene->Create<ProgressBarVisual>();
@@ -77,7 +77,7 @@ ShipController::ShipController(NSE::Scene* scene, float screenAspect)
     _exposureBar->renderingMaterial->renderQueue = Material::RenderQueue::RENDER_QUEUE_OVERLAY;
     _exposureBar->progress = 0.8f;
     _exposureBar->invertY = false;
-    _exposureBar->sprite.SetRectRectPixel(12, 13, 43, 13);
+    _exposureBar->sprite.SetRectPixel(12, 13, 43, 13);
 
     // _integrityBar = scene->Create<ProgressBarVisual>();
     // _integrityBar->foregroundColor = {0.04, 1.0, 0.45, 1.0f};
@@ -88,8 +88,7 @@ ShipController::ShipController(NSE::Scene* scene, float screenAspect)
 
     _crosshair = scene->Create<SpriteVisual>();
     _crosshair->sprite.atlasTexture = atlasUITexture;
-    _crosshair->sprite.SetRectRectPixel(8, 0, 4, 4);
-    _crosshair->isPixelPerfect = true;
+    _crosshair->sprite.SetRectPixel(8, 0, 4, 4);
     _crosshair->isScreenSpace = false;
     _crosshair->color = {1,1,1,0};
     _crosshair->position = {0.0, 0.0, 0.1};
@@ -178,16 +177,14 @@ void ShipController::OnUpdate()
     int dx, dy;
     input->GetMouseDelta(dy, dx);
 
-    _camMomentumX += (float)dx / 1000.0f;
-    _camMomentumY += (float)dy / 1000.0f;
+    _camMomentumX += (float)dx / 500.0f;
+    _camMomentumY += (float)dy / 500.0f;
 
     _camMomentumX *= powf(0.0001f, time->Delta());
     _camMomentumY *= powf(0.0001f, time->Delta());
 
     double masslockedDistance;
     auto masslocked = GetClosestMasslocked(masslockedDistance);
-
-
 
     if (_isShiftSpaceActive)
     {
@@ -211,12 +208,12 @@ void ShipController::OnUpdate()
         _camMomentumX = 0.0f;
         _camMomentumY = 0.0f;
 
-        cameraOffset.x = (sinf(time->Time() * 30.0f) + sinf(time->Time() * 1.8415f * 30.0f) * 0.2345f) * 0.01f * mTime ;
-        cameraOffset.y = (sinf(time->Time() * 30.0f + 57.314f) + sinf(time->Time() * 1.8415f * 30.0f + 57.314f) * 0.2345f) * 0.01f * mTime;
+        // cameraOffset.x = (sinf(time->Time() * 30.0f) + sinf(time->Time() * 1.8415f * 30.0f) * 0.2345f) * 0.01f * mTime ;
+        // cameraOffset.y = (sinf(time->Time() * 30.0f + 57.314f) + sinf(time->Time() * 1.8415f * 30.0f + 57.314f) * 0.2345f) * 0.01f * mTime;
 
         SetInfoText("shift drive\x88\x89", 0);
 
-        _dustParticles->velocity = (float3)(normalize(_shipVelocity) * std::clamp(length(_shipVelocity) / 500.0, 0.0, 1000.0));
+        _dustParticles->velocity = (float3)(normalize(_shipVelocity) * std::clamp(length(_shipVelocity) / 10.0, 0.0, 300.0));
 
         if (masslockedDistance <= 0.0)
         {
@@ -328,11 +325,10 @@ void ShipController::OnUpdate()
                 if (masslockedDistance > 0.0)
                 {
                     _shiftSpaceActivationTimer = _shiftSpaceActivationTimeout;
-                    _shiftSpaceTarget = NavigationSystem::Get()->FindAlignedNavigatable(position, Forward(), 0.99);
+                    _shiftSpaceTarget = NavigationSystem::Get()->FindAlignedNavigatable(position, Forward(), 0.999);
                 }
                 else
                 {
-                    // print masslocked
                     SetInfoText("masslocked\x8C\x8D", 3);
                 }
             }

@@ -10,8 +10,7 @@ using namespace NSE;
 ShipMarkersVisual::ShipMarkersVisual()
 {
     sprite.atlasTexture = AssetsServer::Get()->LoadTextureAsset(L"Assets/Textures/UI_Atlas.dds");
-    sprite.SetRectRectPixel(0, 8, 4, 4);
-    isPixelPerfect = true;
+    sprite.SetRectPixel(0, 8, 4, 4);
     isScreenSpace = false;
 }
 
