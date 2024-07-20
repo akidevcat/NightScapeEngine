@@ -1,5 +1,4 @@
-#ifndef PARTICLESYSTEM_H
-#define PARTICLESYSTEM_H
+#pragma once
 
 #include "Camera.h"
 #include "VisualEntity.h"
@@ -70,5 +69,3 @@ namespace NSE
 }
 
 typedef obj_ptr<NSE::ParticleSystem> NSE_ParticleSystem;
-
-#endif //PARTICLESYSTEM_H

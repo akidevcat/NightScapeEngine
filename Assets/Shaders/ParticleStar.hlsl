@@ -1,5 +1,6 @@
 #include "ShaderLibrary/Core.hlsl"
 #include "ShaderLibrary/Particles.hlsl"
+#include "ShaderLibrary/Hash.hlsl"
 
 struct ParticleData
 {
@@ -42,6 +43,7 @@ PixelInput VertexMain(ParticleVertexInput input)
     realOutput.uv.xy = output.uv.xy;
     realOutput.uv.zw = pData.size;
     realOutput.color = output.color;
+    realOutput.color.a = sin(_Time * 1.0 + hash11(particleID) * 100.0) * 0.3 + 0.7;
     realOutput.mapping = pData.atlasMapping;
 
     return realOutput;
@@ -71,7 +73,10 @@ float4 PixelMain(PixelInput input) : SV_TARGET
 //     i = (i - 0.05) / 0.95;
 //     i = saturate(i);
 
-    return BlendOverlay(result, input.color, 1.0);
+    result = BlendOverlay(result, input.color, 1.0);
+    result.a *= input.color.a;
+
+    return result;
 
     return float4(input.color.rgb * result.rgb * 2.0, 1);
 //     return float4(uv.x, uv.y, 0, 1);

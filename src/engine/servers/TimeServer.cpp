@@ -41,6 +41,16 @@ void NSE::TimeServer::EndFrame()
     _lastAbsoluteTimeMs = _absoluteTimeMs;
 }
 
+long long NSE::TimeServer::Now() const
+{
+    return std::chrono::time_point_cast<std::chrono::milliseconds>(_absoluteTimeMs).time_since_epoch().count();
+}
+
+long long NSE::TimeServer::NowReal() const
+{
+    return std::chrono::time_point_cast<std::chrono::milliseconds>(std::chrono::system_clock::now()).time_since_epoch().count();
+}
+
 void NSE::TimeServer::SetTimeScale(float timeScale)
 {
     _timeScale = timeScale;

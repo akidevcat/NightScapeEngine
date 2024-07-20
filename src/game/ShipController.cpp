@@ -98,6 +98,9 @@ ShipController::ShipController(NSE::Scene* scene, float screenAspect)
     _infoText->color = {0.95f, 0.4f, 0.0f, 1.0f};
 
     _markers = scene->Create<ShipMarkersVisual>();
+
+    _weapon = scene->Create<PulseWeaponEntity>(scene);
+    _weapon->SetPivotOffsets({-2, -1, 0}, {2, -1, 0});
 }
 
 ShipController::~ShipController()
@@ -264,6 +267,14 @@ void ShipController::OnUpdate()
     // _integrityBar->rotation = _shipRadar->rotation;
 
     _dustParticles->position = position;
+
+    _weapon->position = position;
+    _weapon->rotation = rotation;
+    _weapon->SyncPosition();
+    if (input->GetLMB())
+    {
+        _weapon->Fire();
+    }
 
 
     _cockpitLight->position = _shipRadar->position;

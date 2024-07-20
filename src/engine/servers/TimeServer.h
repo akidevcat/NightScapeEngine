@@ -20,6 +20,8 @@ namespace NSE
         public:
         [[nodiscard]] float Time() const { return _timeSeconds; }
         [[nodiscard]] float Delta() const { return _deltaTimeSeconds; }
+        [[nodiscard]] long long Now() const;
+        [[nodiscard]] long long NowReal() const;
 
         void SetTimeScale(float timeScale);
 

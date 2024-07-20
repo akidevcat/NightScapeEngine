@@ -162,7 +162,7 @@ void InventorySystem::Show()
     _nextTabNameSprite->SetEnabled(true);
     _prevTabNameSprite->SetEnabled(true);
     _dSeparatorSprite->SetEnabled(true);
-    _descriptionButtonTips->SetEnabled(true);
+    // _descriptionButtonTips->SetEnabled(true);
 
     for (const auto& text : _descriptionTexts)
     {
@@ -214,8 +214,12 @@ void InventorySystem::RefreshCargoDescriptionUI()
         {
             text->SetText("");
         }
+        _descriptionButtonTips->SetEnabled(false);
         return;
     }
+
+    if (_isVisible)
+        _descriptionButtonTips->SetEnabled(true);
 
     const auto& item = _items[_selectedItemIndex];
     const auto& description = _itemRegistry.at(item.Id);

@@ -892,9 +892,9 @@ void NSE::RenderServer::PipelineSetMaterial(const NSE_Material& material)
 	}
 }
 
-void NSE::RenderServer::PipelineDrawIndexed(const NSE_Mesh& mesh)
+void NSE::RenderServer::PipelineDrawIndexed(const NSE_Mesh& mesh, int indexCount)
 {
-	_deviceContext->DrawIndexed(mesh->GetIndexCount(), 0, 0);
+	_deviceContext->DrawIndexed(indexCount >= 0 ? indexCount : mesh->GetIndexCount(), 0, 0);
 }
 
 void NSE::RenderServer::PipelineSetRenderTargets(ID3D11RenderTargetView *colorTarget,
@@ -969,7 +969,7 @@ void NSE::RenderServer::Present()
 	}
 }
 
-void NSE::RenderServer::DrawMesh(const NSE_Mesh& mesh, const NSE_Material& material, const DirectX::XMMATRIX& matrix, const NSE_Camera& camera, size_t objectID)
+void NSE::RenderServer::DrawMesh(const NSE_Mesh& mesh, const NSE_Material& material, const DirectX::XMMATRIX& matrix, const NSE_Camera& camera, size_t objectID, int indexCount)
 {
 	PipelineSetModelMatrix(matrix);
 	PipelineSetCamera(camera);
@@ -984,5 +984,5 @@ void NSE::RenderServer::DrawMesh(const NSE_Mesh& mesh, const NSE_Material& mater
 	_drawPropertiesBuffer->Upload();
 	_lightsPropertiesBuffer->Upload();
 
-	PipelineDrawIndexed(mesh);
+	PipelineDrawIndexed(mesh, indexCount);
 }

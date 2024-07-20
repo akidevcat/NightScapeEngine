@@ -35,7 +35,22 @@ void NSE::ParticleSystem::RenderEntity(const NSE_Camera& camera)
         this->renderingMaterial->SetBuffer(PID__ParticlesData, _particlesDataBuffer);
     }
 
-    RenderServer::Get()->DrawMesh(_pariclesMesh, this->renderingMaterial, this->GetModelMatrix(camera->position), camera);
+    int indexCount = (int)_count;
+
+    switch (_renderType)
+    {
+        case RenderType::Point:
+            indexCount *= 1;
+            break;
+        case RenderType::Billboard:
+            indexCount *= 6;
+        break;
+        case RenderType::Line:
+            indexCount *= 2;
+        break;
+    }
+
+    RenderServer::Get()->DrawMesh(_pariclesMesh, this->renderingMaterial, this->GetModelMatrix(camera->position), camera, GetUID(), indexCount);
 }
 
 void NSE::ParticleSystem::OnParticlesUpdate()

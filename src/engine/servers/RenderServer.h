@@ -32,7 +32,7 @@ namespace NSE
         void PipelineSetModelMatrix(const DirectX::XMMATRIX& matrix);
         void PipelineSetMesh(const NSE_Mesh& mesh);
         void PipelineSetMaterial(const NSE_Material& material);
-        void PipelineDrawIndexed(const NSE_Mesh& mesh);
+        void PipelineDrawIndexed(const NSE_Mesh& mesh, int indexCount = 0);
         void PipelineSetRenderTargets(ID3D11RenderTargetView* colorTarget, ID3D11DepthStencilView* depthTarget, const D3D11_VIEWPORT& viewport);
         void PipelineSetRenderTargets(const NSE_RenderTexture& colorTarget, const NSE_RenderTexture& depthTarget);
         // void PipelineResetRenderTarget();
@@ -46,7 +46,7 @@ namespace NSE
         // ===== Render Methods =====
         void Present();
         // void ClearRenderTarget(const NSE_RenderTexture& target, DirectX::XMFLOAT4 color);
-        void DrawMesh(const NSE_Mesh& mesh, const NSE_Material& material, const DirectX::XMMATRIX& matrix, const NSE_Camera& camera, size_t objectID = 0);
+        void DrawMesh(const NSE_Mesh& mesh, const NSE_Material& material, const DirectX::XMMATRIX& matrix, const NSE_Camera& camera, size_t objectID = 0, int indexCount = -1);
 
         // Property Accessors
         [[nodiscard]] LightsProperties*           GetLightsProperties() const { return GetLightsPropertiesBuffer()->As<LightsProperties>(); }

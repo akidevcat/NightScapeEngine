@@ -9,6 +9,7 @@
 #include "../engine/entity/SpriteVisual.h"
 #include "../engine/entity/TextVisual.h"
 #include "data/INavigatable.h"
+#include "ship/PulseWeaponEntity.h"
 
 class ShipController : public NSE::VisualMeshEntity
 {
@@ -36,7 +37,7 @@ public:
 private:
     float _integrity = 100.0f;
     float _fuel = 100.0f;
-    float _exposure = 50.0f;
+    float _exposure = 100.0f;
 
     bool _isShipDragEnabled = true;
     bool _isShiftSpaceActive = false;
@@ -61,6 +62,8 @@ private:
     obj_ptr<NSE::TextVisual> _infoText = nullptr;
     obj_ptr<ShipMarkersVisual> _markers = nullptr;
     obj_ptr<StarDustParticles> _dustParticles = nullptr;
-};
+
+    obj_ptr<PulseWeaponEntity> _weapon = nullptr;
+ };
 
 #endif //SHIPCONTROLLER_H

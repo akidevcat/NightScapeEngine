@@ -1,5 +1,8 @@
 #include "LevelSystem.h"
 
+#include <iostream>
+#include <ostream>
+
 #include "../data/PlanetCreationParameters.h"
 #include "MainSystem.h"
 #include "ShipSystem.h"
@@ -9,7 +12,7 @@ using namespace NSE;
 
 void LevelSystem::OnStart()
 {
-    CreateSystem(5426, GalaxyLayer::Layer0);
+    CreateSystem((int)TimeServer::Get()->NowReal(), GalaxyLayer::Layer0);
 }
 
 void LevelSystem::CreateSystem(int seed, GalaxyLayer layer)
