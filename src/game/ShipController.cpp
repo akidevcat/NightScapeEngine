@@ -79,6 +79,18 @@ ShipController::ShipController(NSE::Scene* scene, float screenAspect)
     _exposureBar->invertY = false;
     _exposureBar->sprite.SetRectPixel(12, 13, 43, 13);
 
+    _targetHealthBar = scene->Create<ProgressBarVisual>();
+    _targetHealthBar->color = {1, 1, 1, 1};
+    _targetHealthBar->foregroundColor = {0.8, 0.25, 0.0, 1.0f};
+    _targetHealthBar->backgroundColor = {0.8 / 3.0, 0.25 / 3.0, 0.0, 0.25f};
+    // _exposureBar->renderingMaterial->MakeAdditive();
+    _targetHealthBar->renderingMaterial->SetDepthWrite(ShaderDepthState::Disabled);
+    _targetHealthBar->renderingMaterial->renderQueue = Material::RenderQueue::RENDER_QUEUE_OVERLAY;
+    _targetHealthBar->progress = 0.8f;
+    _targetHealthBar->invertY = false;
+    _targetHealthBar->sprite.SetRectPixel(15, 39, 33, 7);
+    _targetHealthBar->SetEnabled(false);
+
     // _integrityBar = scene->Create<ProgressBarVisual>();
     // _integrityBar->foregroundColor = {0.04, 1.0, 0.45, 1.0f};
     // _integrityBar->backgroundColor = {0.04 / 4.0f, 1.0 / 4.0f, 0.45 / 4.0f, 0.1f};
@@ -95,7 +107,25 @@ ShipController::ShipController(NSE::Scene* scene, float screenAspect)
     _crosshair->renderingMaterial->MakeInvert();
 
     _infoText = scene->Create<TextVisual>();
-    _infoText->color = {0.95f, 0.4f, 0.0f, 1.0f};
+    _infoText->color = {0.8, 0.25, 0.0, 1.0f};
+
+    _targetText = scene->Create<TextVisual>();
+    _targetText->color = {0.8, 0.25, 0.0, 1.0f};
+    _targetText->SetAlignment(TextVisual::Alignment::Center);
+
+    _targetHealthText = scene->Create<TextVisual>();
+    _targetHealthText->color = {0.8, 0.25, 0.0, 1.0f};
+    _targetHealthText->SetAlignment(TextVisual::Alignment::Center);
+    _targetHealthText->SetEnabled(false);
+
+    _targetMesh = scene->Create<VisualMeshEntity>();
+    _targetMesh->scale = {0.2, 0.2, 0.2};
+    auto targetShader = CreateObject<Shader>(L"Assets/Shaders/TargetPreview.hlsl");
+    targetShader->Compile();
+    _targetMesh->renderingMaterial = CreateObject<Material>(targetShader);
+    // _targetMesh->renderingMaterial->MakeAdditive();
+    _targetMesh->renderingMaterial->renderQueue = Material::RenderQueue::RENDER_QUEUE_OVERLAY - 10;
+    _targetMesh->renderingMaterial->SetDepthWrite(ShaderDepthState::Disabled);
 
     _markers = scene->Create<ShipMarkersVisual>();
 
@@ -110,6 +140,8 @@ ShipController::~ShipController()
 
 void ShipController::OnUpdate()
 {
+    std::stringstream str;
+
     UpdateInfoText();
 
     auto input = NSE::InputServer::Get();
@@ -135,23 +167,38 @@ void ShipController::OnUpdate()
     }
     if (input->GetKey(DIK_S))
     {
-        targetVelocity += Forward() * -30.0f;
+        if (input->GetKey(DIK_LSHIFT))
+            targetVelocity += Forward() * -100.0f;
+        else
+            targetVelocity += Forward() * -30.0f;
     }
     if (input->GetKey(DIK_D))
     {
-        targetVelocity += Right() * 30.0f;
+        if (input->GetKey(DIK_LSHIFT))
+            targetVelocity += Right() * 100.0f;
+        else
+            targetVelocity += Right() * 30.0f;
     }
     if (input->GetKey(DIK_A))
     {
-        targetVelocity += Right() * -30.0f;
+        if (input->GetKey(DIK_LSHIFT))
+            targetVelocity += Right() * -100.0f;
+        else
+            targetVelocity += Right() * -30.0f;
     }
     if (input->GetKey(DIK_SPACE))
     {
-        targetVelocity += Up() * 30.0f;
+        if (input->GetKey(DIK_LSHIFT))
+            targetVelocity += Up() * 100.0f;
+        else
+            targetVelocity += Up() * 30.0f;
     }
     if (input->GetKey(DIK_LCONTROL))
     {
-        targetVelocity += Up() * -30.0f;
+        if (input->GetKey(DIK_LSHIFT))
+            targetVelocity += Up() * -100.0f;
+        else
+            targetVelocity += Up() * -30.0f;
     }
     if (input->GetKey(DIK_R))
     {
@@ -181,6 +228,47 @@ void ShipController::OnUpdate()
     if (input->GetKey(DIK_Q))
     {
         _camMomentumR = _camMomentumR + (4.0f - _camMomentumR) * time->Delta() * 4.0f;
+    }
+
+    if (input->GetKeyDown(DIK_T))
+    {
+        auto newTarget = NavigationSystem::Get()->FindAlignedNavigatable(position, Forward(), 0.995);
+        if (newTarget && _navTarget == newTarget)
+        {
+            _navTarget = nullptr;
+        }
+        else
+        {
+            _navTarget = newTarget;
+        }
+        if (_navTarget)
+        {
+            _targetText->SetText(_navTarget->GetNavigatableName());
+            _targetMesh->mesh = _navTarget->GetNavigatablePreviewMesh();
+            if (_navTarget->GetNavigatableHealth() >= 0)
+            {
+                _targetHealthBar->SetEnabled(true);
+                _targetHealthText->SetEnabled(true);
+            }
+        }
+        else
+        {
+            _targetText->SetText("");
+            _targetMesh->mesh = nullptr;
+            _targetHealthBar->SetEnabled(false);
+            _targetHealthText->SetEnabled(false);
+        }
+    }
+
+    if (_navTarget)
+    {
+        _targetMesh->rotation = _navTarget->GetNavigatableRotation();
+        auto targetHealth = _navTarget->GetNavigatableHealth();
+        str.clear();
+        str << std::fixed << std::setprecision(1);
+        str << targetHealth << "%";
+        _targetHealthText->SetText(str.str());
+        _targetHealthBar->progress = targetHealth / 100.0f;
     }
 
     if (_isShipDragEnabled)
@@ -266,6 +354,9 @@ void ShipController::OnUpdate()
     // _integrityBar->position = _shipRadar->position;
     // _integrityBar->rotation = _shipRadar->rotation;
 
+    _targetHealthBar->position = _shipRadar->position - Up() * 0.2f - Right() * 0.85f;
+    _targetHealthText->position = _shipRadar->position + Up() * 0.0f - Right() * 0.85f;
+
     _dustParticles->position = position;
 
     _weapon->position = position;
@@ -279,6 +370,8 @@ void ShipController::OnUpdate()
 
     _cockpitLight->position = _shipRadar->position;
     _infoText->position = position + Forward() * 3.5f + Up() * 0.5f;
+    _targetText->position = position + Forward() * 3.5f - Up() * 0.6f + Right() * 1.15f;
+    _targetMesh->position = position + Forward() * 3.5f - Up() * 1.0f + Right() * 1.15f;
 
     _crosshair->position = position + Forward() * 3.0f;
 
@@ -286,9 +379,7 @@ void ShipController::OnUpdate()
 
     _camera->SetFov(60.0f + velDot * 4.0f * (1.0f - 1.0f / (1 + (float)_shipVelocity.Magnitude() * 0.01f)));
 
-
-
-    std::stringstream str;
+    str.clear();
     str << std::fixed << std::setprecision(3);
 
     if (_shiftSpaceActivationTimer > 0)
@@ -307,9 +398,10 @@ void ShipController::OnUpdate()
 
         }
 
-        if (_shiftSpaceTarget)
+        if (_navTarget && _navTarget->GetNavigatableShiftSpaceNavigatable())
         {
-            float3 dir = normalize((float3)(_shiftSpaceTarget->GetNavigatablePosition() - position));
+            // ToDo check angular distance
+            float3 dir = normalize((float3)(_navTarget->GetNavigatablePosition() - position));
             auto up = Up();
 
             auto targetRotation = Math::LookRotation(dir, float3{up.m128_f32[0], up.m128_f32[1], up.m128_f32[2]});
@@ -330,7 +422,7 @@ void ShipController::OnUpdate()
         {
             _isShiftSpaceActive = false;
             _shipVelocity = Forward() * 1.0f;
-            _shiftSpaceTarget = nullptr;
+            // _navTarget = nullptr;
             // ToDo VFX
         }
         else
@@ -339,14 +431,14 @@ void ShipController::OnUpdate()
             {
                 // Cancel
                 _shiftSpaceActivationTimer = 0.0f;
-                _shiftSpaceTarget = nullptr;
+                // _navTarget = nullptr;
             }
             else // If not charging
             {
                 if (masslockedDistance > 0.0)
                 {
                     _shiftSpaceActivationTimer = _shiftSpaceActivationTimeout;
-                    _shiftSpaceTarget = NavigationSystem::Get()->FindAlignedNavigatable(position, Forward(), 0.999);
+                    // _navTarget = NavigationSystem::Get()->FindAlignedNavigatable(position, Forward(), 0.999);
                 }
                 else
                 {
@@ -383,7 +475,7 @@ obj_ptr<INavigatable> ShipController::GetClosestMasslocked(double& outSurfaceDis
     for (const auto& target : *nav)
     {
         auto distance = length(target->GetNavigatablePosition() - position);
-        distance -= target->GetMasslockRadius();
+        distance -= target->GetNavigatableMasslockRadius();
 
         if (distance < minDistance)
         {

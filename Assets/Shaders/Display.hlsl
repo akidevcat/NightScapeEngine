@@ -35,7 +35,7 @@ float4 PixelMain(PixelInput input) : SV_TARGET
     float2 uv = input.uv * res + 0.5;
     float2 fl = floor(uv);
     float2 fr = frac(uv);
-    float2 aa = fwidth(uv) * 0.75;
+    float2 aa = fwidth(uv) * 0.25;
     fr = smoothstep(0.5 - aa, 0.5 + aa, fr);
 
     uv = (fl+fr-0.5) / res;

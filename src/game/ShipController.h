@@ -43,7 +43,9 @@ private:
     bool _isShiftSpaceActive = false;
     float _shiftSpaceActivationTimer = 0.0f;
     const float _shiftSpaceActivationTimeout = 3.0f;
-    obj_ptr<INavigatable> _shiftSpaceTarget = nullptr;
+    // obj_ptr<INavigatable> _shiftSpaceTarget = nullptr;
+
+    obj_ptr<INavigatable> _navTarget = nullptr;
 
     float _textTimeout = 0.0f;
     float _camMomentumX = 0;
@@ -60,6 +62,10 @@ private:
     obj_ptr<NSE::ProgressBarVisual> _exposureBar = nullptr;
     obj_ptr<NSE::SpriteVisual> _crosshair = nullptr;
     obj_ptr<NSE::TextVisual> _infoText = nullptr;
+    obj_ptr<NSE::TextVisual> _targetText = nullptr;
+    obj_ptr<NSE::TextVisual> _targetHealthText = nullptr;
+    obj_ptr<NSE::VisualMeshEntity> _targetMesh = nullptr;
+    obj_ptr<NSE::ProgressBarVisual> _targetHealthBar = nullptr;
     obj_ptr<ShipMarkersVisual> _markers = nullptr;
     obj_ptr<StarDustParticles> _dustParticles = nullptr;
 

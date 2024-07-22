@@ -1,5 +1,7 @@
 #include "RadarParticleSystem.h"
 
+#include "systems/NavigationSystem.h"
+
 using namespace NSE;
 using namespace DirectX;
 
@@ -8,6 +10,7 @@ RadarParticleSystem::RadarParticleSystem(): ParticleSystem(128, sizeof(Particle)
     auto shader = CreateObject<Shader>(L"Assets/Shaders/RadarParticle.hlsl");
     shader->Compile();
     renderingMaterial = CreateObject<Material>(shader);
+    renderingMaterial->MakeTransparent();
     renderingMaterial->renderQueue = Material::RENDER_QUEUE_OVERLAY;
 }
 
@@ -30,14 +33,19 @@ void RadarParticleSystem::OnProcessParticles(void *particlesData, size_t particl
 {
     auto particles = static_cast<Particle*>(particlesData);
 
-    int i = 0;
-    for (const auto& target : _targets)
-    {
-        if (!target.second.first)
-            continue;
+    auto nav = NavigationSystem::Get();
 
-        particles[i].color = target.second.second;
-        particles[i].position = (float3)(target.second.first->position - position);
+    auto f = Forward();
+    auto forward = float3{f.m128_f32[0], f.m128_f32[1], f.m128_f32[2]};
+    forward = normalize(forward);
+
+    int i = 0;
+    for (const auto& marker : *nav)
+    {
+        particles[i].color = marker->GetNavigatableColor();
+        particles[i].position = (float3)(marker->GetNavigatablePosition() - position);
+        auto fDotP = dotproduct(normalize(particles[i].position), forward);
+        particles[i].color.w = fDotP * 0.45f + 0.55f;
         i++;
     }
 

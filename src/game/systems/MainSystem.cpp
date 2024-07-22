@@ -4,6 +4,7 @@
 #include "../../engine/nsepch.h"
 #include "../../engine/servers/SceneServer.h"
 #include "../StarsCamera.h"
+#include "../droid/DroidEntity.h"
 
 using namespace NSE;
 
@@ -50,6 +51,9 @@ MainSystem::MainSystem(Engine* engine) : _engine(engine)
     _skyboxQuad->renderingMaterial = skyboxMaterial;
 
     _skyboxParticles = _scaledScene->Create<SkyboxStarsParticles>();
+
+    // ToDo test
+    _mainScene->Create<DroidEntity>();
 }
 
 MainSystem::~MainSystem()

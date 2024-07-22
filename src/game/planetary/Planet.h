@@ -12,14 +12,6 @@ class Planet : public NSE::VisualMeshEntity, public INavigatable
 public:
     using ChunkID = uint32_t;
 
-    // struct ChunkID
-    // {
-    //     char FaceID = 0;
-    //     int LodID = 0;
-    //
-    //     explicit ChunkID(char faceID);
-    // };
-
     struct Chunk
     {
         bool isSetup = false;
@@ -47,8 +39,14 @@ public:
     void RenderEntity(const NSE_Camera& camera) override;
 
     const NSE::Vector3d& GetNavigatablePosition() override { return position; }
-    float4        GetNavigatableColor() override { return float4{1,1,1,1}; }
-    float          GetMasslockRadius() override { return _planetRadius + _planetAtmosphereHeight; }
+    const DirectX::XMVECTOR& GetNavigatableRotation() override { return rotation; }
+    float4        GetNavigatableColor() override { return float4{1.00, 0.547, 0.0300, 1.0}; }
+    float          GetNavigatableMasslockRadius() override { return _planetRadius + _planetAtmosphereHeight; }
+    bool GetNavigatableShiftSpaceNavigatable() override { return true; }
+    bool GetNavigatableShiftSpaceVisibility() override { return true; }
+    const std::string& GetNavigatableName() override { return _name; }
+    obj_ptr<NSE::Mesh> GetNavigatablePreviewMesh() override { return nullptr; }
+    float GetNavigatableHealth() override { return -100; }
 
     static char cid_to_face(ChunkID id)
     {
@@ -106,6 +104,7 @@ protected:
     void RenderEntityScaled(const NSE_Camera& camera);
 
 private:
+    std::string _name = "Planet";
     bool _isScaled = false;
     obj_ptr<Planet> _mainPlanet = nullptr;
     obj_ptr<SceneEntity> _player = nullptr;

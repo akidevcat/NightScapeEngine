@@ -19,7 +19,7 @@ DefaultPixelInput VertexMain(DefaultVertexInput input)
     return output;
 }
 
-float4 GetAtmosphericScattering(float3 planetOrigin, float planetRadius, float atmosphereRadius, float3 rayOrigin, float3 rayDirection, float rayLength, uint2 screenPos)
+float4 GetAtmosphericScattering(float3 planetOrigin, float planetRadius, float atmosphereRadius, float3 rayOrigin, float3 rayDirection, float rayLength, float3 lightDirection, uint2 screenPos)
 {
     const uint sampleCount = 8;
     float3 samplePos = rayOrigin;
@@ -35,7 +35,12 @@ float4 GetAtmosphericScattering(float3 planetOrigin, float planetRadius, float a
 
     for (int i = 0; i < sampleCount; i++)
     {
-        float height = 1.0 - max(length(samplePos - planetOrigin) - planetRadius, 0.0) / (atmosphereRadius - planetRadius);
+        float3 sampleDelta = samplePos - planetOrigin;
+        float sampleDeltaLength = length(sampleDelta);
+        float3 sampleDirection = sampleDelta / sampleDeltaLength;
+        float lDotD = saturate(-dot(lightDirection, sampleDirection));
+        lDotD = smoothstep(0.0, 0.6, lDotD);
+        float height = 1.0 - max(sampleDeltaLength - planetRadius, 0.0) / (atmosphereRadius - planetRadius);
 //         height = saturate(pow(height, 0.3));
 
         float sampleDensity = height * 0.5;
@@ -43,7 +48,7 @@ float4 GetAtmosphericScattering(float3 planetOrigin, float planetRadius, float a
         atmAccumDensity += sampleDensity * sampleLength;
 
 //         float sampleLight = lerp(float3(0.506, 0.835, 1), float3(0.9, 0.2, 0.0), saturate(atmAccumRayLength * 0.1));
-        float3 absorbedLight = float3(0.506, 0.835, 1) * (exp(sampleLength)) * 0.05;
+        float3 absorbedLight = float3(0.506, 0.835, 1) * (exp(sampleLength)) * 0.05 * lDotD;
 
         // light correction by height
 //         absorbedLight *= 1.0 + (1.0 - camHeight) * 10.0;
@@ -56,7 +61,7 @@ float4 GetAtmosphericScattering(float3 planetOrigin, float planetRadius, float a
         atmTransmittance *= saturate(1.0 - sampleDensity);
     }
 
-    atmAccumLightEnergy.rgb = DitherByLuminance(atmAccumLightEnergy.rgb, screenPos);
+//     atmAccumLightEnergy.rgb = DitherByLuminance(atmAccumLightEnergy.rgb, screenPos);
 
     return float4(atmAccumLightEnergy, 1.0 - atmTransmittance);
 }
@@ -70,6 +75,8 @@ float4 PixelMain(DefaultPixelInput input) : SV_TARGET
     float3 viewDir = normalize(input.positionRS.xyz);
     float3 originWS = TransformObjectToWorld(0);
 
+    float3 lightDirection = normalize(float3(1, 0, -0.7));
+
     float2 intersections = 0;
     IntersectSphere(0, viewDir, originWS, _AtmosphereRadius, intersections);
 
@@ -81,5 +88,5 @@ float4 PixelMain(DefaultPixelInput input) : SV_TARGET
 //     nearFade = saturate(nearFade);
 float nearFade = 1;
 
-    return GetAtmosphericScattering(originWS, _PlanetRadius, _AtmosphereRadius, viewDir * intersections.x, viewDir, intersections.y - intersections.x, screenPos) * float4(1,1,1,nearFade);
+    return GetAtmosphericScattering(originWS, _PlanetRadius, _AtmosphereRadius, viewDir * intersections.x, viewDir, intersections.y - intersections.x, lightDirection, screenPos) * float4(1,1,1,nearFade);
 }

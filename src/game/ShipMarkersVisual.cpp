@@ -1,6 +1,7 @@
 #include "ShipMarkersVisual.h"
 
 #include "../engine/servers/AssetServer.h"
+#include "../engine/servers/TimeServer.h"
 #include "data/INavigatable.h"
 #include "systems/MainSystem.h"
 #include "systems/NavigationSystem.h"
@@ -20,8 +21,13 @@ void ShipMarkersVisual::RenderEntity(const obj_ptr<NSE::Camera> &camera)
 
     for (const auto& marker : *nav)
     {
+        // ToDo check shift space status
+        // if ( marker->GetNavigatableShiftSpaceVisibility())
+
         position = camera->position + normalize(marker->GetNavigatablePosition() - camera->position);
+        // todo check if target
         color = marker->GetNavigatableColor();
+
         SpriteVisual::RenderEntity(camera);
     }
 }

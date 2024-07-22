@@ -7,7 +7,7 @@
 using namespace DirectX;
 using namespace NSE;
 
-SkyboxStarsParticles::SkyboxStarsParticles() : ParticleSystem(1000, sizeof(Particle), 1000, RenderType::Billboard)
+SkyboxStarsParticles::SkyboxStarsParticles() : ParticleSystem(100, sizeof(Particle), 100, RenderType::Billboard)
 {
     auto shader = NSE::CreateObject<NSE::Shader>(L"Assets/Shaders/ParticleStar.hlsl");
     shader->Compile();

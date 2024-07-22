@@ -170,6 +170,8 @@ add_executable(${PROJECT_NAME} WIN32
         src/game/ship/PulseWeaponEntity.cpp
         src/game/ship/PulseWeaponEntity.h
         src/game/data/ProjectileData.h
+        src/game/droid/DroidEntity.cpp
+        src/game/droid/DroidEntity.h
 )
 
 target_link_libraries(${PROJECT_NAME} d3d9 d3d11 d3dcompiler dinput8 dxguid)

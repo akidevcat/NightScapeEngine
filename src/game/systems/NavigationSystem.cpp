@@ -15,13 +15,16 @@ void NavigationSystem::OnUpdate()
     scene->FindAllEntitiesFromBaseType<INavigatable>(_targets);
 }
 
-obj_ptr<INavigatable> NavigationSystem::FindAlignedNavigatable(Vector3d origin, Vector3d direction, double cosMin)
+obj_ptr<INavigatable> NavigationSystem::FindAlignedNavigatable(Vector3d origin, Vector3d direction, double cosMin, bool isShiftSpaceTarget)
 {
     double maxCos = -100.0;
     obj_ptr<INavigatable> result = nullptr;
 
     for (const auto& m : _targets)
     {
+        if (isShiftSpaceTarget && !m->GetNavigatableShiftSpaceNavigatable())
+            continue;
+
         Vector3d dir = normalize(m->GetNavigatablePosition() - origin);
         double c = dotproduct(direction, dir);
         if (c >= cosMin && c > maxCos)
