@@ -42,9 +42,6 @@ ShipController::ShipController(NSE::Scene* scene, float screenAspect)
     _cockpitLight->lightColor = {0.87f, 0.27f, 0.02f, 0.0f};
     _cockpitLight->lightIntensity = 0.25;
 
-    _shipRadar = scene->Create<ShipRadarController>(scene);
-    _shipRadar->scale = {0.6f, 0.6f, 0.6f};
-
     _integrityBar = scene->Create<ProgressBarVisual>();
     _integrityBar->color = {1, 1, 1, 1};
     _integrityBar->foregroundColor = {0.6, 0.6, 0.6, 1.0f};
@@ -127,15 +124,25 @@ ShipController::ShipController(NSE::Scene* scene, float screenAspect)
     _targetMesh->renderingMaterial->renderQueue = Material::RenderQueue::RENDER_QUEUE_OVERLAY - 10;
     _targetMesh->renderingMaterial->SetDepthWrite(ShaderDepthState::Disabled);
 
-    _markers = scene->Create<ShipMarkersVisual>();
-
     _weapon = scene->Create<PulseWeaponEntity>(scene);
     _weapon->SetPivotOffsets({-2, -1, 0}, {2, -1, 0});
 }
 
+
+
 ShipController::~ShipController()
 {
     NSE::ObjectServer::Get()->Destroy(mesh);
+}
+
+void ShipController::OnCreated()
+{
+    auto scene = GetScene();
+
+    _shipRadar = scene->Create<ShipRadarController>(dynamic_pointer_cast<ShipController>(Self()));
+    _shipRadar->scale = {0.6f, 0.6f, 0.6f};
+
+    _markers = scene->Create<ShipMarkersVisual>(dynamic_pointer_cast<ShipController>(Self()));
 }
 
 void ShipController::OnUpdate()

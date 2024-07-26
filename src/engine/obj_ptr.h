@@ -294,7 +294,6 @@ public:
     }
 
     operator bool() const noexcept {
-        // return this->_Ptr_base<_Ty>::get() != nullptr; // ToDo use_count?
         return this->use_count() != 0;
     }
 
@@ -306,17 +305,17 @@ public:
 
     template <class _Ty2 = _Ty, std::enable_if_t<!std::disjunction_v<std::is_array<_Ty2>, std::is_void<_Ty2>>, int> = 0>
     _NODISCARD _Ty2& operator*() const {
-        assert(("Object null reference occured", !expired())); // ToDo
+        assert(("Object null reference occured", !expired()));
         return *this->_Mybase::get();
     }
 
     template <class _Ty2 = _Ty, std::enable_if_t<!std::is_array_v<_Ty2>, int> = 0>
     _NODISCARD _Ty2* operator->() const {
-        assert(("Object null reference occured", !expired())); // ToDo
+        assert(("Object null reference occured", !expired()));
         return this->_Mybase::get();
     }
 
-    bool operator==(const obj_ptr& other)
+    bool operator==(const obj_ptr& other) const
     {
         bool leftNotNull = *this;
         bool rightNotNull = other;
@@ -334,6 +333,8 @@ public:
 
         return true;
     }
+
+
 
     bool operator!=(const obj_ptr& other)
     {

@@ -17,4 +17,5 @@ public:
     virtual const std::string& GetNavigatableName() = 0;
     virtual float GetNavigatableHealth() = 0;
     virtual obj_ptr<NSE::Mesh> GetNavigatablePreviewMesh() = 0;
+
 };

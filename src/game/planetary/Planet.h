@@ -40,7 +40,7 @@ public:
 
     const NSE::Vector3d& GetNavigatablePosition() override { return position; }
     const DirectX::XMVECTOR& GetNavigatableRotation() override { return rotation; }
-    float4        GetNavigatableColor() override { return float4{1.00, 0.547, 0.0300, 1.0}; }
+    float4        GetNavigatableColor() override { return float4{0.8, 0.6, 0.9, 1.0}; }
     float          GetNavigatableMasslockRadius() override { return _planetRadius + _planetAtmosphereHeight; }
     bool GetNavigatableShiftSpaceNavigatable() override { return true; }
     bool GetNavigatableShiftSpaceVisibility() override { return true; }

@@ -17,12 +17,14 @@ public:
     explicit ShipController(NSE::Scene* scene, float screenAspect);
     ~ShipController() override;
 
+    void OnCreated() override;
     void OnUpdate() override;
 
     NSE_Camera GetCamera() { return _camera; }
     obj_ptr<ShipRadarController> GetRadar() { return _shipRadar; }
 
     [[nodiscard]] NSE::Vector3d GetShipVelocity() const { return _shipVelocity; }
+    [[nodiscard]] obj_ptr<INavigatable> GetNavTarget() const { return _navTarget; }
 
 private:
     void UpdateInfoText();

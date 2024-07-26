@@ -7,7 +7,7 @@
 class ShipRadarController : public NSE::VisualMeshEntity
 {
 public:
-    ShipRadarController(NSE::Scene* scene);
+    ShipRadarController(const obj_ptr<ShipController>& controller);
     ~ShipRadarController();
 
     void OnUpdate() override;

@@ -1,6 +1,8 @@
 #include "ShipRadarController.h"
 
-ShipRadarController::ShipRadarController(NSE::Scene* scene)
+#include "ShipController.h"
+
+ShipRadarController::ShipRadarController(const obj_ptr<ShipController>& controller)
 {
     mesh = NSE::AssetsServer::Get()->LoadMeshAsset("Assets/Models/IcosphereSmooth3.obj");
     auto shader = NSE::ObjectServer::Get()->Create<NSE::Shader>(L"Assets/Shaders/Radar.hlsl");
@@ -8,7 +10,7 @@ ShipRadarController::ShipRadarController(NSE::Scene* scene)
     renderingMaterial = NSE::ObjectServer::Get()->Create<NSE::Material>(shader);
     renderingMaterial->MakeTransparent();
 
-    _pSystem = scene->Create<RadarParticleSystem>();
+    _pSystem = controller->GetScene()->Create<RadarParticleSystem>(controller);
     AddTarget(_pSystem, {1, 0.7, 0.4, 1});
 }
 

@@ -1,12 +1,14 @@
 #include "RadarParticleSystem.h"
 
 #include "systems/NavigationSystem.h"
+#include "ShipController.h"
 
 using namespace NSE;
 using namespace DirectX;
 
-RadarParticleSystem::RadarParticleSystem(): ParticleSystem(128, sizeof(Particle), 0, RenderType::Point)
+RadarParticleSystem::RadarParticleSystem(const obj_ptr<ShipController>& controller): ParticleSystem(128, sizeof(Particle), 0, RenderType::Point)
 {
+    _controller = controller;
     auto shader = CreateObject<Shader>(L"Assets/Shaders/RadarParticle.hlsl");
     shader->Compile();
     renderingMaterial = CreateObject<Material>(shader);
@@ -32,6 +34,7 @@ void RadarParticleSystem::OnSetupParticles(void *particlesData, size_t particleC
 void RadarParticleSystem::OnProcessParticles(void *particlesData, size_t particleCount)
 {
     auto particles = static_cast<Particle*>(particlesData);
+    auto navTarget = _controller->GetNavTarget();
 
     auto nav = NavigationSystem::Get();
 
@@ -42,7 +45,15 @@ void RadarParticleSystem::OnProcessParticles(void *particlesData, size_t particl
     int i = 0;
     for (const auto& marker : *nav)
     {
-        particles[i].color = marker->GetNavigatableColor();
+        if (marker == navTarget)
+        {
+            particles[i].color = {1.00, 0.547, 0.0300, 1.0};
+        }
+        else
+        {
+            particles[i].color = marker->GetNavigatableColor();
+        }
+        // particles[i].color = marker->GetNavigatableColor();
         particles[i].position = (float3)(marker->GetNavigatablePosition() - position);
         auto fDotP = dotproduct(normalize(particles[i].position), forward);
         particles[i].color.w = fDotP * 0.45f + 0.55f;
