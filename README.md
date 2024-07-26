@@ -4,7 +4,7 @@ Currently W.I.P., planning a partial refactoring/rework after an upcoming playte
 
 ## Features
 - Simple servers infrastructure for Input, Rendering, Time, Scene, etc... handling
-- Double precision for the game entities positioning
+- Double precision for the game entities positioning (with the world space being a 'camera' space*)
 - Rendering abstractions (GraphicsBuffer, Shader, Material, Texture, RenderTexture)*
 - obj_ptr<> wrapper with Destroy() Create() functionality to handle entities' lifetime*
 - CPU particle systems with effecient rendering
