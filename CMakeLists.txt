@@ -1,185 +1,46 @@
-cmake_minimum_required(VERSION 3.26)
+cmake_minimum_required(VERSION 3.28)
 project(NightScapeEngine)
 
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
+set(SDL2MAIN_LIBRARY "")
 
-add_executable(${PROJECT_NAME} WIN32
-        src/main.cpp
-        src/application.cpp
-        src/application.h
-        src/game/game.cpp
-        src/game/game.h
-        src/engine/servers/InputServer.cpp
-        src/engine/servers/InputServer.h
-        src/engine/servers/RenderServer.cpp
-        src/engine/servers/RenderServer.h
-        src/engine/servers/AssetServer.cpp
-        src/engine/servers/AssetServer.h
-        src/engine/engine.cpp
-        src/engine/engine.h
-        src/engine/servers/SoundServer.cpp
-        src/engine/servers/SoundServer.h
-        src/engine/entity/SceneEntity.cpp
-        src/engine/entity/SceneEntity.h
-        src/engine/entity/Camera.cpp
-        src/engine/entity/Camera.h
-        src/engine/entity/Entity.cpp
-        src/engine/entity/Entity.h
-        src/engine/scene/Scene.cpp
-        src/engine/scene/Scene.h
-        src/engine/servers/SceneServer.cpp
-        src/engine/servers/SceneServer.h
-        src/engine/servers/ShaderCompiler.cpp
-        src/engine/servers/ShaderCompiler.h
-        src/engine/entity/VisualEntity.cpp
-        src/engine/entity/VisualEntity.h
-        src/engine/render/Material.cpp
-        src/engine/render/Material.h
-        src/engine/entity/TriangleVisual.cpp
-        src/engine/entity/TriangleVisual.h
-        src/engine/data/Mesh.cpp
-        src/engine/data/Mesh.h
-        src/engine/render/ShaderProgramTemplate.h
-        src/engine/render/VertexShader.cpp
-        src/engine/render/VertexShader.h
-        src/engine/render/ShaderUtils.cpp
-        src/engine/render/ShaderUtils.h
-        src/engine/render/PixelShader.cpp
-        src/engine/render/PixelShader.h
-        src/engine/render/Shader.cpp
-        src/engine/render/Shader.h
-        src/engine/servers/TimeServer.cpp
-        src/engine/servers/TimeServer.h
-        src/engine/entity/QuadVisual.cpp
-        src/engine/entity/QuadVisual.h
-        src/engine/render/GlobalProperties.cpp
-        src/engine/render/GlobalProperties.h
-        src/engine/render/DrawProperties.h
-        src/engine/render/DrawProperties.cpp
-        src/engine/math/Math.cpp
-        src/engine/math/Math.h
-        src/engine/entity/FreeCamera.cpp
-        src/engine/entity/FreeCamera.h
-        src/engine/render/RenderTexture.cpp
-        src/engine/render/RenderTexture.h
-        src/engine/entity/Object.cpp
-        src/engine/entity/Object.h
-        src/engine/servers/ObjectServer.cpp
-        src/engine/servers/ObjectServer.h
-        src/engine/servers/ScreenServer.cpp
-        src/engine/servers/ScreenServer.h
-        src/engine/obj_ptr.h
-        src/engine/servers/BaseServer.cpp
-        src/engine/servers/BaseServer.h
-        src/engine/servers/ApplicationServer.cpp
-        src/engine/servers/ApplicationServer.h
-        src/engine/render/ShaderInputs.cpp
-        src/engine/render/ShaderInputs.h
-        src/engine/render/ShaderInputsData.cpp
-        src/engine/render/ShaderInputsData.h
-        src/engine/render/ShaderInputsDescription.cpp
-        src/engine/render/ShaderInputsDescription.h
-        src/engine/render/SamplerState.cpp
-        src/engine/render/SamplerState.h
-        src/engine/render/Texture.cpp
-        src/engine/render/Texture.h
-        src/engine/render/Texture2D.cpp
-        src/engine/render/Texture2D.h
-        src/game/StarsCamera.cpp
-        src/game/StarsCamera.h
-        src/engine/servers/RenderPipelineServer.cpp
-        src/engine/servers/RenderPipelineServer.h
-        src/engine/render/BlendState.cpp
-        src/engine/render/BlendState.h
-        src/game/ShipController.cpp
-        src/game/ShipController.h
-        src/engine/entity/VisualMeshEntity.cpp
-        src/engine/entity/VisualMeshEntity.h
-        src/engine/NightScapeEngine.h
-        src/game/ShipRadarController.cpp
-        src/game/ShipRadarController.h
-        src/engine/data/Light.cpp
-        src/engine/data/Light.h
-        src/engine/addon/DDSTextureLoader11.cpp
-        src/engine/addon/DDSTextureLoader11.h
-        src/engine/nsepch.h
-        src/engine/data/LightsProperties.cpp
-        src/engine/data/LightsProperties.h
-        src/engine/entity/ParticleSystem.cpp
-        src/engine/entity/ParticleSystem.h
-        src/engine/render/GraphicsBuffer.cpp
-        src/engine/render/GraphicsBuffer.h
-        src/game/StarDustParticles.cpp
-        src/game/StarDustParticles.h
-        src/game/planetary/Planet.cpp
-        src/game/planetary/Planet.h
-        src/engine/physics/RigidEntity.cpp
-        src/engine/physics/RigidEntity.h
-        src/engine/physics/CollisionEntity.cpp
-        src/engine/physics/CollisionEntity.h
-        src/engine/render/DepthStencilState.cpp
-        src/engine/render/DepthStencilState.h
-        src/engine/entity/SpriteVisual.cpp
-        src/engine/entity/SpriteVisual.h
-        src/engine/data/SpriteTexture.h
-        src/engine/data/ShaderDepthState.h
-        src/engine/entity/TextVisual.cpp
-        src/engine/entity/TextVisual.h
-        src/game/RadarParticleSystem.cpp
-        src/game/RadarParticleSystem.h
-        src/engine/entity/ProgressBarVisual.cpp
-        src/engine/entity/ProgressBarVisual.h
-        src/engine/ecs/EntityRegistry.cpp
-        src/engine/ecs/EntityRegistry.h
-        src/engine/ecs/Entity.cpp
-        src/engine/ecs/Entity.h
-        src/game/planetary/PlanetMeshTools.cpp
-        src/game/planetary/PlanetMeshTools.h
-        src/game/SkyboxStarsParticles.cpp
-        src/game/SkyboxStarsParticles.h
-        src/engine/addon/FastNoiseLite.h
-        src/game/systems/NavigationSystem.cpp
-        src/game/systems/NavigationSystem.h
-        src/game/systems/GenerationSystem.cpp
-        src/game/systems/GenerationSystem.h
-        src/game/systems/LevelSystem.cpp
-        src/game/systems/LevelSystem.h
-        src/game/systems/GalaxySystem.cpp
-        src/game/systems/GalaxySystem.h
-        src/game/systems/InventorySystem.cpp
-        src/game/systems/InventorySystem.h
-        src/game/systems/ShipSystem.cpp
-        src/game/systems/ShipSystem.h
-        src/game/systems/GameSystem.h
-        src/game/planetary/ISpaceObject.h
-        src/game/data/GalaxyLayer.h
-        src/game/systems/MainSystem.cpp
-        src/game/systems/MainSystem.h
-        src/game/data/PlanetCreationParameters.h
-        src/game/data/INavigatable.h
-        src/game/ShipMarkersVisual.cpp
-        src/game/ShipMarkersVisual.h
-        src/game/ItemVisualUI.cpp
-        src/game/ItemVisualUI.h
-        src/game/data/InventoryItemStack.h
-        src/game/data/InventoryItemDescription.cpp
-        src/game/data/InventoryItemDescription.h
-        src/game/data/ITargetable.h
-        src/game/ship/WeaponEntity.cpp
-        src/game/ship/WeaponEntity.h
-        src/game/ship/PulseWeaponEntity.cpp
-        src/game/ship/PulseWeaponEntity.h
-        src/game/data/ProjectileData.h
-        src/game/droid/DroidEntity.cpp
-        src/game/droid/DroidEntity.h
-)
+set(SDL2_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/libs/SDL2/include)
 
-target_link_libraries(${PROJECT_NAME} d3d9 d3d11 d3dcompiler dinput8 dxguid)
+# Support both 32 and 64 bit builds
+if (${CMAKE_SIZEOF_VOID_P} MATCHES 8)
+    set(SDL2_LIBRARIES "${PROJECT_SOURCE_DIR}/libs/SDL2/lib/x64/SDL2.lib;${PROJECT_SOURCE_DIR}/libs/SDL2/lib/x64/SDL2main.lib")
+else ()
+    set(SDL2_LIBRARIES "${PROJECT_SOURCE_DIR}/libs/SDL2/lib/x86/SDL2.lib;${PROJECT_SOURCE_DIR}/libs/SDL2/lib/x86/SDL2main.lib")
+endif ()
 
-add_custom_target(copy_data
-        COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different
-        "${CMAKE_CURRENT_SOURCE_DIR}/Assets/"
-        $<TARGET_FILE_DIR:${PROJECT_NAME}>/Assets
-        COMMENT "Copying data"
-)
-add_dependencies(${PROJECT_NAME} copy_data)
+string(STRIP "${SDL2_LIBRARIES}" SDL2_LIBRARIES)
+
+include_directories(${SDL2_INCLUDE_DIR})
+
+#add_library(NightScapeEngine SHARED nse.cpp
+#        src/engine/runtime/core/game/IGameInstance.h
+#        src/engine/runtime/core/main/Engine.cpp
+#        src/engine/runtime/core/main/Engine.h)
+
+# Gather all .cpp files in the src directory
+file(GLOB_RECURSE SOURCES "${PROJECT_SOURCE_DIR}/src/*.cpp")
+file(GLOB_RECURSE HEADERS "${PROJECT_SOURCE_DIR}/src/*.h*")
+
+# Add library
+add_library(${PROJECT_NAME} SHARED ${SOURCES}
+        src/NSE.cpp)
+
+# Include private source code
+#target_include_directories(NightScapeEngine PRIVATE "${PROJECT_SOURCE_DIR}/src")
+
+# Include SDL2
+target_link_libraries(${PROJECT_NAME} ${SDL2_LIBRARIES})
+
+# Prepare lib export
+file(
+        REMOVE_RECURSE ${PROJECT_SOURCE_DIR}/libs/NSE)
+file(
+        COPY ${PROJECT_SOURCE_DIR}/src/
+        DESTINATION ${PROJECT_SOURCE_DIR}/libs/NSE/include
+        FILES_MATCHING PATTERN "*.h*")
