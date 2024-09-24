@@ -3,8 +3,9 @@ project(NightScapeEngine)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
-set(SDL2MAIN_LIBRARY "")
 
+# include SDL2
+set(SDL2MAIN_LIBRARY "")
 set(SDL2_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/libs/SDL2/include)
 
 # Support both 32 and 64 bit builds
@@ -16,12 +17,17 @@ endif ()
 
 string(STRIP "${SDL2_LIBRARIES}" SDL2_LIBRARIES)
 
+# include SDL2
 include_directories(${SDL2_INCLUDE_DIR})
 
-#add_library(NightScapeEngine SHARED nse.cpp
-#        src/engine/runtime/core/game/IGameInstance.h
-#        src/engine/runtime/core/main/Engine.cpp
-#        src/engine/runtime/core/main/Engine.h)
+# include freeglut
+#include_directories(${PROJECT_SOURCE_DIR}/libs/freeglut/include)
+
+# include GLEW
+include_directories(${PROJECT_SOURCE_DIR}/libs/GLEW/include)
+
+#include entt
+include_directories(${PROJECT_SOURCE_DIR}/libs/entt/include)
 
 # Gather all .cpp files in the src directory
 file(GLOB_RECURSE SOURCES "${PROJECT_SOURCE_DIR}/src/*.cpp")
@@ -29,13 +35,28 @@ file(GLOB_RECURSE HEADERS "${PROJECT_SOURCE_DIR}/src/*.h*")
 
 # Add library
 add_library(${PROJECT_NAME} SHARED ${SOURCES}
-        src/NSE.cpp)
+        src/NSE.cpp
+        src/pch.h
+        src/engine/runtime/core/main/EngineConfiguration.h
+        src/engine/runtime/core/render/RenderServer_OpenGLImpl.cpp
+        src/engine/runtime/core/render/RenderServer.h
+        src/engine/runtime/core/main/EngineServer.cpp
+        src/engine/runtime/core/main/EngineServer.h
+        src/engine/runtime/core/scene/SceneServer.h
+        src/engine/runtime/core/scene/Entity.h
+        src/engine/runtime/core/main/Ref.h)
 
 # Include private source code
 #target_include_directories(NightScapeEngine PRIVATE "${PROJECT_SOURCE_DIR}/src")
 
-# Include SDL2
+# Link SDL2
 target_link_libraries(${PROJECT_NAME} ${SDL2_LIBRARIES})
+
+# Link freeglut
+#target_link_libraries(${PROJECT_NAME} ${PROJECT_SOURCE_DIR}/libs/freeglut/lib/x64/freeglut.lib)
+
+# Link GLEW
+target_link_libraries(${PROJECT_NAME} ${PROJECT_SOURCE_DIR}/libs/GLEW/lib/x64/glew32.lib)
 
 # Prepare lib export
 file(

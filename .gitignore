@@ -9,7 +9,6 @@
 **/*.cbp
 **/CMakeScripts
 **/compile_commands.json
-libs/SDL2/*
 
 ### C++ template
 # Compiled Object files

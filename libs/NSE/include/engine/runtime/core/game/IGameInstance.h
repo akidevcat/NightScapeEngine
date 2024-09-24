@@ -1,4 +1,5 @@
 #pragma once
+#include <string>
 
 namespace NSE
 {
@@ -8,5 +9,7 @@ namespace NSE
         virtual ~IGameInstance();
 
         virtual void OnGameLaunch() = 0;
+
+        virtual std::string GetName() { return "Night Scape Engine"; }
     };
 }
