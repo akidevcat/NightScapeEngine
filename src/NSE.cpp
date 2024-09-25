@@ -1,6 +1,6 @@
 #include "NSE.h"
 
-NSE::Engine* NSE::CreateEngine(IGameInstance* game)
+NSE::Engine* NSE::CreateEngine(IAppInstance* app)
 {
-    return new Engine(game);
+    return new Engine(app);
 }

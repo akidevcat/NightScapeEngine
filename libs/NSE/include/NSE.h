@@ -1,11 +1,13 @@
 #ifndef NIGHT_SCAPE_ENGINE_h
 #define NIGHT_SCAPE_ENGINE_h
 
-#include "engine/runtime/core/main/Engine.h"
+#include "pch.h"
+#include "Engine/Runtime/Core/Engine.h"
+#include "Engine/Runtime/Scene/Scene.h"
 
 namespace NSE
 {
-    Engine* CreateEngine(IGameInstance* game);
+    Engine* CreateEngine(IAppInstance* app);
 }
 
 #endif //NIGHT_SCAPE_ENGINE_h

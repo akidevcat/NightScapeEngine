@@ -20,13 +20,10 @@ string(STRIP "${SDL2_LIBRARIES}" SDL2_LIBRARIES)
 # include SDL2
 include_directories(${SDL2_INCLUDE_DIR})
 
-# include freeglut
-#include_directories(${PROJECT_SOURCE_DIR}/libs/freeglut/include)
-
 # include GLEW
 include_directories(${PROJECT_SOURCE_DIR}/libs/GLEW/include)
 
-#include entt
+# include entt
 include_directories(${PROJECT_SOURCE_DIR}/libs/entt/include)
 
 # Gather all .cpp files in the src directory
@@ -34,34 +31,62 @@ file(GLOB_RECURSE SOURCES "${PROJECT_SOURCE_DIR}/src/*.cpp")
 file(GLOB_RECURSE HEADERS "${PROJECT_SOURCE_DIR}/src/*.h*")
 
 # Add library
-add_library(${PROJECT_NAME} SHARED ${SOURCES}
-        src/NSE.cpp
-        src/pch.h
-        src/engine/runtime/core/main/EngineConfiguration.h
-        src/engine/runtime/core/render/RenderServer_OpenGLImpl.cpp
-        src/engine/runtime/core/render/RenderServer.h
-        src/engine/runtime/core/main/EngineServer.cpp
-        src/engine/runtime/core/main/EngineServer.h
-        src/engine/runtime/core/scene/SceneServer.h
-        src/engine/runtime/core/scene/Entity.h
-        src/engine/runtime/core/main/Ref.h)
-
-# Include private source code
-#target_include_directories(NightScapeEngine PRIVATE "${PROJECT_SOURCE_DIR}/src")
+add_library(${PROJECT_NAME}        OBJECT ${HEADERS} ${SOURCES})
+add_library(${PROJECT_NAME}_shared SHARED $<TARGET_OBJECTS:${PROJECT_NAME}>)
+add_library(${PROJECT_NAME}_static STATIC $<TARGET_OBJECTS:${PROJECT_NAME}>)
+set_property(TARGET ${PROJECT_NAME} PROPERTY POSITION_INDEPENDENT_CODE 1)
 
 # Link SDL2
-target_link_libraries(${PROJECT_NAME} ${SDL2_LIBRARIES})
-
-# Link freeglut
-#target_link_libraries(${PROJECT_NAME} ${PROJECT_SOURCE_DIR}/libs/freeglut/lib/x64/freeglut.lib)
+target_link_libraries(${PROJECT_NAME}        ${SDL2_LIBRARIES})
+target_link_libraries(${PROJECT_NAME}_shared ${SDL2_LIBRARIES})
+target_link_libraries(${PROJECT_NAME}_static ${SDL2_LIBRARIES})
 
 # Link GLEW
-target_link_libraries(${PROJECT_NAME} ${PROJECT_SOURCE_DIR}/libs/GLEW/lib/x64/glew32.lib)
+target_link_libraries(${PROJECT_NAME}        ${PROJECT_SOURCE_DIR}/libs/GLEW/lib/x64/glew32.lib glu32 opengl32)
+target_link_libraries(${PROJECT_NAME}_shared ${PROJECT_SOURCE_DIR}/libs/GLEW/lib/x64/glew32.lib glu32 opengl32)
+target_link_libraries(${PROJECT_NAME}_static ${PROJECT_SOURCE_DIR}/libs/GLEW/lib/x64/glew32.lib glu32 opengl32)
+
+# Precompile pch.h
+target_precompile_headers(${PROJECT_NAME} PRIVATE ${PROJECT_SOURCE_DIR}/src/pch.h)
 
 # Prepare lib export
-file(
-        REMOVE_RECURSE ${PROJECT_SOURCE_DIR}/libs/NSE)
-file(
-        COPY ${PROJECT_SOURCE_DIR}/src/
-        DESTINATION ${PROJECT_SOURCE_DIR}/libs/NSE/include
-        FILES_MATCHING PATTERN "*.h*")
+add_custom_command(
+        TARGET ${PROJECT_NAME}_static PRE_LINK
+        COMMAND ${CMAKE_COMMAND} -E rm -r -f
+        ${PROJECT_SOURCE_DIR}/libs/NSE
+        COMMENT "Removing old NSE export includes: ${PROJECT_SOURCE_DIR}/libs/NSE")
+foreach(CurrentHeaderFile IN LISTS HEADERS)
+    string(REPLACE ${PROJECT_SOURCE_DIR}/src/ "" CurrentFileSubPath ${CurrentHeaderFile})
+    add_custom_command(
+            TARGET ${PROJECT_NAME}_static PRE_LINK
+            COMMAND ${CMAKE_COMMAND} -E copy ${CurrentHeaderFile} ${PROJECT_SOURCE_DIR}/libs/NSE/include/${CurrentFileSubPath}
+            COMMENT "Copying new NSE export includes: ${CurrentHeaderFile}")
+endforeach()
+
+
+#file(
+#        REMOVE_RECURSE ${PROJECT_SOURCE_DIR}/libs/NSE)
+#file(
+#        COPY ${PROJECT_SOURCE_DIR}/src/
+#        DESTINATION ${PROJECT_SOURCE_DIR}/libs/NSE/include
+#        FILES_MATCHING PATTERN "*.h*")
+#file(
+#        COPY ${CMAKE_BINARY_DIR}/
+#        DESTINATION ${PROJECT_SOURCE_DIR}/libs/NSE/lib/
+#        FILES_MATCHING PATTERN "*.dll")
+#file(
+#        COPY ${CMAKE_BINARY_DIR}/
+#        DESTINATION ${PROJECT_SOURCE_DIR}/libs/NSE/lib/
+#        FILES_MATCHING PATTERN "*.lib")
+
+# Add tests
+enable_testing()
+file(GLOB_RECURSE TESTS_SOURCES "${PROJECT_SOURCE_DIR}/tests/*.cpp")
+add_executable(unit_tests ${TESTS_SOURCES} ${HEADERS})
+#target_include_directories(unit_tests PRIVATE ${PROJECT_SOURCE_DIR}/libs/NSE/include)
+#target_include_directories(unit_tests PRIVATE ${HEADERS})
+target_include_directories(unit_tests PRIVATE ${PROJECT_SOURCE_DIR}/src)
+target_link_libraries(unit_tests ${SDL2_LIBRARIES})
+target_link_libraries(unit_tests ${PROJECT_SOURCE_DIR}/libs/GLEW/lib/x64/glew32.lib)
+target_link_libraries(unit_tests ${PROJECT_NAME}_static)
+
