@@ -1,24 +1,12 @@
-#ifdef NSE_USE_OPENGL_BACKEND
+#include "OpenGLRenderAPI.h"
 
-#include "RenderServer.h"
-#include <gl/glew.h>
-
-NSE::RenderServer* NSE::RenderServer::_instance = nullptr;
-
-NSE::RenderServer::RenderServer(EngineConfiguration cfg, SDL_Window* window)
+NSE::OpenGLRenderAPI::OpenGLRenderAPI(EngineConfiguration config, SDL_Window* window)
 {
-    _cfg = cfg;
+    _config = config;
     _window = window;
-    _glProgramID = 0;
-    _instance = this;
 }
 
-NSE::RenderServer::~RenderServer()
-{
-
-}
-
-bool NSE::RenderServer::OnInitialize()
+bool NSE::OpenGLRenderAPI::OnInitialize()
 {
     // Use OpenGL 3.2
     SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, 3 );
@@ -48,7 +36,7 @@ bool NSE::RenderServer::OnInitialize()
 
     // Enable VSync
     int vSyncResult = -1;
-    switch (_cfg.vSyncMode)
+    switch (_config.vSyncMode)
     {
         case EngineConfiguration::VSyncMode::None:
             vSyncResult = SDL_GL_SetSwapInterval(0);
@@ -67,22 +55,8 @@ bool NSE::RenderServer::OnInitialize()
     return true;
 }
 
-void NSE::RenderServer::OnDispose()
+void NSE::OpenGLRenderAPI::OnDispose()
 {
     glDeleteProgram(_glProgramID);
     _glProgramID = 0;
 }
-
-int m =0;
-
-void NSE::RenderServer::Present()
-{
-    SDL_GL_SwapWindow(_window);
-}
-
-void NSE::RenderServer::ClearRenderTarget()
-{
-    glClearColor(1, 0, 0, 1);
-}
-
-#endif

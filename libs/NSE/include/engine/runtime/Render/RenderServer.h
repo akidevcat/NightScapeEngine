@@ -2,6 +2,7 @@
 
 #include "../Core/EngineServer.h"
 #include "../Core/EngineConfiguration.h"
+#include "IRenderAPI.h"
 #include "IRenderPipeline.h"
 
 namespace NSE
@@ -22,21 +23,9 @@ namespace NSE
         void ClearRenderTarget();
 
     private:
-        static RenderServer* _instance;
-
-    public:
-        static RenderServer* Get()
-        {
-            assert(_instance);
-            return _instance;
-        }
-
-    private:
-        EngineConfiguration _cfg;
-        GLuint _glProgramID;
-
-        SDL_GLContext _glContext = nullptr;
-        SDL_Window* _window = nullptr;
+        IRenderAPI* _api = nullptr;
+        EngineConfiguration _config;
+        SDL_Window* _window;
     };
 
     constexpr EngineServerAccessor<RenderServer> Render;
