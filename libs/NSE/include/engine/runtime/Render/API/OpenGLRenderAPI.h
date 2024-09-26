@@ -13,6 +13,12 @@ namespace NSE
         bool OnInitialize() override;
         void OnDispose() override;
 
+    public:
+        void Present() const override;
+        void ClearRenderTargetColor(float4 color) const override;
+        void ClearRenderTargetDepth(float depth) const override;
+        void ClearRenderTargetStencil(int stencil) const override;
+
     private:
         EngineConfiguration _config;
 

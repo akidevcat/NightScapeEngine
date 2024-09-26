@@ -60,3 +60,23 @@ void NSE::OpenGLRenderAPI::OnDispose()
     glDeleteProgram(_glProgramID);
     _glProgramID = 0;
 }
+
+void NSE::OpenGLRenderAPI::Present() const
+{
+    SDL_GL_SwapWindow(_window);
+}
+
+void NSE::OpenGLRenderAPI::ClearRenderTargetColor(float4 color) const
+{
+    glClearColor(color.r, color.g, color.b, color.a);
+}
+
+void NSE::OpenGLRenderAPI::ClearRenderTargetDepth(float depth) const
+{
+    glClearDepth(depth);
+}
+
+void NSE::OpenGLRenderAPI::ClearRenderTargetStencil(int stencil) const
+{
+    glClearStencil(stencil);
+}

@@ -46,6 +46,12 @@ target_link_libraries(${PROJECT_NAME}        ${PROJECT_SOURCE_DIR}/libs/GLEW/lib
 target_link_libraries(${PROJECT_NAME}_shared ${PROJECT_SOURCE_DIR}/libs/GLEW/lib/x64/glew32.lib glu32 opengl32)
 target_link_libraries(${PROJECT_NAME}_static ${PROJECT_SOURCE_DIR}/libs/GLEW/lib/x64/glew32.lib glu32 opengl32)
 
+# Link GLM
+find_package(glm CONFIG REQUIRED)
+target_link_libraries(${PROJECT_NAME} glm::glm)
+target_link_libraries(${PROJECT_NAME}_shared glm::glm)
+target_link_libraries(${PROJECT_NAME}_static glm::glm)
+
 # Precompile pch.h
 target_precompile_headers(${PROJECT_NAME} PRIVATE ${PROJECT_SOURCE_DIR}/src/pch.h)
 

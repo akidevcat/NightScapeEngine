@@ -37,13 +37,3 @@ void NSE::RenderServer::OnDispose()
     if (_api)
         _api->OnDispose();
 }
-
-void NSE::RenderServer::Present()
-{
-    SDL_GL_SwapWindow(_window);
-}
-
-void NSE::RenderServer::ClearRenderTarget()
-{
-    glClearColor(1, 0, 0, 1);
-}

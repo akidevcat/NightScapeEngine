@@ -19,8 +19,7 @@ namespace NSE
         void OnDispose() override;
 
     public:
-        void Present();
-        void ClearRenderTarget();
+        [[nodiscard]] const IRenderAPI* api() const { return _api; }
 
     private:
         IRenderAPI* _api = nullptr;

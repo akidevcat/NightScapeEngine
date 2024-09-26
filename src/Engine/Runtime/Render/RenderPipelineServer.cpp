@@ -26,6 +26,6 @@ void NSE::RenderPipelineServer::LoadPipeline(IRenderPipeline *pipeline)
 
 void NSE::RenderPipelineServer::RenderFrame()
 {
-    Render->ClearRenderTarget();
-    Render->Present();
+    Render->api()->ClearRenderTargetColor(float4{1.0f});
+    Render->api()->Present();
 }
