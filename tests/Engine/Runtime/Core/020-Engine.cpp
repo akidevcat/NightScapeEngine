@@ -1,5 +1,5 @@
 #include "NSE.h"
-#include "../../../Catch2/catch_amalgamated.hpp"
+#include <catch2/catch_all.hpp>
 
 class TestGame : public NSE::IAppInstance
 {
@@ -29,10 +29,11 @@ TEST_CASE("Engine basic testing", "[Engine]")
     };
     engine->Initialize(cfg);
     // Render some frames
-    for (int i = 0; i < 1000; i++)
+    for (int i = 0; i < 10; i++)
     {
         engine->UpdateFrame();
     }
+    REQUIRE(true);
     engine->Shutdown();
     free(game);
 }

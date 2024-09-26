@@ -3,9 +3,15 @@
 #include <iostream>
 
 // #include "../../../../pch.h"
+#include "../Assets/AssetsServer.h"
+#include "../Audio/AudioServer.h"
+#include "../Input/InputServer.h"
+#include "../Physics/PhysicsServer.h"
+#include "../Profiling/ProfilingServer.h"
 #include "../Render/RenderPipelineServer.h"
 #include "../Render/RenderServer.h"
 #include "../Scene/SceneServer.h"
+#include "../Time/TimeServer.h"
 
 NSE::Engine::Engine(IAppInstance *app)
 {
@@ -51,9 +57,15 @@ void NSE::Engine::Initialize(const EngineConfiguration& config)
     }
 
     // Initialize servers
+    RegisterServer(new TimeServer{config});
+    RegisterServer(new ProfilingServer{config});
+    RegisterServer(new AssetsServer{config});
+    RegisterServer(new AudioServer{config});
+    RegisterServer(new InputServer{config});
+    RegisterServer(new PhysicsServer{config});
     RegisterServer(new SceneServer{});
     RegisterServer(new RenderServer{config, _window});
-    RegisterServer(new RenderPipelineServer{});
+    RegisterServer(new RenderPipelineServer{config});
 
     _isInitialized = true;
 }
@@ -79,7 +91,6 @@ void NSE::Engine::Shutdown()
     _window = nullptr;
 
     SDL_Quit();
-    exit(0);
 }
 
 // void NSE::Engine::RegisterServer(EngineServer* server)

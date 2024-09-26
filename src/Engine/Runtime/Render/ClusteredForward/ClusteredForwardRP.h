@@ -1,11 +1,15 @@
 #pragma once
 
-#include "../IRenderPipeline.h"
+#include "../RenderPipeline.h"
 
 namespace NSE
 {
-    class ClusteredForwardRP : public IRenderPipeline
+    class ClusteredForwardRP : public RenderPipeline
     {
+    public:
+        void OnLoad() override;
+        void OnUnload() override;
 
+        void Render(const Components::Camera &camera, const Components::Transform &transform) override;
     };
 }

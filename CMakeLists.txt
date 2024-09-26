@@ -4,6 +4,9 @@ project(NightScapeEngine)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
 
+# Find packages
+find_package(Catch2 3 REQUIRED)
+
 # include SDL2
 set(SDL2MAIN_LIBRARY "")
 set(SDL2_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/libs/SDL2/include)
@@ -86,13 +89,16 @@ endforeach()
 #        FILES_MATCHING PATTERN "*.lib")
 
 # Add tests
+include(Catch)
 enable_testing()
 file(GLOB_RECURSE TESTS_SOURCES "${PROJECT_SOURCE_DIR}/tests/*.cpp")
 add_executable(unit_tests ${TESTS_SOURCES} ${HEADERS})
 #target_include_directories(unit_tests PRIVATE ${PROJECT_SOURCE_DIR}/libs/NSE/include)
 #target_include_directories(unit_tests PRIVATE ${HEADERS})
 target_include_directories(unit_tests PRIVATE ${PROJECT_SOURCE_DIR}/src)
+target_link_libraries(unit_tests Catch2::Catch2WithMain) # Put this before SDL2 for the main function
 target_link_libraries(unit_tests ${SDL2_LIBRARIES})
 target_link_libraries(unit_tests ${PROJECT_SOURCE_DIR}/libs/GLEW/lib/x64/glew32.lib)
+#target_link_libraries(unit_tests Catch2::Catch2WithMain)
 target_link_libraries(unit_tests ${PROJECT_NAME}_static)
-
+catch_discover_tests(unit_tests)

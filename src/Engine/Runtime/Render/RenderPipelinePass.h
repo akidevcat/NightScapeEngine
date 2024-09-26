@@ -2,7 +2,7 @@
 
 namespace NSE
 {
-    class IRenderPipeline
+    class RenderPipelinePass
     {
 
     };

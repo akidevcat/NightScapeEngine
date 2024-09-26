@@ -1,5 +1,5 @@
 #include "NSE.h"
-#include "../../../Catch2/catch_amalgamated.hpp"
+#include <catch2/catch_all.hpp>
 
 TEST_CASE("Ref basic testing", "[Ref]")
 {

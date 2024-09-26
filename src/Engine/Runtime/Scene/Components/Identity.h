@@ -1,9 +1,9 @@
 #pragma once
 #include <string>
 
-namespace NSE
+namespace NSE::Components
 {
-    struct IdentityComponent
+    struct Identity
     {
         size_t uid = 0;
         size_t sceneUid = 0;

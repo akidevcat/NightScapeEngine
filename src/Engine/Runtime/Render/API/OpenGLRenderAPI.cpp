@@ -9,8 +9,8 @@ NSE::OpenGLRenderAPI::OpenGLRenderAPI(EngineConfiguration config, SDL_Window* wi
 bool NSE::OpenGLRenderAPI::OnInitialize()
 {
     // Use OpenGL 3.2
-    SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, 3 );
-    SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION, 2 );
+    SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+    SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION, 2);
     SDL_GL_SetAttribute( SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE );
 
     // Double buffering
@@ -69,14 +69,17 @@ void NSE::OpenGLRenderAPI::Present() const
 void NSE::OpenGLRenderAPI::ClearRenderTargetColor(float4 color) const
 {
     glClearColor(color.r, color.g, color.b, color.a);
+    glClear(GL_COLOR_BUFFER_BIT);
 }
 
 void NSE::OpenGLRenderAPI::ClearRenderTargetDepth(float depth) const
 {
     glClearDepth(depth);
+    glClear(GL_DEPTH_BUFFER_BIT);
 }
 
 void NSE::OpenGLRenderAPI::ClearRenderTargetStencil(int stencil) const
 {
     glClearStencil(stencil);
+    glClear(GL_STENCIL_BUFFER_BIT);
 }

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../IRPContext.h";
+#include "../IRPContext.h"
 
 namespace NSE
 {

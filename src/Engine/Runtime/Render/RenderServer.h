@@ -3,7 +3,7 @@
 #include "../Core/EngineServer.h"
 #include "../Core/EngineConfiguration.h"
 #include "IRenderAPI.h"
-#include "IRenderPipeline.h"
+#include "RenderPipeline.h"
 
 namespace NSE
 {

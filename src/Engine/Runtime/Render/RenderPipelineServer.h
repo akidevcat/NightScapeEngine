@@ -1,6 +1,7 @@
 #pragma once
 
-#include "IRenderPipeline.h"
+#include "RenderPipeline.h"
+#include "../Core/EngineConfiguration.h"
 #include "../Core/EngineServer.h"
 
 namespace NSE
@@ -8,22 +9,24 @@ namespace NSE
     class RenderPipelineServer : public EngineServer<RenderPipelineServer>
     {
     public:
-        RenderPipelineServer();
+        explicit RenderPipelineServer(const EngineConfiguration& config);
         ~RenderPipelineServer() override;
 
         bool OnInitialize() override;
         void OnDispose() override;
 
-        void LoadPipeline(IRenderPipeline* pipeline);
+        void LoadPipeline(RenderPipeline*&& pipeline);
+        void UnloadPipeline();
 
     private:
         void RenderFrame();
 
     private:
-        IRenderPipeline* _pipeline = nullptr;
+        EngineConfiguration _config;
+        RenderPipeline* _pipeline = nullptr;
 
         friend NSE::Engine;
     };
 
-    constexpr EngineServerAccessor<RenderPipelineServer> RenderPipeline;
+    constexpr EngineServerAccessor<RenderPipelineServer> Pipeline;
 }

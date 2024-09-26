@@ -1,14 +1,13 @@
-// #include "pch.h"
 #include "Scene.h"
+
+#include "Components/Transform.h"
+#include "../Render/Components/Camera.h"
 
 size_t NSE::Scene::_uidCount = 1;
 
 NSE::Scene::Scene()
 {
     _uid = _uidCount++;
-
-    // auto v = _registry.view<TestComponent>();
-    // v.storage()
 }
 
 NSE::Scene::~Scene()
