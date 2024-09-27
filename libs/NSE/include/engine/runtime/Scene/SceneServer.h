@@ -16,9 +16,15 @@ namespace NSE
         SceneServer();
         ~SceneServer() override;
 
+    protected:
         bool OnInitialize() override;
         void OnDispose() override;
 
+        void BeginFrameUpdate();
+        void UpdateFrame();
+        void EndFrameUpdate();
+
+    public:
         Ref<Scene> CreateScene();
         Ref<Scene> GetScene(size_t sceneID);
         void UnloadScene(size_t sceneID);
@@ -43,5 +49,5 @@ namespace NSE
         friend NSE::Engine;
     };
 
-    constexpr EngineServerAccessor<SceneServer> Scenes;
+    constexpr EngineServerAccessor<SceneServer> sScene;
 }

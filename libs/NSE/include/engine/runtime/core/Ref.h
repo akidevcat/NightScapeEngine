@@ -166,6 +166,9 @@ namespace NSE
 
     private:
         mutable T* _instance = nullptr;
+
+        template<class T2>
+        friend class SRef;
     };
 
     template<typename T>

@@ -18,5 +18,5 @@ namespace NSE
         EngineConfiguration _config;
     };
 
-    constexpr EngineServerAccessor<ProfilingServer> Profiling;
+    constexpr EngineServerAccessor<ProfilingServer> sProfiling;
 }

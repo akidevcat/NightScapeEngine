@@ -18,5 +18,5 @@ namespace NSE
         EngineConfiguration _config;
     };
 
-    constexpr EngineServerAccessor<AudioServer> Audio;
+    constexpr EngineServerAccessor<AudioServer> sAudio;
 }

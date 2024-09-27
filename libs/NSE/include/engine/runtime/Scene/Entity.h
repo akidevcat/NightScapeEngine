@@ -9,8 +9,9 @@ namespace NSE
 
     class Entity
     {
-    protected:
+    public:
         Entity() = default;
+        Entity(nullptr_t) : Entity() {}
         ~Entity() = default;
 
         Entity(const entt::entity& ref, const Ref<Scene>& scene) : _ref(ref), _scene(scene) {}

@@ -18,6 +18,30 @@ void NSE::SceneServer::OnDispose()
 
 }
 
+void NSE::SceneServer::BeginFrameUpdate()
+{
+    for (auto& scene : _cachedScenesList)
+    {
+        scene->OnBeginFrameUpdate();
+    }
+}
+
+void NSE::SceneServer::UpdateFrame()
+{
+    for (auto& scene : _cachedScenesList)
+    {
+        scene->OnFrameUpdate();
+    }
+}
+
+void NSE::SceneServer::EndFrameUpdate()
+{
+    for (auto& scene : _cachedScenesList)
+    {
+        scene->OnEndFrameUpdate();
+    }
+}
+
 NSE::Ref<NSE::Scene> NSE::SceneServer::CreateScene()
 {
     // auto result = std::make_shared<Scene>();
@@ -42,7 +66,7 @@ void NSE::SceneServer::UnloadScene(size_t sceneID)
     if (result == _scenes.end())
         return;
 
-    result->second->OnDispose();
+    result->second->OnUnload();
 
 #ifndef NDEBUG
     Ref<Scene> sceneRef = result->second;

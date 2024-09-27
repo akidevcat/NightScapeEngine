@@ -75,7 +75,10 @@ void NSE::Engine::UpdateFrame()
 
     GetServer<TimeServer>()->BeginFrame();
     GetServer<InputServer>()->BeginFrame();
+    GetServer<SceneServer>()->BeginFrameUpdate();
+    GetServer<SceneServer>()->UpdateFrame();
     GetServer<RenderPipelineServer>()->RenderFrame();
+    GetServer<SceneServer>()->EndFrameUpdate();
     GetServer<InputServer>()->EndFrame();
     GetServer<TimeServer>()->EndFrame();
 }

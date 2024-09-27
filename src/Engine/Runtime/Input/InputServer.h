@@ -24,5 +24,5 @@ namespace NSE
         friend Engine;
     };
 
-    constexpr EngineServerAccessor<InputServer> Input;
+    constexpr EngineServerAccessor<InputServer> sInput;
 }

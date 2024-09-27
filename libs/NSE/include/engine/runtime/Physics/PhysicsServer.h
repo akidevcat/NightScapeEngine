@@ -18,5 +18,5 @@ namespace NSE
         EngineConfiguration _config;
     };
 
-    constexpr EngineServerAccessor<PhysicsServer> Physics;
+    constexpr EngineServerAccessor<PhysicsServer> sPhysics;
 }

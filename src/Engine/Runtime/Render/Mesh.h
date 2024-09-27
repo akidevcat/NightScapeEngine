@@ -2,7 +2,7 @@
 
 namespace NSE
 {
-    class Mesh : RefCounted
+    class Mesh : public RefCounted
     {
 
     };

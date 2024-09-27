@@ -27,5 +27,5 @@ namespace NSE
         SDL_Window* _window;
     };
 
-    constexpr EngineServerAccessor<RenderServer> Render;
+    constexpr EngineServerAccessor<RenderServer> sRender;
 }

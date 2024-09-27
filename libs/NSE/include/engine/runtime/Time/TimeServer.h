@@ -24,5 +24,5 @@ namespace NSE
         friend Engine;
     };
 
-    constexpr EngineServerAccessor<TimeServer> Time;
+    constexpr EngineServerAccessor<TimeServer> sTime;
 }

@@ -15,7 +15,7 @@ namespace NSE
     {
     public:
         explicit Engine(IAppInstance* app);
-        ~Engine();
+        ~Engine() = default;
 
         void Initialize(const EngineConfiguration& config);
         void UpdateFrame();

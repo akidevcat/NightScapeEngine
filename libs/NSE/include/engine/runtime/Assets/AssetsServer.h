@@ -18,5 +18,5 @@ namespace NSE
         EngineConfiguration _config;
     };
 
-    constexpr EngineServerAccessor<AssetsServer> Assets;
+    constexpr EngineServerAccessor<AssetsServer> sAssets;
 }

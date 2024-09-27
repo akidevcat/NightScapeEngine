@@ -1,6 +1,7 @@
 #include "RenderPipelineServer.h"
 
 #include "RenderServer.h"
+#include "../Scene/SceneServer.h"
 #include "ClusteredForward/ClusteredForwardRP.h"
 
 NSE::RenderPipelineServer::RenderPipelineServer(const EngineConfiguration& config)
@@ -50,6 +51,12 @@ void NSE::RenderPipelineServer::RenderFrame()
     if (!_pipeline)
         return;
 
-    Render->api()->ClearRenderTargetColor(float4{0, 1, 1, 1});
-    Render->api()->Present();
+    for (auto& scene : *SceneServer::Get())
+    {
+        auto view = scene->GetEntities<Components::Transform, Components::Camera>();
+        for (const auto& [entity, transform, camera] : view.each())
+        {
+            _pipeline->Render(camera, transform);
+        }
+    }
 }
