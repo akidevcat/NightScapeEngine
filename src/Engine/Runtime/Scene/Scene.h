@@ -1,6 +1,7 @@
 #pragma once
 
 #include <entt/entt.hpp>
+#include "Entity.h"
 
 namespace NSE
 {
@@ -24,11 +25,14 @@ namespace NSE
     private:
         size_t _uid;
 
-
         entt::registry _registry;
 
         static size_t _uidCount;
 
         friend SceneServer;
+        friend Entity;
     };
 }
+
+// Entity.h requires some template implementations based of the Scene class
+#include "Entity_SceneImplementation.h"

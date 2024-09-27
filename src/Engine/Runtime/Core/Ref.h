@@ -189,16 +189,16 @@ namespace NSE
             other._instance = nullptr;
         }
 
-        T* operator->() { return _instance; }
-        const T* operator->() const { return _instance; }
-        T& operator*() { return *_instance; }
-        const T& operator*() const { return *_instance; }
+        T* operator->() { assert(("Null reference occured", Alive())); return _instance; }
+        const T* operator->() const { assert(("Null reference occured", Alive())); return _instance; }
+        T& operator*() { assert(("Null reference occured", Alive())); return *_instance; }
+        const T& operator*() const { assert(("Null reference occured", Alive())); return *_instance; }
 
         bool Alive() const { return _instance ? RefCounted::ContainsRef(_instance) : false; }
         operator bool() const { return Alive(); }
 
         template<typename T2>
-        Ref<T2> As() const { return Ref<T2>(dynamic_cast<T2*>(_instance)); }
+        Ref<T2> As() const { assert(("Null reference occured", Alive())); return Ref<T2>(dynamic_cast<T2*>(_instance)); }
 
     private:
         T* _instance = nullptr;
