@@ -18,3 +18,11 @@ void NSE::TimeServer::OnDispose()
 {
 
 }
+
+void NSE::TimeServer::BeginFrame()
+{
+}
+
+void NSE::TimeServer::EndFrame()
+{
+}

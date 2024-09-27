@@ -5,7 +5,6 @@
 
 namespace NSE
 {
-
     class RenderPipelineServer;
 
     class RenderPipeline

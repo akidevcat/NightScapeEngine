@@ -2,7 +2,6 @@
 
 #include <iostream>
 
-// #include "../../../../pch.h"
 #include "../Assets/AssetsServer.h"
 #include "../Audio/AudioServer.h"
 #include "../Input/InputServer.h"
@@ -72,9 +71,13 @@ void NSE::Engine::Initialize(const EngineConfiguration& config)
 
 void NSE::Engine::UpdateFrame()
 {
-    assert(_isInitialized);
+    assert(("Engine is not initialized", _isInitialized));
 
+    GetServer<TimeServer>()->BeginFrame();
+    GetServer<InputServer>()->BeginFrame();
     GetServer<RenderPipelineServer>()->RenderFrame();
+    GetServer<InputServer>()->EndFrame();
+    GetServer<TimeServer>()->EndFrame();
 }
 
 void NSE::Engine::Shutdown()
@@ -92,16 +95,3 @@ void NSE::Engine::Shutdown()
 
     SDL_Quit();
 }
-
-// void NSE::Engine::RegisterServer(EngineServer* server)
-// {
-//     assert(server);
-//
-//     if (!server)
-//         return;
-//
-//     _servers.emplace_back(server);
-//     _serversMap.emplace(typeid(*server).hash_code(), server);
-//
-//     server->OnInitialize();
-// }

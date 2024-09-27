@@ -8,14 +8,20 @@ namespace NSE
     class TimeServer : public EngineServer<TimeServer>
     {
     public:
-        TimeServer(EngineConfiguration cfg);
+        explicit TimeServer(EngineConfiguration cfg);
         ~TimeServer() override;
 
         bool OnInitialize() override;
         void OnDispose() override;
 
     private:
+        void BeginFrame();
+        void EndFrame();
+
+    private:
         EngineConfiguration _config;
+
+        friend Engine;
     };
 
     constexpr EngineServerAccessor<TimeServer> Time;

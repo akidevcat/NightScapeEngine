@@ -18,3 +18,11 @@ void NSE::InputServer::OnDispose()
 {
 
 }
+
+void NSE::InputServer::BeginFrame()
+{
+}
+
+void NSE::InputServer::EndFrame()
+{
+}
