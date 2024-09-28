@@ -1,14 +1,14 @@
 #pragma once
 
-#include "../IRenderAPI.h"
-#include "../../Core/EngineConfiguration.h"
+#include "../../IRenderAPI.h"
+#include "../../../Core/EngineConfiguration.h"
 
 namespace NSE
 {
-    class OpenGLRenderAPI : public IRenderAPI
+    class glRenderAPI : public IRenderAPI
     {
     public:
-        explicit OpenGLRenderAPI(EngineConfiguration config, SDL_Window* window);
+        explicit glRenderAPI(EngineConfiguration config, SDL_Window* window);
 
         bool OnInitialize() override;
         void OnDispose() override;
@@ -18,6 +18,10 @@ namespace NSE
         void ClearRenderTargetColor(float4 color) const override;
         void ClearRenderTargetDepth(float depth) const override;
         void ClearRenderTargetStencil(int stencil) const override;
+
+    public:
+        [[nodiscard]] SRef<GraphicsBuffer> CreateGraphicsBuffer(GraphicsBuffer::Target target, size_t size, bool keepDataOnCPU) const final;
+        [[nodiscard]] SRef<GraphicsBuffer> CreateGraphicsBuffer(GraphicsBuffer::Target target, size_t stride, size_t count, bool keepDataOnCPU) const final;
 
     private:
         EngineConfiguration _config;

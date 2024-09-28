@@ -6,6 +6,9 @@
 
 namespace NSE
 {
+    template<typename T>
+    class Ref;
+
     class RefCounted
     {
     public:
@@ -14,6 +17,10 @@ namespace NSE
         void IncRef() const { ++_refCount; }
         void DecRef() const { --_refCount; }
         uint32_t RefCount() const { return _refCount.load(); }
+
+        Ref<RefCounted> self();
+        template<typename T>
+        Ref<T> self();
 
     private:
         static void RegRef(void* ptr);
@@ -209,4 +216,10 @@ namespace NSE
         template<class T2>
         friend class Ref;
     };
+
+    template<typename T>
+    Ref<T> RefCounted::self()
+    {
+        return Ref{this}.As<T>();
+    }
 }

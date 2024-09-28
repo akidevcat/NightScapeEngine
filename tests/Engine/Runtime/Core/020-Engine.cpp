@@ -19,21 +19,25 @@ public:
     }
 };
 
-TEST_CASE("Engine basic testing", "[Engine]")
+TEST_CASE("Engine basic testing", "[User]")
 {
     auto game = new TestGame{};
     auto engine = NSE::CreateEngine(game);
+
     NSE::EngineConfiguration cfg
     {
         NSE::EngineConfiguration::VSyncMode::None
     };
     engine->Initialize(cfg);
-    // Render some frames
-    for (int i = 0; i < 10; i++)
+
+    while(true)
     {
-        engine->UpdateFrame();
+        if (!engine->UpdateFrame())
+            break;
     }
+
     REQUIRE(true);
+
     engine->Shutdown();
     free(game);
 }

@@ -16,7 +16,7 @@ namespace NSE
 
         Entity(const entt::entity& ref, const Ref<Scene>& scene) : _ref(ref), _scene(scene) {}
 
-        [[nodiscard]] inline bool Alive() const;
+        [[nodiscard]] bool Alive() const;
 
         template<typename T, typename... TArgs>
         T& AddComponent(TArgs&&... args);

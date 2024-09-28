@@ -1,6 +1,6 @@
 #include "RenderServer.h"
 #include <gl/glew.h>
-#include "API/OpenGLRenderAPI.h"
+#include "API/OpenGL/glRenderAPI.h"
 
 NSE::RenderServer::RenderServer(EngineConfiguration cfg, SDL_Window* window)
 {
@@ -18,7 +18,7 @@ bool NSE::RenderServer::OnInitialize()
     switch (_config.renderAPI)
     {
         case EngineConfiguration::RenderAPI::OpenGL:
-            _api = new OpenGLRenderAPI{_config, _window};
+            _api = new glRenderAPI{_config, _window};
             break;
     }
 

@@ -3,6 +3,11 @@
 std::unordered_set<void*> NSE::RefCounted::_references;
 std::mutex NSE::RefCounted::_referencesMutex;
 
+NSE::Ref<NSE::RefCounted> NSE::RefCounted::self()
+{
+    return Ref{this};
+}
+
 void NSE::RefCounted::RegRef(void *ptr)
 {
     std::scoped_lock lock(_referencesMutex);

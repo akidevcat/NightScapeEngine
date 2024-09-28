@@ -2,6 +2,7 @@
 
 #include "Components/Transform.h"
 #include "../Render/Components/Camera.h"
+#include "Components/Relationship.h"
 
 size_t NSE::Scene::_uidCount = 1;
 
@@ -35,6 +36,15 @@ void NSE::Scene::OnFrameUpdate()
 
 void NSE::Scene::OnEndFrameUpdate()
 {
+    // Destroy entities
+    for (auto& entity : _entitiesToBeDestroyed)
+    {
+        _registry.destroy(entity);
+    }
+
+    _entitiesToBeDestroyed.clear();
+
+    // Unload systems
     for (auto& system : _systemsToBeDestroyed)
     {
         system->OnDispose();
@@ -50,15 +60,24 @@ void NSE::Scene::OnUnload()
 
 NSE::Entity NSE::Scene::CreateEntity(const std::string& name, Entity parent)
 {
-    return nullptr;
+    auto ref = _registry.create();
+    auto result = GetEntity(ref);
+    result.AddComponent<Components::Identity>().name = name;
+    result.AddComponent<Components::Transform>();
+    result.AddComponent<Components::Relationship>().parent = parent;
+    return result;
 }
 
 void NSE::Scene::DestroyEntity(Entity entity)
 {
+    assert(("An attempt to destroy a null entity", entity.Alive()));
+    _entitiesToBeDestroyed.emplace_back(entity);
 }
 
 void NSE::Scene::DestroyEntityNow(Entity entity)
 {
+    assert(("An attempt to destroy a null entity", entity.Alive()));
+    _registry.destroy(entity);
 }
 
 void NSE::Scene::RegisterEntitySystem(const SRef<EntitySystem>& system)

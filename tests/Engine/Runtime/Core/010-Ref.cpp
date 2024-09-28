@@ -3,7 +3,7 @@
 
 #include "Engine/Runtime/Render/Mesh.h"
 
-TEST_CASE("Ref basic testing", "[Ref]")
+TEST_CASE("Ref basic testing", "[Auto]")
 {
     NSE::Ref<NSE::Mesh> ref;
     {

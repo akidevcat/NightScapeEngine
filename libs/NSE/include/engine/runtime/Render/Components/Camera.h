@@ -8,6 +8,8 @@ namespace NSE::Components
 
         Type type = Type::Perspective;
 
+        int priority = 0;
+
         float fieldOfView = 60.0f;
         float orthographicSize = 10.0f;
         float clipPlanesNear = 0.1f;

@@ -25,7 +25,7 @@ namespace NSE
         EngineConfiguration _config;
         RenderPipeline* _pipeline = nullptr;
 
-        friend NSE::Engine;
+        friend Engine;
     };
 
     constexpr EngineServerAccessor<RenderPipelineServer> Pipeline;

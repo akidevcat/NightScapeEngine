@@ -32,6 +32,11 @@ namespace NSE
             return _registry.view<TComponents...>();
         }
 
+        Entity GetEntity(const entt::entity ref)
+        {
+            return Entity{ref, self<Scene>()};
+        }
+
         void RegisterEntitySystem(const SRef<EntitySystem>& system);
         void UnregisterEntitySystem(const SRef<EntitySystem>& system);
 
@@ -42,10 +47,11 @@ namespace NSE
         const std::string& GetName() const { return _name; }
 
     private:
-        size_t _uid;
+        size_t _uid = 0;
         std::string _name = "New Scene";
 
         entt::registry _registry;
+        std::vector<entt::entity> _entitiesToBeDestroyed;
 
         std::unordered_map<void*, SRef<EntitySystem>> _systems;
         std::vector<SRef<EntitySystem>> _systemsToBeInitialized;

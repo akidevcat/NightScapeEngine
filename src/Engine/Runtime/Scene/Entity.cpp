@@ -2,7 +2,7 @@
 
 #include "Scene.h"
 
-inline bool NSE::Entity::Alive() const
+bool NSE::Entity::Alive() const
 {
     return
         _ref != entt::null &&

@@ -18,7 +18,7 @@ namespace NSE
         ~Engine() = default;
 
         void Initialize(const EngineConfiguration& config);
-        void UpdateFrame();
+        bool UpdateFrame();
         void Shutdown();
 
         template <typename ST>

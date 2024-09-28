@@ -69,7 +69,7 @@ void NSE::Engine::Initialize(const EngineConfiguration& config)
     _isInitialized = true;
 }
 
-void NSE::Engine::UpdateFrame()
+bool NSE::Engine::UpdateFrame()
 {
     assert(("Engine is not initialized", _isInitialized));
 
@@ -81,6 +81,8 @@ void NSE::Engine::UpdateFrame()
     GetServer<SceneServer>()->EndFrameUpdate();
     GetServer<InputServer>()->EndFrame();
     GetServer<TimeServer>()->EndFrame();
+
+    return true;
 }
 
 void NSE::Engine::Shutdown()

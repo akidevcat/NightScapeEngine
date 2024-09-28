@@ -1,12 +1,14 @@
-#include "OpenGLRenderAPI.h"
+#include "glRenderAPI.h"
 
-NSE::OpenGLRenderAPI::OpenGLRenderAPI(EngineConfiguration config, SDL_Window* window)
+#include "glGraphicsBuffer.h"
+
+NSE::glRenderAPI::glRenderAPI(EngineConfiguration config, SDL_Window* window)
 {
     _config = config;
     _window = window;
 }
 
-bool NSE::OpenGLRenderAPI::OnInitialize()
+bool NSE::glRenderAPI::OnInitialize()
 {
     // Use OpenGL 3.2
     SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, 3);
@@ -55,31 +57,43 @@ bool NSE::OpenGLRenderAPI::OnInitialize()
     return true;
 }
 
-void NSE::OpenGLRenderAPI::OnDispose()
+void NSE::glRenderAPI::OnDispose()
 {
     glDeleteProgram(_glProgramID);
     _glProgramID = 0;
 }
 
-void NSE::OpenGLRenderAPI::Present() const
+void NSE::glRenderAPI::Present() const
 {
     SDL_GL_SwapWindow(_window);
 }
 
-void NSE::OpenGLRenderAPI::ClearRenderTargetColor(float4 color) const
+void NSE::glRenderAPI::ClearRenderTargetColor(float4 color) const
 {
     glClearColor(color.r, color.g, color.b, color.a);
     glClear(GL_COLOR_BUFFER_BIT);
 }
 
-void NSE::OpenGLRenderAPI::ClearRenderTargetDepth(float depth) const
+void NSE::glRenderAPI::ClearRenderTargetDepth(float depth) const
 {
     glClearDepth(depth);
     glClear(GL_DEPTH_BUFFER_BIT);
 }
 
-void NSE::OpenGLRenderAPI::ClearRenderTargetStencil(int stencil) const
+void NSE::glRenderAPI::ClearRenderTargetStencil(int stencil) const
 {
     glClearStencil(stencil);
     glClear(GL_STENCIL_BUFFER_BIT);
+}
+
+NSE::SRef<NSE::GraphicsBuffer> NSE::glRenderAPI::CreateGraphicsBuffer(GraphicsBuffer::Target target, size_t size,
+    bool keepDataOnCPU) const
+{
+    return SRef{new glGraphicsBuffer{target, size, keepDataOnCPU}};
+}
+
+NSE::SRef<NSE::GraphicsBuffer> NSE::glRenderAPI::CreateGraphicsBuffer(GraphicsBuffer::Target target, size_t stride,
+    size_t count, bool keepDataOnCPU) const
+{
+    return SRef{new glGraphicsBuffer{target, stride, count, keepDataOnCPU}};
 }

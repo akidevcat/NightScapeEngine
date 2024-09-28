@@ -51,6 +51,8 @@ void NSE::RenderPipelineServer::RenderFrame()
     if (!_pipeline)
         return;
 
+    sRender->api()->ClearRenderTargetColor(float4{1, 0, 1, 1});
+
     for (auto& scene : *SceneServer::Get())
     {
         auto view = scene->GetEntities<Components::Transform, Components::Camera>();
@@ -59,4 +61,6 @@ void NSE::RenderPipelineServer::RenderFrame()
             _pipeline->Render(camera, transform);
         }
     }
+
+    sRender->api()->Present();
 }
