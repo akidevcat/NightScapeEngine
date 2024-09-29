@@ -20,10 +20,16 @@ Another important element is, all the engine transform positions are stored as d
 
 ## Dependencies
 
+### Vulkan
+
 ### SDL2
+
+### GLEW
 
 ### Entt
 
+### Catch2
+
 ### Cereal
 
-### Bullet
+### Jolt
