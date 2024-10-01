@@ -1,7 +1,10 @@
 #include "SceneServer.h"
 
+#include "../Memory/FactoryRegistry.h"
+
 NSE::SceneServer::SceneServer()
 {
+    _factoryRegistry = SRef{new FactoryRegistry{}};
 }
 
 NSE::SceneServer::~SceneServer()

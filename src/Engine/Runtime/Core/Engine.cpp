@@ -1,7 +1,9 @@
 #include "Engine.h"
 
 #include <iostream>
+#include <SDL_vulkan.h>
 
+#include "../Application/ApplicationServer.h"
 #include "../Assets/AssetsServer.h"
 #include "../Audio/AudioServer.h"
 #include "../Input/InputServer.h"
@@ -11,10 +13,12 @@
 #include "../Render/RenderServer.h"
 #include "../Scene/SceneServer.h"
 #include "../Time/TimeServer.h"
+#include "../Memory/FactoryRegistry.h"
 
-NSE::Engine::Engine(IAppInstance *app)
+NSE::Engine::Engine(IAppInstance* app, IEditorInstance* editor)
 {
     _app = app;
+    _editor = editor;
 }
 
 void NSE::Engine::Initialize(const EngineConfiguration& config)
@@ -37,7 +41,19 @@ void NSE::Engine::Initialize(const EngineConfiguration& config)
         return;
     }
 
-    _window = SDL_CreateWindow(_app->GetName().c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 960, SDL_WINDOW_OPENGL);
+    Uint32 windowsFlags = 0;
+    switch (config.renderAPI)
+    {
+        case EngineConfiguration::RenderAPI::OpenGL:
+            windowsFlags |= SDL_WINDOW_OPENGL;
+            break;
+        case EngineConfiguration::RenderAPI::Vulkan:
+            SDL_Vulkan_LoadLibrary(nullptr);
+            windowsFlags |= SDL_WINDOW_VULKAN;
+            break;
+    }
+
+    _window = SDL_CreateWindow(_app->GetName().c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 960, windowsFlags);
     if (!_window)
     {
         std::cerr << "Problem occured while engine initialization: " << std::endl;
@@ -56,6 +72,7 @@ void NSE::Engine::Initialize(const EngineConfiguration& config)
     }
 
     // Initialize servers
+    RegisterServer(new ApplicationServer{config});
     RegisterServer(new TimeServer{config});
     RegisterServer(new ProfilingServer{config});
     RegisterServer(new AssetsServer{config});
@@ -66,6 +83,11 @@ void NSE::Engine::Initialize(const EngineConfiguration& config)
     RegisterServer(new RenderServer{config, _window});
     RegisterServer(new RenderPipelineServer{config});
 
+    _app->OnAppSetup();
+    _app->OnRegisteringComponents(GetServer<SceneServer>()->GetFactoryRegistry());
+    _app->OnRegisteringEntitySystems(GetServer<SceneServer>()->GetFactoryRegistry());
+    _app->OnRegisteringMainSystem();
+
     _isInitialized = true;
 }
 
@@ -74,6 +96,8 @@ bool NSE::Engine::UpdateFrame()
     assert(("Engine is not initialized", _isInitialized));
 
     GetServer<TimeServer>()->BeginFrame();
+    if (!GetServer<ApplicationServer>()->Update())
+        return false;
     GetServer<InputServer>()->BeginFrame();
     GetServer<SceneServer>()->BeginFrameUpdate();
     GetServer<SceneServer>()->UpdateFrame();

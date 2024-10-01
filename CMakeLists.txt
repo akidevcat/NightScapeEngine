@@ -5,7 +5,10 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
 
 # Find packages
+#set(ENV{VULKAN_SDK} "C:/VulkanSDK/1.3.290.0")
+
 find_package(Catch2 3 REQUIRED)
+find_package(Vulkan REQUIRED)
 
 # include SDL2
 set(SDL2MAIN_LIBRARY "")
@@ -28,6 +31,9 @@ include_directories(${PROJECT_SOURCE_DIR}/libs/GLEW/include)
 
 # include entt
 include_directories(${PROJECT_SOURCE_DIR}/libs/entt/include)
+
+# include Vulkan
+include_directories(${Vulkan_INCLUDE_DIRS})
 
 # Gather all .cpp files in the src directory
 file(GLOB_RECURSE SOURCES "${PROJECT_SOURCE_DIR}/src/*.cpp")
@@ -54,6 +60,11 @@ find_package(glm CONFIG REQUIRED)
 target_link_libraries(${PROJECT_NAME} glm::glm)
 target_link_libraries(${PROJECT_NAME}_shared glm::glm)
 target_link_libraries(${PROJECT_NAME}_static glm::glm)
+
+# Link Vulkan
+target_link_libraries(${PROJECT_NAME} ${Vulkan_LIBRARIES})
+target_link_libraries(${PROJECT_NAME}_shared ${Vulkan_LIBRARIES})
+target_link_libraries(${PROJECT_NAME}_static ${Vulkan_LIBRARIES})
 
 # Precompile pch.h
 target_precompile_headers(${PROJECT_NAME} PRIVATE ${PROJECT_SOURCE_DIR}/src/pch.h)

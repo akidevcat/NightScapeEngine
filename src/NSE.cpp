@@ -1,6 +1,6 @@
 #include "NSE.h"
 
-NSE::Engine* NSE::CreateEngine(IAppInstance* app)
+NSE::Engine* NSE::CreateEngine(IAppInstance*&& app, IEditorInstance*&& editor)
 {
-    return new Engine(app);
+    return new Engine{app, editor};
 }

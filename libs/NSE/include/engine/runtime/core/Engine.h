@@ -8,13 +8,14 @@
 #include "EngineConfiguration.h"
 #include "EngineServer.h"
 #include "IAppInstance.h"
+#include "IEditorInstance.h"
 
 namespace NSE
 {
     class Engine
     {
     public:
-        explicit Engine(IAppInstance* app);
+        explicit Engine(IAppInstance* app, IEditorInstance* editor = nullptr);
         ~Engine() = default;
 
         void Initialize(const EngineConfiguration& config);
@@ -41,6 +42,7 @@ namespace NSE
 
     private:
         IAppInstance* _app = nullptr;
+        IEditorInstance* _editor = nullptr;
         EngineConfiguration _config;
         std::vector<IEngineServer*> _servers;
         std::unordered_map<size_t, IEngineServer*> _serversMap;

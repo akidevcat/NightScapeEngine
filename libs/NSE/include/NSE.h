@@ -7,7 +7,7 @@
 
 namespace NSE
 {
-    Engine* CreateEngine(IAppInstance* app);
+    Engine* CreateEngine(IAppInstance*&& app, IEditorInstance*&& editor = nullptr);
 }
 
 #endif //NIGHT_SCAPE_ENGINE_h

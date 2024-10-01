@@ -5,6 +5,7 @@
 #include "Scene.h"
 
 #include "../Core/EngineServer.h"
+#include "../Memory/FactoryRegistry.h"
 
 namespace NSE
 {
@@ -38,6 +39,8 @@ namespace NSE
         [[nodiscard]] std::vector<Ref<Scene>>::const_reverse_iterator rbegin() const { return _cachedScenesList.rbegin(); }
         [[nodiscard]] std::vector<Ref<Scene>>::const_reverse_iterator rend() const { return _cachedScenesList.rend(); }
 
+        Ref<FactoryRegistry> GetFactoryRegistry() const { return _factoryRegistry; }
+
     private:
         void RefreshCachedScenesList();
 
@@ -45,6 +48,8 @@ namespace NSE
         std::unordered_map<size_t, SRef<Scene>> _scenes
             = std::unordered_map<size_t, SRef<Scene>>();
         std::vector<Ref<Scene>> _cachedScenesList;
+
+        SRef<FactoryRegistry> _factoryRegistry;
 
         friend NSE::Engine;
     };
