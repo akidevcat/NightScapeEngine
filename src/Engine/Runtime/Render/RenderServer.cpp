@@ -2,6 +2,7 @@
 #include <gl/glew.h>
 #include "API/OpenGL/glRenderAPI.h"
 #include "API/Vulkan/vkRenderAPI.h"
+#include "../../../Vendor/ImGui/imgui_impl_sdl2.h"
 
 NSE::RenderServer::RenderServer(EngineConfiguration cfg, SDL_Window* window)
 {
@@ -22,7 +23,7 @@ bool NSE::RenderServer::OnInitialize()
             _api = new glRenderAPI{_config, _window};
             break;
         case EngineConfiguration::RenderAPI::Vulkan:
-            _api = new vkRenderAPI{_config, _window};
+            _api = new NSE::Vulkan::vkRenderAPI{_config, _window};
         break;
     }
 
@@ -40,4 +41,12 @@ void NSE::RenderServer::OnDispose()
 {
     if (_api)
         _api->OnDispose();
+}
+
+void NSE::RenderServer::Update()
+{
+    _api->NewImGuiFrame();
+    ImGui_ImplSDL2_NewFrame();
+    ImGui::NewFrame();
+    ImGui::ShowDemoWindow();
 }

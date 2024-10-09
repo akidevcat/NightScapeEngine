@@ -97,3 +97,12 @@ NSE::SRef<NSE::GraphicsBuffer> NSE::glRenderAPI::CreateGraphicsBuffer(GraphicsBu
 {
     return SRef{new glGraphicsBuffer{target, stride, count, keepDataOnCPU}};
 }
+
+void NSE::glRenderAPI::NewImGuiFrame() const
+{
+
+}
+
+void NSE::glRenderAPI::RenderImGuiDrawData() const
+{
+}

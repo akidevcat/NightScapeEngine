@@ -25,7 +25,7 @@ NSE::Mesh::~Mesh()
     Release();
 }
 
-void NSE::Mesh::SetTopology(MeshTopology topology)
+void NSE::Mesh::SetTopology(PrimitiveTopology topology)
 {
     _topology = topology;
 }

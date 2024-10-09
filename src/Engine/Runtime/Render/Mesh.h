@@ -1,7 +1,7 @@
 #pragma once
 
 #include "VertexData.h"
-#include "MeshTopology.h"
+#include "PrimitiveTopology.h"
 #include "GraphicsBuffer.h"
 
 namespace NSE
@@ -20,8 +20,8 @@ namespace NSE
         [[nodiscard]] Ref<GraphicsBuffer> GetVertexBuffer() const { return _vertexBuffer; }
         [[nodiscard]] Ref<GraphicsBuffer> GetIndexBuffer() const { return _indexBuffer; }
 
-        [[nodiscard]] MeshTopology GetTopology() const { return _topology; }
-        void SetTopology(MeshTopology topology);
+        [[nodiscard]] PrimitiveTopology GetTopology() const { return _topology; }
+        void SetTopology(PrimitiveTopology topology);
 
         void Upload();
         void Resize(int vertexCount, int indexCount);
@@ -33,6 +33,6 @@ namespace NSE
         SRef<GraphicsBuffer> _vertexBuffer = nullptr;
         SRef<GraphicsBuffer> _indexBuffer = nullptr;
 
-        MeshTopology _topology = MeshTopology::Triangles;
+        PrimitiveTopology _topology = PrimitiveTopology::Triangles;
     };
 }

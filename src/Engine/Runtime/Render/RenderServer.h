@@ -18,6 +18,8 @@ namespace NSE
         bool OnInitialize() override;
         void OnDispose() override;
 
+        void Update();
+
     public:
         [[nodiscard]] const IRenderAPI* api() const { return _api; }
 

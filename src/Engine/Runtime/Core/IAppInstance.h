@@ -19,6 +19,8 @@ namespace NSE
 
         virtual void OnGameLaunch() = 0;
 
+        virtual void OnDispose() {}
+
         virtual std::string GetName() { return "Night Scape Engine"; }
     };
 }

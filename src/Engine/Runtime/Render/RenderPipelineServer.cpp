@@ -3,6 +3,7 @@
 #include "RenderServer.h"
 #include "../Scene/SceneServer.h"
 #include "ClusteredForward/ClusteredForwardRP.h"
+#include "../../../Vendor/ImGui/imgui_impl_sdl2.h"
 
 NSE::RenderPipelineServer::RenderPipelineServer(const EngineConfiguration& config)
 {
@@ -51,6 +52,8 @@ void NSE::RenderPipelineServer::RenderFrame()
     if (!_pipeline)
         return;
 
+    ImGui::Render();
+
     sRender->api()->ClearRenderTargetColor(float4{1, 0, 1, 1});
 
     for (auto& scene : *SceneServer::Get())
@@ -61,6 +64,8 @@ void NSE::RenderPipelineServer::RenderFrame()
             _pipeline->Render(camera, transform);
         }
     }
+
+    sRender->api()->RenderImGuiDrawData();
 
     sRender->api()->Present();
 }

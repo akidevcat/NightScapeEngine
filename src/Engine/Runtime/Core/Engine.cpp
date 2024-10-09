@@ -14,6 +14,7 @@
 #include "../Scene/SceneServer.h"
 #include "../Time/TimeServer.h"
 #include "../Memory/FactoryRegistry.h"
+#include "../Serializer/SerializerServer.h"
 
 NSE::Engine::Engine(IAppInstance* app, IEditorInstance* editor)
 {
@@ -72,6 +73,7 @@ void NSE::Engine::Initialize(const EngineConfiguration& config)
     }
 
     // Initialize servers
+    RegisterServer(new SerializerServer{config});
     RegisterServer(new ApplicationServer{config});
     RegisterServer(new TimeServer{config});
     RegisterServer(new ProfilingServer{config});
@@ -83,10 +85,20 @@ void NSE::Engine::Initialize(const EngineConfiguration& config)
     RegisterServer(new RenderServer{config, _window});
     RegisterServer(new RenderPipelineServer{config});
 
+    if (_editor)
+    {
+        _editor->OnInitialize(_app);
+    }
+
     _app->OnAppSetup();
     _app->OnRegisteringComponents(GetServer<SceneServer>()->GetFactoryRegistry());
     _app->OnRegisteringEntitySystems(GetServer<SceneServer>()->GetFactoryRegistry());
     _app->OnRegisteringMainSystem();
+
+    if (_editor)
+    {
+        _editor->OnInitializeAfterApp(_app);
+    }
 
     _isInitialized = true;
 }
@@ -101,6 +113,7 @@ bool NSE::Engine::UpdateFrame()
     GetServer<InputServer>()->BeginFrame();
     GetServer<SceneServer>()->BeginFrameUpdate();
     GetServer<SceneServer>()->UpdateFrame();
+    GetServer<RenderServer>()->Update();
     GetServer<RenderPipelineServer>()->RenderFrame();
     GetServer<SceneServer>()->EndFrameUpdate();
     GetServer<InputServer>()->EndFrame();
@@ -111,6 +124,13 @@ bool NSE::Engine::UpdateFrame()
 
 void NSE::Engine::Shutdown()
 {
+    _app->OnDispose();
+
+    if (_editor)
+    {
+        _editor->OnDispose();
+    }
+
     for (auto server = _servers.rbegin(); server != _servers.rend(); ++server)
     {
         (*server)->OnDispose();

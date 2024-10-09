@@ -2,7 +2,7 @@
 
 namespace NSE
 {
-    enum class MeshTopology
+    enum class PrimitiveTopology
     {
         Triangles, Lines, LinesStrip, Points
     };
