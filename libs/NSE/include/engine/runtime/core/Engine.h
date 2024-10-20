@@ -2,7 +2,6 @@
 
 #include <SDL_video.h>
 #include <unordered_map>
-#include <vcruntime_typeinfo.h>
 #include <vector>
 
 #include "EngineConfiguration.h"

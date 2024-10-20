@@ -40,6 +40,8 @@ namespace NSE::Vulkan
     public:
         [[nodiscard]] VkInstance    GetVulkanInstance() const { return _vkbInstance.instance; }
         [[nodiscard]] VkDevice      GetVulkanDevice() const { return _vkbDevice.device; }
+        [[nodiscard]] vkb::Swapchain GetVkbSwapchain() const { return _vkbSwapchain; }
+        [[nodiscard]] VkSwapchainKHR GetVulkanSwapchain() const { return _vkbSwapchain; }
 
     private:
         void NewImGuiFrame() const override;

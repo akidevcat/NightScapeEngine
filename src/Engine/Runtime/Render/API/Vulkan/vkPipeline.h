@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vulkan/vulkan_core.h>
+
 #include "../../Pipeline.h"
 
 namespace NSE::Vulkan
@@ -10,10 +12,21 @@ namespace NSE::Vulkan
         vkPipeline(const PipelineConfiguration& config);
         ~vkPipeline() override;
 
-        PipelineConfiguration& GetConfiguration() override { return _config; }
-        const PipelineConfiguration& GetConfiguration() const override { return _config; }
+        void Initialize() final;
+        void Dispose() final;
+
+        const PipelineConfiguration& configuration() const override { return _config; }
+
+        VkPipelineLayout layout() const { return _layout; }
+        VkPipeline pipeline() const { return _pipeline; }
+        VkPipelineCache pipelineCache() const { return _pipelineCache; }
 
     private:
         PipelineConfiguration _config;
+        bool _isInitialized = false;
+
+        VkPipelineLayout _layout = nullptr;
+        VkPipeline _pipeline = nullptr;
+        VkPipelineCache _pipelineCache = nullptr;
     };
 }

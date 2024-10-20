@@ -62,6 +62,6 @@ namespace NSE
     bool Entity::TryRemoveComponent()
     {
         assert(("Null reference occured ( Entity->TryRemoveComponent )", Alive()));
-        return _scene->_registry.remove<T...>(_ref) > 0;
+        return _scene->_registry.remove<T>(_ref) > 0;
     }
 }

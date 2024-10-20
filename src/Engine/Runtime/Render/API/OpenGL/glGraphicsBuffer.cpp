@@ -45,7 +45,8 @@ NSE::glGraphicsBuffer::~glGraphicsBuffer()
 
 void NSE::glGraphicsBuffer::Release()
 {
-    glDeleteBuffers(1, &_bufferID);
+    // ToDo
+    // glDeleteBuffers(1, &_bufferID);
 
     free(_data);
     _data = nullptr;

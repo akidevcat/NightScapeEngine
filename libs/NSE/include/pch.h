@@ -2,7 +2,11 @@
 
 #include <SDL.h>
 #include <gl/glew.h>
+#if defined(__APPLE__)
+#include <OpenGL/glu.h>
+#else
 #include <gl/glu.h>
+#endif
 #include <entt/entt.hpp>
 
 #include <glm/glm.hpp>

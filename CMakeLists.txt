@@ -7,27 +7,30 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
 # Find packages
 #set(ENV{VULKAN_SDK} "C:/VulkanSDK/1.3.290.0")
 
+find_package(SDL2 REQUIRED)
 find_package(Catch2 3 REQUIRED)
 find_package(Vulkan REQUIRED)
+find_package(GLEW REQUIRED)
 
 # include SDL2
-set(SDL2MAIN_LIBRARY "")
-set(SDL2_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/libs/SDL2/include)
+#set(SDL2MAIN_LIBRARY "")
+#set(SDL2_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/libs/SDL2/include)
+#
+## Support both 32 and 64 bit builds
+#if (${CMAKE_SIZEOF_VOID_P} MATCHES 8)
+#    set(SDL2_LIBRARIES "${PROJECT_SOURCE_DIR}/libs/SDL2/lib/x64/SDL2.lib;${PROJECT_SOURCE_DIR}/libs/SDL2/lib/x64/SDL2main.lib")
+#else ()
+#    set(SDL2_LIBRARIES "${PROJECT_SOURCE_DIR}/libs/SDL2/lib/x86/SDL2.lib;${PROJECT_SOURCE_DIR}/libs/SDL2/lib/x86/SDL2main.lib")
+#endif ()
 
-# Support both 32 and 64 bit builds
-if (${CMAKE_SIZEOF_VOID_P} MATCHES 8)
-    set(SDL2_LIBRARIES "${PROJECT_SOURCE_DIR}/libs/SDL2/lib/x64/SDL2.lib;${PROJECT_SOURCE_DIR}/libs/SDL2/lib/x64/SDL2main.lib")
-else ()
-    set(SDL2_LIBRARIES "${PROJECT_SOURCE_DIR}/libs/SDL2/lib/x86/SDL2.lib;${PROJECT_SOURCE_DIR}/libs/SDL2/lib/x86/SDL2main.lib")
-endif ()
-
-string(STRIP "${SDL2_LIBRARIES}" SDL2_LIBRARIES)
+#string(STRIP "${SDL2_LIBRARIES}" SDL2_LIBRARIES)
 
 # include SDL2
-include_directories(${SDL2_INCLUDE_DIR})
+include_directories(${SDL2_INCLUDE_DIRS})
 
 # include GLEW
-include_directories(${PROJECT_SOURCE_DIR}/libs/GLEW/include)
+#include_directories(${PROJECT_SOURCE_DIR}/libs/GLEW/include)
+include_directories(${GLEW_INCLUDE_DIRS})
 
 # include entt
 include_directories(${PROJECT_SOURCE_DIR}/libs/entt/include)
@@ -51,9 +54,9 @@ target_link_libraries(${PROJECT_NAME}_shared ${SDL2_LIBRARIES})
 target_link_libraries(${PROJECT_NAME}_static ${SDL2_LIBRARIES})
 
 # Link GLEW
-target_link_libraries(${PROJECT_NAME}        ${PROJECT_SOURCE_DIR}/libs/GLEW/lib/x64/glew32.lib glu32 opengl32)
-target_link_libraries(${PROJECT_NAME}_shared ${PROJECT_SOURCE_DIR}/libs/GLEW/lib/x64/glew32.lib glu32 opengl32)
-target_link_libraries(${PROJECT_NAME}_static ${PROJECT_SOURCE_DIR}/libs/GLEW/lib/x64/glew32.lib glu32 opengl32)
+target_link_libraries(${PROJECT_NAME}        GLEW::GLEW)
+target_link_libraries(${PROJECT_NAME}_shared GLEW::GLEW)
+target_link_libraries(${PROJECT_NAME}_static GLEW::GLEW)
 
 # Link GLM
 find_package(glm CONFIG REQUIRED)
@@ -109,7 +112,7 @@ add_executable(unit_tests ${TESTS_SOURCES} ${HEADERS})
 target_include_directories(unit_tests PRIVATE ${PROJECT_SOURCE_DIR}/src)
 target_link_libraries(unit_tests Catch2::Catch2WithMain) # Put this before SDL2 for the main function
 target_link_libraries(unit_tests ${SDL2_LIBRARIES})
-target_link_libraries(unit_tests ${PROJECT_SOURCE_DIR}/libs/GLEW/lib/x64/glew32.lib)
+target_link_libraries(unit_tests GLEW::GLEW)
 #target_link_libraries(unit_tests Catch2::Catch2WithMain)
 target_link_libraries(unit_tests ${PROJECT_NAME}_static)
 catch_discover_tests(unit_tests)

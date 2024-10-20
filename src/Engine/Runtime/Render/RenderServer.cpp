@@ -45,8 +45,8 @@ void NSE::RenderServer::OnDispose()
 
 void NSE::RenderServer::Update()
 {
-    _api->NewImGuiFrame();
-    ImGui_ImplSDL2_NewFrame();
-    ImGui::NewFrame();
-    ImGui::ShowDemoWindow();
+    // _api->NewImGuiFrame();
+    // ImGui_ImplSDL2_NewFrame();
+    // ImGui::NewFrame();
+    // ImGui::ShowDemoWindow();
 }

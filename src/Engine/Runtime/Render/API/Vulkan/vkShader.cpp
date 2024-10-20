@@ -17,7 +17,7 @@ NSE::Vulkan::vkShader::vkShader(const std::string& shaderPath)
 
 NSE::Vulkan::vkShader::~vkShader()
 {
-
+    Dispose();
 }
 
 void NSE::Vulkan::vkShader::OnLoadFromFile(const std::string& shaderPath)

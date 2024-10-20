@@ -9,7 +9,10 @@ namespace NSE
         Pipeline() = default;
         ~Pipeline() override = default;
 
-        virtual PipelineConfiguration& GetConfiguration() = 0;
-        virtual const PipelineConfiguration& GetConfiguration() const = 0;
+        virtual void Initialize() {}
+        virtual void Dispose() {}
+
+        virtual const PipelineConfiguration& configuration() const = 0;
+        Ref<Shader> shader() const { return configuration().shader; }
     };
 }

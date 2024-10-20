@@ -52,7 +52,7 @@ void NSE::RenderPipelineServer::RenderFrame()
     if (!_pipeline)
         return;
 
-    ImGui::Render();
+    // ImGui::Render();
 
     sRender->api()->ClearRenderTargetColor(float4{1, 0, 1, 1});
 

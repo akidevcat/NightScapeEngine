@@ -20,6 +20,7 @@ namespace NSE::Vulkan
         void Dispose();
 
         [[nodiscard]] bool initialized() const { return _isInitialized; }
+        [[nodiscard]] const std::vector<VkPipelineShaderStageCreateInfo>& shaderStages() const { return _shaderStages; }
 
     protected:
         void OnLoadFromFile(const std::string &assetPath) override;
@@ -30,6 +31,7 @@ namespace NSE::Vulkan
     private:
         bool _isInitialized = false;
         std::string _shaderCode{};
+
         std::vector<VkPipelineShaderStageCreateInfo> _shaderStages;
 
         friend vkShaderSerializer;

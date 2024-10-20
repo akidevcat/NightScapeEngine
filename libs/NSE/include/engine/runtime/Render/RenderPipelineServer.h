@@ -28,5 +28,5 @@ namespace NSE
         friend Engine;
     };
 
-    constexpr EngineServerAccessor<RenderPipelineServer> Pipeline;
+    constexpr EngineServerAccessor<RenderPipelineServer> sPipeline;
 }

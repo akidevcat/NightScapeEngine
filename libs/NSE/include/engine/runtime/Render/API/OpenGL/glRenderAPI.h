@@ -24,6 +24,10 @@ namespace NSE
         [[nodiscard]] SRef<GraphicsBuffer> CreateGraphicsBuffer(GraphicsBuffer::Target target, size_t stride, size_t count, bool keepDataOnCPU) const final;
 
     private:
+        void NewImGuiFrame() const override;
+        void RenderImGuiDrawData() const override;
+
+    private:
         EngineConfiguration _config;
 
         GLuint _glProgramID = 0;

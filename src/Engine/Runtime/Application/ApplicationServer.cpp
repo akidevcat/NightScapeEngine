@@ -13,6 +13,8 @@ NSE::ApplicationServer::~ApplicationServer()
 
 bool NSE::ApplicationServer::OnInitialize()
 {
+    // ImGui_ImplSDL2_Init();
+
     return true;
 }
 
@@ -31,7 +33,7 @@ bool NSE::ApplicationServer::Update()
             return false;
         }
 
-        ImGui_ImplSDL2_ProcessEvent(&windowEvent);
+        // ImGui_ImplSDL2_ProcessEvent(&windowEvent);
     }
     return true;
 }
